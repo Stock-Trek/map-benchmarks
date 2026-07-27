@@ -5,13 +5,15 @@ use std::{sync::Arc, thread};
 use txmap::prelude::*;
 
 fn concurrent_insert(c: &mut Criterion) {
+    let mut group = c.benchmark_group("concurrent_insert");
+
     let num_threads = 8;
     let ops_per_thread = 10_000;
     let dashmap = Arc::new(DashMap::with_shard_amount(8));
     let starshardmap = Arc::new(ShardedHashMap::new(8));
     let txmap = Arc::new(TxMap::new(Shards::_8));
 
-    c.bench_function("dashmap_concurrent_insert", |b| {
+    group.bench_function("dashmap", |b| {
         b.iter(|| {
             let handles: Vec<_> = (0..num_threads)
                 .map(|_| {
@@ -34,7 +36,7 @@ fn concurrent_insert(c: &mut Criterion) {
             }
         })
     });
-    c.bench_function("starshardmap_concurrent_insert", |b| {
+    group.bench_function("starshard", |b| {
         b.iter(|| {
             let handles: Vec<_> = (0..num_threads)
                 .map(|_| {
@@ -57,7 +59,7 @@ fn concurrent_insert(c: &mut Criterion) {
             }
         })
     });
-    c.bench_function("txmap_concurrent_insert", |b| {
+    group.bench_function("txmap", |b| {
         b.iter(|| {
             let handles: Vec<_> = (0..num_threads)
                 .map(|_| {
@@ -82,5 +84,5 @@ fn concurrent_insert(c: &mut Criterion) {
     });
 }
 
-criterion_group!(benches, concurrent_insert);
-criterion_main!(benches);
+criterion_group!(group, concurrent_insert);
+criterion_main!(group);
