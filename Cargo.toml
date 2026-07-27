@@ -5,13 +5,11 @@ edition = "2024"
 
 [dependencies]
 concread = "0"
+criterion = { version = "0.8.2", features = ["async_futures", "html_reports"] }
 dashmap = "6"
+fluxmap = "0.3.7"
 starshard = "2"
 txmap = "2"
-
-[dev-dependencies]
-criterion = { version = "0.8.2", features = ["html_reports"] }
-rand = "0.10.2"
 
 [[bench]]
 name = "concurrent_get"
