@@ -31,10 +31,14 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
-      - name: Setup Pages
-        uses: actions/configure-pages@v5
+      # - name: Set up rust toolchain
+      #   uses: actions-rust-lang/setup-rust-toolchain@v1
+      # - name: Setup Pages
+      #   uses: actions/configure-pages@v5
       - name: Run benchmarks
         run: cargo bench
+      - name: Copy redirect
+        run: cp redirect.html target/criterion
       - name: Upload artifacts
         uses: actions/upload-pages-artifact@v3
         with:
