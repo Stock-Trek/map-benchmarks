@@ -26,9 +26,6 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Install latest map versions
-        run: cargo add dashmap starshard txmap
-
       - name: Run benchmarks
         run: cargo bench
 
