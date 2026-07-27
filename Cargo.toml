@@ -19,3 +19,11 @@ harness = false
 [[bench]]
 name = "concurrent_insert"
 harness = false
+
+[[bench]]
+name = "get"
+harness = false
+
+[[bench]]
+name = "concurrent_get"
+harness = false
