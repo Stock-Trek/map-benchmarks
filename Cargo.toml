@@ -9,6 +9,7 @@ criterion = { version = "0.8.2", features = ["async_futures", "html_reports"] }
 dashmap = "6"
 fluxmap = "0"
 hashbrown = "0"
+immutable-chunkmap = "2"
 starshard = "2"
 txmap = "2"
 

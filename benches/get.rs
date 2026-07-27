@@ -1,7 +1,8 @@
 use criterion::{
     Criterion,
-    async_executor::{AsyncExecutor, FuturesExecutor},
-    criterion_group, criterion_main,
+    // async_executor::{AsyncExecutor, FuturesExecutor},
+    criterion_group,
+    criterion_main,
 };
 
 fn get(c: &mut Criterion) {
@@ -9,12 +10,13 @@ fn get(c: &mut Criterion) {
 
     let concreadmap = concread::hashmap::HashMap::<String, u64>::new();
     let dashmap = dashmap::DashMap::<String, u64>::with_shard_amount(8);
-    let fluxmap = FuturesExecutor
-        .block_on(fluxmap::db::Database::<String, u64>::new(
-            fluxmap::DurabilityLevel::InMemory,
-        ))
-        .unwrap();
+    // let fluxmap = FuturesExecutor
+    //     .block_on(fluxmap::db::Database::<String, u64>::new(
+    //         fluxmap::DurabilityLevel::InMemory,
+    //     ))
+    //     .unwrap();
     let mut hashbrownmap = hashbrown::HashMap::<String, u64>::new();
+    let immutable_chunkmap = immutable_chunkmap::map::MapL::<String, u64>::new();
     let starshardmap = starshard::ShardedHashMap::<String, u64>::new(8);
     let txmap = txmap::prelude::TxMap::with_lock_policy::<txmap::prelude::RwLockPolicy>(
         txmap::prelude::Shards::_8,
@@ -22,13 +24,14 @@ fn get(c: &mut Criterion) {
 
     concreadmap.write().insert("key".to_string(), 42);
     dashmap.insert("key".to_string(), 42);
-    FuturesExecutor.block_on(async {
-        fluxmap
-            .handle()
-            .insert("key".to_string(), 42)
-            .await
-            .unwrap();
-    });
+    // FuturesExecutor.block_on(async {
+    //     fluxmap
+    //         .handle()
+    //         .insert("key".to_string(), 42)
+    //         .await
+    //         .unwrap();
+    // });
+    immutable_chunkmap.insert("key".to_string(), 42);
     hashbrownmap.insert("key".to_string(), 42);
     starshardmap.insert("key".to_string(), 42);
     txmap.insert("key".to_string(), 42);
@@ -45,16 +48,22 @@ fn get(c: &mut Criterion) {
             let _ = dashmap.get(&key);
         });
     });
-    group.bench_function("fluxmap", |b| {
-        b.iter(|| {
-            let key = std::hint::black_box("key".to_string());
-            let _ = fluxmap.handle().get(&key).expect("Cannot get from fluxmap");
-        });
-    });
+    // group.bench_function("fluxmap", |b| {
+    //     b.iter(|| {
+    //         let key = std::hint::black_box("key".to_string());
+    //         let _ = fluxmap.handle().get(&key).expect("Cannot get from fluxmap");
+    //     });
+    // });
     group.bench_function("hashbrown", |b| {
         b.iter(|| {
             let key = std::hint::black_box("key".to_string());
             let _ = hashbrownmap.get(&key);
+        });
+    });
+    group.bench_function("immutable_chunkmap", |b| {
+        b.iter(|| {
+            let key = std::hint::black_box("key".to_string());
+            let _ = immutable_chunkmap.get(&key);
         });
     });
     group.bench_function("starshard", |b| {

@@ -1,7 +1,8 @@
 use criterion::{
     Criterion,
-    async_executor::{AsyncExecutor, FuturesExecutor},
-    criterion_group, criterion_main,
+    // async_executor::{AsyncExecutor, FuturesExecutor},
+    criterion_group,
+    criterion_main,
 };
 use std::{sync::Arc, thread};
 
@@ -13,13 +14,14 @@ fn concurrent_insert_get_remove(c: &mut Criterion) {
 
     let concreadmap = Arc::new(concread::hashmap::HashMap::<String, u64>::new());
     let dashmap = Arc::new(dashmap::DashMap::<String, u64>::with_shard_amount(8));
-    let fluxmap = Arc::new(
-        FuturesExecutor
-            .block_on(fluxmap::db::Database::<String, u64>::new(
-                fluxmap::DurabilityLevel::InMemory,
-            ))
-            .unwrap(),
-    );
+    // let fluxmap = Arc::new(
+    //     FuturesExecutor
+    //         .block_on(fluxmap::db::Database::<String, u64>::new(
+    //             fluxmap::DurabilityLevel::InMemory,
+    //         ))
+    //         .unwrap(),
+    // );
+    let immutable_chunkmap = Arc::new(immutable_chunkmap::map::MapL::<String, u64>::new());
     let starshardmap = Arc::new(starshard::ShardedHashMap::<String, u64>::new(8));
     let txmap = Arc::new(txmap::prelude::TxMap::<String, u64>::new(
         txmap::prelude::Shards::_8,
@@ -75,28 +77,53 @@ fn concurrent_insert_get_remove(c: &mut Criterion) {
             }
         })
     });
-    group.bench_function("fluxmap", |b| {
-        b.to_async(FuturesExecutor).iter(async || {
+    // group.bench_function("fluxmap", |b| {
+    //     b.to_async(FuturesExecutor).iter(async || {
+    //         let handles: Vec<_> = (0..num_threads)
+    //             .map(|_| {
+    //                 let map = fluxmap.clone();
+    //                 thread::spawn(async move || {
+    //                     for i in 0..ops_per_thread {
+    //                         let key = std::hint::black_box(format!(
+    //                             "key_{:?}_{}",
+    //                             thread::current().id(),
+    //                             i
+    //                         ));
+    //                         let _ = map.handle().insert(key.clone(), 42).await;
+    //                         let _ = map.handle().get(&key);
+    //                         let _ = map.handle().remove(&key).await;
+    //                     }
+    //                 })
+    //             })
+    //             .collect();
+
+    //         for h in handles {
+    //             h.join().unwrap().await;
+    //         }
+    //     })
+    // });
+    group.bench_function("immutable_chunkmap", |b| {
+        b.iter(|| {
             let handles: Vec<_> = (0..num_threads)
                 .map(|_| {
-                    let map = fluxmap.clone();
-                    thread::spawn(async move || {
+                    let map = immutable_chunkmap.clone();
+                    thread::spawn(move || {
                         for i in 0..ops_per_thread {
                             let key = std::hint::black_box(format!(
                                 "key_{:?}_{}",
                                 thread::current().id(),
                                 i
                             ));
-                            let _ = map.handle().insert(key.clone(), 42).await;
-                            let _ = map.handle().get(&key);
-                            let _ = map.handle().remove(&key).await;
+                            let _ = map.insert(key.clone(), 42);
+                            let _ = map.get(&key);
+                            let _ = map.remove(&key);
                         }
                     })
                 })
                 .collect();
 
             for h in handles {
-                h.join().unwrap().await;
+                h.join().unwrap();
             }
         })
     });
