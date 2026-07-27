@@ -4,11 +4,9 @@ version = "0.1.0"
 edition = "2024"
 
 [dependencies]
-concread = "0.5.10"
+concread = "0"
 dashmap = "6"
-fast-stm = "0.7.1"
 starshard = "2"
-stm = "0.4.0"
 txmap = "2"
 
 [dev-dependencies]
