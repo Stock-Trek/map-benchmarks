@@ -1,0 +1,21 @@
+[package]
+name = "bench-map"
+version = "0.1.0"
+edition = "2024"
+
+[dependencies]
+dashmap = "6.2.1"
+starshard = "2.2.2"
+txmap = "2.2.0"
+
+[dev-dependencies]
+criterion = { version = "0.8.2", features = ["html_reports"] }
+rand = "0.10.2"
+
+[[bench]]
+name = "insert"
+harness = false
+
+[[bench]]
+name = "concurrent_insert"
+harness = false
