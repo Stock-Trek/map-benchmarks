@@ -14,6 +14,7 @@ fn insert_get_remove(c: &mut Criterion) {
             fluxmap::DurabilityLevel::InMemory,
         ))
         .unwrap();
+    let mut hashbrownmap = hashbrown::HashMap::<String, u64>::new();
     let starshardmap = starshard::ShardedHashMap::<String, u64>::new(8);
     let txmap = txmap::prelude::TxMap::<String, u64>::new(txmap::prelude::Shards::_8);
 
@@ -48,6 +49,14 @@ fn insert_get_remove(c: &mut Criterion) {
             dashmap.insert(key.clone(), 42);
             let _ = dashmap.get(&key);
             let _ = dashmap.remove(&key);
+        });
+    });
+    group.bench_function("hashbrown", |b| {
+        b.iter(|| {
+            let key = std::hint::black_box("key".to_string());
+            hashbrownmap.insert(key.clone(), 42);
+            let _ = hashbrownmap.get(&key);
+            let _ = hashbrownmap.remove(&key);
         });
     });
     group.bench_function("starshard", |b| {

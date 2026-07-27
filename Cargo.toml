@@ -1,13 +1,14 @@
 [package]
 name = "bench-map"
-version = "0.1.0"
+version = "1.0.0"
 edition = "2024"
 
 [dependencies]
 concread = "0"
 criterion = { version = "0.8.2", features = ["async_futures", "html_reports"] }
 dashmap = "6"
-fluxmap = "0.3.7"
+fluxmap = "0"
+hashbrown = "0"
 starshard = "2"
 txmap = "2"
 

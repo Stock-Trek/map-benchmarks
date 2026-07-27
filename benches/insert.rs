@@ -14,6 +14,7 @@ fn insert(c: &mut Criterion) {
             fluxmap::DurabilityLevel::InMemory,
         ))
         .unwrap();
+    let mut hashbrownmap = hashbrown::HashMap::<String, u64>::new();
     let starshardmap = starshard::ShardedHashMap::<String, u64>::new(8);
     let txmap = txmap::prelude::TxMap::<String, u64>::new(txmap::prelude::Shards::_8);
 
@@ -35,6 +36,12 @@ fn insert(c: &mut Criterion) {
             async {
                 fluxmap.handle().insert(key, 42).await.unwrap();
             }
+        });
+    });
+    group.bench_function("hashbrown", |b| {
+        b.iter(|| {
+            let key = std::hint::black_box("key".to_string());
+            hashbrownmap.insert(key, 42);
         });
     });
     group.bench_function("starshard", |b| {

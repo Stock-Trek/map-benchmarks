@@ -14,6 +14,7 @@ fn get(c: &mut Criterion) {
             fluxmap::DurabilityLevel::InMemory,
         ))
         .unwrap();
+    let mut hashbrownmap = hashbrown::HashMap::<String, u64>::new();
     let starshardmap = starshard::ShardedHashMap::<String, u64>::new(8);
     let txmap = txmap::prelude::TxMap::with_lock_policy::<txmap::prelude::RwLockPolicy>(
         txmap::prelude::Shards::_8,
@@ -28,6 +29,7 @@ fn get(c: &mut Criterion) {
             .await
             .unwrap();
     });
+    hashbrownmap.insert("key".to_string(), 42);
     starshardmap.insert("key".to_string(), 42);
     txmap.insert("key".to_string(), 42);
 
@@ -47,6 +49,12 @@ fn get(c: &mut Criterion) {
         b.iter(|| {
             let key = std::hint::black_box("key".to_string());
             let _ = fluxmap.handle().get(&key).expect("Cannot get from fluxmap");
+        });
+    });
+    group.bench_function("hashbrown", |b| {
+        b.iter(|| {
+            let key = std::hint::black_box("key".to_string());
+            let _ = hashbrownmap.get(&key);
         });
     });
     group.bench_function("starshard", |b| {
