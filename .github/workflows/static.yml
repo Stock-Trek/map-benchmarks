@@ -31,14 +31,12 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
-      # - name: Set up rust toolchain
-      #   uses: actions-rust-lang/setup-rust-toolchain@v1
-      # - name: Setup Pages
-      #   uses: actions/configure-pages@v5
+      - name: Install latest map versions
+        run: cargo add dashmap starshard txmap
       - name: Run benchmarks
         run: cargo bench
       - name: Copy redirect
-        run: cp redirect.html target/criterion
+        run: cp redirect.html target/criterion/index.html
       - name: Upload artifacts
         uses: actions/upload-pages-artifact@v3
         with:
