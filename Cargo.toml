@@ -4,9 +4,9 @@ version = "0.1.0"
 edition = "2024"
 
 [dependencies]
-dashmap = "6.2.1"
-starshard = "2.2.2"
-txmap = "2.2.0"
+dashmap = "6"
+starshard = "2"
+txmap = "2"
 
 [dev-dependencies]
 criterion = { version = "0.8.2", features = ["html_reports"] }
