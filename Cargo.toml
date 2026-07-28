@@ -4,35 +4,40 @@ version = "1.0.0"
 edition = "2024"
 
 [dependencies]
+ahash = "0"
 concread = "0"
 criterion = { version = "0.8.2", features = ["async_futures", "html_reports"] }
 dashmap = "6"
 fluxmap = "0"
 hashbrown = "0"
 immutable-chunkmap = "2"
+indexmap = "2"
+rand = "0.10.2"
+rustc-hash = "2"
 starshard = "2"
 txmap = "2"
+uuid = { version = "1.24.0", features = ["v4"] }
 
-[[bench]]
-name = "concurrent_get"
-harness = false
+#[[bench]]
+#name = "concurrent_get"
+#harness = false
 
-[[bench]]
-name = "concurrent_insert"
-harness = false
+#[[bench]]
+#name = "concurrent_insert"
+#harness = false
 
-[[bench]]
-name = "concurrent_insert_get_remove"
-harness = false
+#[[bench]]
+#name = "concurrent_insert_get_remove"
+#harness = false
 
-[[bench]]
-name = "get"
-harness = false
+#[[bench]]
+#name = "get"
+#harness = false
 
-[[bench]]
-name = "insert"
-harness = false
+#[[bench]]
+#name = "insert"
+#harness = false
 
-[[bench]]
-name = "insert_get_remove"
-harness = false
+#[[bench]]
+#name = "insert_get_remove"
+#harness = false
