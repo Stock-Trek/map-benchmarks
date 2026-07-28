@@ -14,7 +14,7 @@ impl DataGen for U64DenseDataGen {
         let max = start + (count as u64);
         let mut result = HashSet::new();
         for candidate in start..max {
-            result.insert(candidate as u64);
+            result.insert(candidate);
         }
         result
     }

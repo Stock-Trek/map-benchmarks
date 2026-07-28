@@ -2,9 +2,8 @@ use bench_map::{
     config::*,
     data::u64_sparse::U64SparseDataGen,
     map_gen::MapGen,
-    maps::sync_benchmap::SyncBenchMap,
     pin_thread::PinThread,
-    workload::{generate_workloads, run_workload, WorkloadDesign},
+    workload::{WorkloadDesign, generate_workloads, run_workload},
 };
 use criterion::{Criterion, Throughput, criterion_group, criterion_main};
 use std::sync::Arc;

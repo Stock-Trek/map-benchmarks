@@ -17,8 +17,7 @@ impl PinThread {
             unsafe {
                 let mut cpu_set: libc::cpu_set_t = mem::zeroed();
                 libc::CPU_SET(cpu_id, &mut cpu_set);
-                let ret =
-                    libc::sched_setaffinity(0, mem::size_of::<libc::cpu_set_t>(), &cpu_set);
+                let ret = libc::sched_setaffinity(0, mem::size_of::<libc::cpu_set_t>(), &cpu_set);
                 if ret != 0 {
                     eprintln!(
                         "Warning: failed to pin thread to CPU {}: {}",
