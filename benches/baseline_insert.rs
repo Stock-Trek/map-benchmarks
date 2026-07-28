@@ -37,8 +37,8 @@ fn insert(c: &mut Criterion) {
     let existing_key_count = 0;
     let sort_keys = false;
     for missing_key_count in ENTRY_COUNT {
+        // u64 keys
         {
-            // u64 keys
             let map_data = Rc::new(MapGen::generate(
                 U64SparseDataGen,
                 U64SparseDataGen,
@@ -48,7 +48,7 @@ fn insert(c: &mut Criterion) {
                 sort_keys,
             ));
             let mut group = c.benchmark_group(format!(
-                "baseline/insert-u64-keys/{}",
+                "baseline/insert/u64/{}",
                 format_with_underscores(*missing_key_count as u64)
             ));
             group.warm_up_time(WARM_UP_TIME);
@@ -66,8 +66,8 @@ fn insert(c: &mut Criterion) {
             bench_insert_missing!(group, map_data.clone(), bench_map::maps::std_benchmap::StdBenchMap<_, _>, "std");
             bench_insert_missing!(group, map_data.clone(), bench_map::maps::txmap_benchmap::TxMapBenchMap<_, _>, "txmap");
         }
+        // String<32> keys
         {
-            // String keys
             let map_data = Rc::new(MapGen::generate(
                 StringDataGen::<32>,
                 U64SparseDataGen,
@@ -77,7 +77,7 @@ fn insert(c: &mut Criterion) {
                 sort_keys,
             ));
             let mut group = c.benchmark_group(format!(
-                "baseline/insert-String<32>-keys/{}",
+                "baseline/insert/String<32>/{}",
                 format_with_underscores(*missing_key_count as u64)
             ));
             group.warm_up_time(WARM_UP_TIME);

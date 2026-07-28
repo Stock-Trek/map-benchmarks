@@ -11,11 +11,6 @@ always use blackbox for keys and returned values
 alway use returned values in an accumulator
 always pre-allocate for insert
 
-baseline:
-  [10K, 100K, 1M]
-  [u64, String(medium)]
-  [insert, lookup(existing), lookup(absent)]
-
 mixed:
   [100K, 1M]
   [u64, String(medium)]

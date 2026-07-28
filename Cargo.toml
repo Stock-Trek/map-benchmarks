@@ -29,3 +29,7 @@ harness = false
 [[bench]]
 name = "baseline_lookup_miss"
 harness = false
+
+[[bench]]
+name = "key_sensitivity"
+harness = false
