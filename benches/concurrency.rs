@@ -21,7 +21,7 @@ macro_rules! bench_concurrent {
                     let map = Arc::clone(&map);
                     let workload = workloads[thread_id].clone();
                     handles.push(std::thread::spawn(move || {
-                        PinThread::pin(thread_id);
+                        PinThread::try_pin(thread_id).expect("failed to pin thread to CPU");
                         run_workload::<$map_type, u64, u64>(&*map, &workload);
                     }));
                 }
