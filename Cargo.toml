@@ -18,26 +18,14 @@ starshard = "2"
 txmap = "2"
 uuid = { version = "1.24.0", features = ["v4"] }
 
-#[[bench]]
-#name = "concurrent_get"
-#harness = false
+[[bench]]
+name = "baseline_insert"
+harness = false
 
-#[[bench]]
-#name = "concurrent_insert"
-#harness = false
+[[bench]]
+name = "baseline_lookup_hit"
+harness = false
 
-#[[bench]]
-#name = "concurrent_insert_get_remove"
-#harness = false
-
-#[[bench]]
-#name = "get"
-#harness = false
-
-#[[bench]]
-#name = "insert"
-#harness = false
-
-#[[bench]]
-#name = "insert_get_remove"
-#harness = false
+[[bench]]
+name = "baseline_lookup_miss"
+harness = false

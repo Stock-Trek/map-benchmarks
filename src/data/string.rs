@@ -1,37 +1,27 @@
 use crate::data::data_gen::DataGen;
 use hashbrown::HashSet;
-use rand::RngExt;
+use rand::{RngExt, rngs::ThreadRng};
 
+#[derive(Clone, Copy)]
 pub struct StringDataGen<const LENGTH: usize>;
+
+const CHARSET: &[u8] = b"ABCDEFGHIJKLMNOPQRSTUVWXYZ\
+                         abcdefghijklmnopqrstuvwxyz\
+                         0123456789";
 
 impl<const LENGTH: usize> DataGen for StringDataGen<LENGTH> {
     type Output = String;
 
-    fn generate_unique(&self, count: usize, avoid: &HashSet<Self::Output>) -> Vec<Self::Output> {
-        if count == 0 {
-            return Vec::new();
-        }
-
-        const CHARSET: &[u8] = b"ABCDEFGHIJKLMNOPQRSTUVWXYZ\
-                                  abcdefghijklmnopqrstuvwxyz\
-                                  0123456789";
-
-        let mut rng = rand::rng();
-        let mut result = Vec::with_capacity(count);
-        let mut gen_string = || -> String {
-            (0..LENGTH)
+    fn generate_with(&self, count: usize, rng: &mut ThreadRng) -> HashSet<Self::Output> {
+        let mut result = HashSet::new();
+        while result.len() < count {
+            let candidate = (0..LENGTH)
                 .map(|_| {
                     let idx = rng.random_range(0..CHARSET.len());
                     CHARSET[idx] as char
                 })
-                .collect()
-        };
-        while result.len() < count {
-            let mut candidate = gen_string();
-            while avoid.contains(&candidate) || result.contains(&candidate) {
-                candidate = gen_string();
-            }
-            result.push(candidate);
+                .collect();
+            result.insert(candidate);
         }
         result
     }

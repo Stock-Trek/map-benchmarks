@@ -1,20 +1,21 @@
 use crate::data::data_gen::DataGen;
 use hashbrown::HashSet;
+use rand::{RngExt, rngs::ThreadRng};
 
+#[derive(Clone, Copy)]
 pub struct U64DenseDataGen;
 
 impl DataGen for U64DenseDataGen {
     type Output = u64;
 
-    fn generate_unique(&self, count: usize, avoid: &HashSet<Self::Output>) -> Vec<Self::Output> {
-        let mut vec = Vec::with_capacity(count);
-        let mut i = 0;
-        while vec.len() < count {
-            if !avoid.contains(&i) {
-                vec.push(i as u64);
-            }
-            i += 1;
+    fn generate_with(&self, count: usize, rng: &mut ThreadRng) -> HashSet<Self::Output> {
+        let start_max = u64::MAX - (count as u64);
+        let start = rng.random_range(u64::MIN..start_max);
+        let max = start + (count as u64);
+        let mut result = HashSet::new();
+        for candidate in start..max {
+            result.insert(candidate as u64);
         }
-        vec
+        result
     }
 }
