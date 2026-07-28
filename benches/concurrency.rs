@@ -8,12 +8,6 @@ use bench_map::{
 use criterion::{Criterion, Throughput, criterion_group, criterion_main};
 use std::sync::Arc;
 
-/// Number of operations per thread per benchmark iteration
-const OPS_PER_THREAD: usize = 10_000;
-
-/// Thread counts to benchmark
-const THREAD_COUNTS: &[usize] = &[1, 2, 4];
-
 macro_rules! bench_concurrent {
     ($group:ident, $map_data:expr, $thread_count:expr, $workloads:expr, $map_type:path, $name:expr) => {
         let map_data = $map_data.clone();
@@ -41,21 +35,21 @@ macro_rules! bench_concurrent {
 
 fn concurrency(c: &mut Criterion) {
     let entry_count = 1_000_000;
-    let max_threads = *THREAD_COUNTS.last().unwrap();
+    let max_threads = CONCURRENCY_THREAD_COUNTS.last().unwrap();
 
     let map_data = std::rc::Rc::new(MapGen::generate(
         U64SparseDataGen,
         U64SparseDataGen,
         entry_count,
         entry_count,
-        max_threads * OPS_PER_THREAD,
+        max_threads * CONCURRENCY_OPS_PER_THREAD,
         false,
     ));
 
-    let design = WorkloadDesign::balanced(OPS_PER_THREAD);
+    let design = WorkloadDesign::balanced(CONCURRENCY_OPS_PER_THREAD);
 
-    for &thread_count in THREAD_COUNTS {
-        let total_ops = thread_count * OPS_PER_THREAD;
+    for &thread_count in CONCURRENCY_THREAD_COUNTS {
+        let total_ops = thread_count * CONCURRENCY_OPS_PER_THREAD;
         let workloads = generate_workloads(
             &design,
             map_data.existing_keys(),

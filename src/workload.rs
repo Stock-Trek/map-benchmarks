@@ -43,11 +43,17 @@ impl WorkloadDesign {
     }
 }
 
+/// A single operation with its associated key.
+#[derive(Clone, Copy, Debug)]
+pub struct WorkItem {
+    pub op: Op,
+    pub key: u64,
+}
+
 /// A pre-generated workload for a single thread.
 #[derive(Clone)]
 pub struct ThreadWorkload {
-    pub ops: Vec<Op>,
-    pub keys: Vec<u64>,
+    pub items: Vec<WorkItem>,
 }
 
 /// Generate a workload for a single thread from a design.
@@ -61,31 +67,40 @@ pub fn generate_workload(
     rng: &mut impl RngExt,
 ) -> ThreadWorkload {
     let total = design.total_ops();
-    let mut ops = Vec::with_capacity(total);
-    let mut keys = Vec::with_capacity(total);
+    let mut items = Vec::with_capacity(total);
 
     for _ in 0..design.lookup_hits {
-        ops.push(Op::LookupHit);
-        keys.push(existing_keys[rng.random_range(0..existing_keys.len())]);
+        items.push(WorkItem {
+            op: Op::LookupHit,
+            key: existing_keys[rng.random_range(0..existing_keys.len())],
+        });
     }
     for _ in 0..design.lookup_misses {
-        ops.push(Op::LookupMiss);
-        keys.push(missing_keys[rng.random_range(0..missing_keys.len())]);
+        items.push(WorkItem {
+            op: Op::LookupMiss,
+            key: missing_keys[rng.random_range(0..missing_keys.len())],
+        });
     }
     for _ in 0..design.inserts {
-        ops.push(Op::Insert);
-        keys.push(missing_keys[rng.random_range(0..missing_keys.len())]);
+        items.push(WorkItem {
+            op: Op::Insert,
+            key: missing_keys[rng.random_range(0..missing_keys.len())],
+        });
     }
     for _ in 0..design.updates {
-        ops.push(Op::Update);
-        keys.push(existing_keys[rng.random_range(0..existing_keys.len())]);
+        items.push(WorkItem {
+            op: Op::Update,
+            key: existing_keys[rng.random_range(0..existing_keys.len())],
+        });
     }
     for _ in 0..design.removes {
-        ops.push(Op::Remove);
-        keys.push(existing_keys[rng.random_range(0..existing_keys.len())]);
+        items.push(WorkItem {
+            op: Op::Remove,
+            key: existing_keys[rng.random_range(0..existing_keys.len())],
+        });
     }
 
-    ThreadWorkload { ops, keys }
+    ThreadWorkload { items }
 }
 
 /// Generate workloads for all threads using the same design.
@@ -115,9 +130,9 @@ where
     K: From<u64> + Copy,
     V: From<u64> + Copy,
 {
-    for (op, key) in workload.ops.iter().zip(workload.keys.iter()) {
-        let key = K::from(*key);
-        match op {
+    for item in &workload.items {
+        let key = K::from(item.key);
+        match item.op {
             Op::LookupHit => {
                 std::hint::black_box(map.get_cloned(std::hint::black_box(&key)));
             }
