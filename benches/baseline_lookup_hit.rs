@@ -1,8 +1,5 @@
 use bench_map::{
-    config::*,
-    data::{string::StringDataGen, u64_sparse::U64SparseDataGen},
-    map_gen::MapGen,
-    maps::BenchMap,
+    config::*, data::u64_sparse::U64SparseDataGen, map_gen::MapGen, maps::BenchMap,
     thousands_format::format_with_underscores,
 };
 use criterion::{Criterion, Throughput, criterion_group, criterion_main};
@@ -24,71 +21,39 @@ macro_rules! bench_lookup_hit {
     };
 }
 
-fn insert(c: &mut Criterion) {
+fn baseline_lookup_hit(c: &mut Criterion) {
     let existing_key_count = 100;
     let missing_key_count = 0;
     let sort_keys = false;
-    for entry_count in ENTRY_COUNT {
-        // u64 keys
-        {
-            let map_data = Rc::new(MapGen::generate(
-                U64SparseDataGen,
-                U64SparseDataGen,
-                *entry_count,
-                existing_key_count,
-                missing_key_count,
-                sort_keys,
-            ));
-            let mut group = c.benchmark_group(format!(
-                "baseline/lookup-hit/u64/{}",
-                format_with_underscores(*entry_count as u64)
-            ));
-            group.warm_up_time(WARM_UP_TIME);
-            group.measurement_time(MEASUREMENT_TIME);
-            group.throughput(Throughput::Elements(existing_key_count as u64));
-            bench_lookup_hit!(group, map_data.clone(), bench_map::maps::ahash_benchmap::AhashBenchMap<_, _>, "ahash");
-            bench_lookup_hit!(group, map_data.clone(), bench_map::maps::btreemap_benchmap::BTreeMapBenchMap<_, _>, "btreemap");
-            bench_lookup_hit!(group, map_data.clone(), bench_map::maps::concread_benchmap::ConcreadBenchMap<_, _>, "concread");
-            bench_lookup_hit!(group, map_data.clone(), bench_map::maps::dashmap_benchmap::DashMapBenchMap<_, _>, "dashmap");
-            bench_lookup_hit!(group, map_data.clone(), bench_map::maps::hashbrown_benchmap::HashbrownBenchMap<_, _>, "hashbrown");
-            bench_lookup_hit!(group, map_data.clone(), bench_map::maps::immutable_chunkmap_benchmap::ImmutableChunkMapBenchMap<_, _>, "immutable-chunkmap");
-            bench_lookup_hit!(group, map_data.clone(), bench_map::maps::indexmap_benchmap::IndexMapBenchMap<_, _>, "indexmap");
-            bench_lookup_hit!(group, map_data.clone(), bench_map::maps::rustc_hash_benchmap::RustCHashBenchMap<_, _>, "rustc-hash");
-            bench_lookup_hit!(group, map_data.clone(), bench_map::maps::starshard_benchmap::StarshardBenchMap<_, _>, "starshard");
-            bench_lookup_hit!(group, map_data.clone(), bench_map::maps::std_benchmap::StdBenchMap<_, _>, "std");
-            bench_lookup_hit!(group, map_data.clone(), bench_map::maps::txmap_benchmap::TxMapBenchMap<_, _>, "txmap");
-        }
-        // String<32> keys
-        {
-            let map_data = Rc::new(MapGen::generate(
-                StringDataGen::<32>,
-                U64SparseDataGen,
-                *entry_count,
-                existing_key_count,
-                missing_key_count,
-                sort_keys,
-            ));
-            let mut group = c.benchmark_group(format!(
-                "baseline/lookup-hit/String<32>/{}",
-                format_with_underscores(*entry_count as u64)
-            ));
-            group.warm_up_time(WARM_UP_TIME);
-            group.measurement_time(MEASUREMENT_TIME);
-            group.throughput(Throughput::Elements(existing_key_count as u64));
-            bench_lookup_hit!(group, map_data.clone(), bench_map::maps::ahash_benchmap::AhashBenchMap<_, _>, "ahash");
-            bench_lookup_hit!(group, map_data.clone(), bench_map::maps::btreemap_benchmap::BTreeMapBenchMap<_, _>, "btreemap");
-            bench_lookup_hit!(group, map_data.clone(), bench_map::maps::concread_benchmap::ConcreadBenchMap<_, _>, "concread");
-            bench_lookup_hit!(group, map_data.clone(), bench_map::maps::dashmap_benchmap::DashMapBenchMap<_, _>, "dashmap");
-            bench_lookup_hit!(group, map_data.clone(), bench_map::maps::hashbrown_benchmap::HashbrownBenchMap<_, _>, "hashbrown");
-            bench_lookup_hit!(group, map_data.clone(), bench_map::maps::immutable_chunkmap_benchmap::ImmutableChunkMapBenchMap<_, _>, "immutable-chunkmap");
-            bench_lookup_hit!(group, map_data.clone(), bench_map::maps::indexmap_benchmap::IndexMapBenchMap<_, _>, "indexmap");
-            bench_lookup_hit!(group, map_data.clone(), bench_map::maps::rustc_hash_benchmap::RustCHashBenchMap<_, _>, "rustc-hash");
-            bench_lookup_hit!(group, map_data.clone(), bench_map::maps::starshard_benchmap::StarshardBenchMap<_, _>, "starshard");
-            bench_lookup_hit!(group, map_data.clone(), bench_map::maps::std_benchmap::StdBenchMap<_, _>, "std");
-            bench_lookup_hit!(group, map_data.clone(), bench_map::maps::txmap_benchmap::TxMapBenchMap<_, _>, "txmap");
-        }
+    for entry_count in BASELINE_ENTRY_COUNT {
+        let map_data = Rc::new(MapGen::generate(
+            U64SparseDataGen,
+            U64SparseDataGen,
+            *entry_count,
+            existing_key_count,
+            missing_key_count,
+            sort_keys,
+        ));
+        let mut group = c.benchmark_group(format!(
+            "baseline/lookup-hit/{}",
+            format_with_underscores(*entry_count)
+        ));
+        group.warm_up_time(WARM_UP_TIME);
+        group.measurement_time(MEASUREMENT_TIME);
+        group.throughput(Throughput::Elements(existing_key_count as u64));
+        bench_lookup_hit!(group, map_data.clone(), bench_map::maps::ahash_benchmap::AhashBenchMap<_, _>, "ahash");
+        bench_lookup_hit!(group, map_data.clone(), bench_map::maps::btreemap_benchmap::BTreeMapBenchMap<_, _>, "btreemap");
+        bench_lookup_hit!(group, map_data.clone(), bench_map::maps::concread_benchmap::ConcreadBenchMap<_, _>, "concread");
+        bench_lookup_hit!(group, map_data.clone(), bench_map::maps::dashmap_benchmap::DashMapBenchMap<_, _>, "dashmap");
+        bench_lookup_hit!(group, map_data.clone(), bench_map::maps::hashbrown_benchmap::HashbrownBenchMap<_, _>, "hashbrown");
+        bench_lookup_hit!(group, map_data.clone(), bench_map::maps::immutable_chunkmap_benchmap::ImmutableChunkMapBenchMap<_, _>, "immutable-chunkmap");
+        bench_lookup_hit!(group, map_data.clone(), bench_map::maps::indexmap_benchmap::IndexMapBenchMap<_, _>, "indexmap");
+        bench_lookup_hit!(group, map_data.clone(), bench_map::maps::rustc_hash_benchmap::RustCHashBenchMap<_, _>, "rustc-hash");
+        bench_lookup_hit!(group, map_data.clone(), bench_map::maps::starshard_benchmap::StarshardBenchMap<_, _>, "starshard");
+        bench_lookup_hit!(group, map_data.clone(), bench_map::maps::std_benchmap::StdBenchMap<_, _>, "std");
+        bench_lookup_hit!(group, map_data.clone(), bench_map::maps::txmap_benchmap::TxMapBenchMap<_, _>, "txmap");
     }
 }
 
-criterion_group!(group, insert);
+criterion_group!(group, baseline_lookup_hit);
 criterion_main!(group);

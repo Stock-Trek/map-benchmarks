@@ -27,28 +27,28 @@ macro_rules! bench_lookup_hit {
     };
 }
 
-fn insert(c: &mut Criterion) {
-    let existing_key_count = 100;
-    let missing_key_count = 0;
+fn baseline_key_sensitivity(c: &mut Criterion) {
+    let existing_key_count: u64 = 100;
+    let missing_key_count: u64 = 0;
     let sort_keys = false;
-    for entry_count in ENTRY_COUNT {
+    for entry_count in KEY_SENSITIVITY_ENTRY_COUNT {
         // u64 keys
         {
             let map_data = Rc::new(MapGen::generate(
                 U64SparseDataGen,
                 U64SparseDataGen,
                 *entry_count,
-                existing_key_count,
-                missing_key_count,
+                existing_key_count as usize,
+                missing_key_count as usize,
                 sort_keys,
             ));
             let mut group = c.benchmark_group(format!(
                 "key-sensitivity/u64/{}",
-                format_with_underscores(*entry_count as u64)
+                format_with_underscores(*entry_count)
             ));
             group.warm_up_time(WARM_UP_TIME);
             group.measurement_time(MEASUREMENT_TIME);
-            group.throughput(Throughput::Elements(existing_key_count as u64));
+            group.throughput(Throughput::Elements(existing_key_count));
             bench_lookup_hit!(group, map_data.clone(), bench_map::maps::ahash_benchmap::AhashBenchMap<_, _>, "ahash");
             bench_lookup_hit!(group, map_data.clone(), bench_map::maps::btreemap_benchmap::BTreeMapBenchMap<_, _>, "btreemap");
             bench_lookup_hit!(group, map_data.clone(), bench_map::maps::concread_benchmap::ConcreadBenchMap<_, _>, "concread");
@@ -67,17 +67,17 @@ fn insert(c: &mut Criterion) {
                 UuidV4DataGen,
                 U64SparseDataGen,
                 *entry_count,
-                existing_key_count,
-                missing_key_count,
+                existing_key_count as usize,
+                missing_key_count as usize,
                 sort_keys,
             ));
             let mut group = c.benchmark_group(format!(
                 "key-sensitivity/UUID/{}",
-                format_with_underscores(*entry_count as u64)
+                format_with_underscores(*entry_count)
             ));
             group.warm_up_time(WARM_UP_TIME);
             group.measurement_time(MEASUREMENT_TIME);
-            group.throughput(Throughput::Elements(existing_key_count as u64));
+            group.throughput(Throughput::Elements(existing_key_count));
             bench_lookup_hit!(group, map_data.clone(), bench_map::maps::ahash_benchmap::AhashBenchMap<_, _>, "ahash");
             bench_lookup_hit!(group, map_data.clone(), bench_map::maps::btreemap_benchmap::BTreeMapBenchMap<_, _>, "btreemap");
             bench_lookup_hit!(group, map_data.clone(), bench_map::maps::concread_benchmap::ConcreadBenchMap<_, _>, "concread");
@@ -96,17 +96,17 @@ fn insert(c: &mut Criterion) {
                 ByteArrayDataGen::<32>,
                 U64SparseDataGen,
                 *entry_count,
-                existing_key_count,
-                missing_key_count,
+                existing_key_count as usize,
+                missing_key_count as usize,
                 sort_keys,
             ));
             let mut group = c.benchmark_group(format!(
                 "key-sensitivity/Byte<32>/{}",
-                format_with_underscores(*entry_count as u64)
+                format_with_underscores(*entry_count)
             ));
             group.warm_up_time(WARM_UP_TIME);
             group.measurement_time(MEASUREMENT_TIME);
-            group.throughput(Throughput::Elements(existing_key_count as u64));
+            group.throughput(Throughput::Elements(existing_key_count));
             bench_lookup_hit!(group, map_data.clone(), bench_map::maps::ahash_benchmap::AhashBenchMap<_, _>, "ahash");
             bench_lookup_hit!(group, map_data.clone(), bench_map::maps::btreemap_benchmap::BTreeMapBenchMap<_, _>, "btreemap");
             bench_lookup_hit!(group, map_data.clone(), bench_map::maps::concread_benchmap::ConcreadBenchMap<_, _>, "concread");
@@ -125,17 +125,17 @@ fn insert(c: &mut Criterion) {
                 StringDataGen::<16>,
                 U64SparseDataGen,
                 *entry_count,
-                existing_key_count,
-                missing_key_count,
+                existing_key_count as usize,
+                missing_key_count as usize,
                 sort_keys,
             ));
             let mut group = c.benchmark_group(format!(
                 "key-sensitivity/String<16>/{}",
-                format_with_underscores(*entry_count as u64)
+                format_with_underscores(*entry_count)
             ));
             group.warm_up_time(WARM_UP_TIME);
             group.measurement_time(MEASUREMENT_TIME);
-            group.throughput(Throughput::Elements(existing_key_count as u64));
+            group.throughput(Throughput::Elements(existing_key_count));
             bench_lookup_hit!(group, map_data.clone(), bench_map::maps::ahash_benchmap::AhashBenchMap<_, _>, "ahash");
             bench_lookup_hit!(group, map_data.clone(), bench_map::maps::btreemap_benchmap::BTreeMapBenchMap<_, _>, "btreemap");
             bench_lookup_hit!(group, map_data.clone(), bench_map::maps::concread_benchmap::ConcreadBenchMap<_, _>, "concread");
@@ -154,17 +154,17 @@ fn insert(c: &mut Criterion) {
                 StringDataGen::<128>,
                 U64SparseDataGen,
                 *entry_count,
-                existing_key_count,
-                missing_key_count,
+                existing_key_count as usize,
+                missing_key_count as usize,
                 sort_keys,
             ));
             let mut group = c.benchmark_group(format!(
                 "key-sensitivity/String<128>/{}",
-                format_with_underscores(*entry_count as u64)
+                format_with_underscores(*entry_count)
             ));
             group.warm_up_time(WARM_UP_TIME);
             group.measurement_time(MEASUREMENT_TIME);
-            group.throughput(Throughput::Elements(existing_key_count as u64));
+            group.throughput(Throughput::Elements(existing_key_count));
             bench_lookup_hit!(group, map_data.clone(), bench_map::maps::ahash_benchmap::AhashBenchMap<_, _>, "ahash");
             bench_lookup_hit!(group, map_data.clone(), bench_map::maps::btreemap_benchmap::BTreeMapBenchMap<_, _>, "btreemap");
             bench_lookup_hit!(group, map_data.clone(), bench_map::maps::concread_benchmap::ConcreadBenchMap<_, _>, "concread");
@@ -180,5 +180,5 @@ fn insert(c: &mut Criterion) {
     }
 }
 
-criterion_group!(group, insert);
+criterion_group!(group, baseline_key_sensitivity);
 criterion_main!(group);

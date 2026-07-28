@@ -1,4 +1,4 @@
-pub fn format_with_underscores(n: u64) -> String {
+pub fn format_with_underscores(n: usize) -> String {
     let s = n.to_string();
     let mut result = String::with_capacity(s.len() + s.len() / 3);
     let chars: Vec<char> = s.chars().collect();
