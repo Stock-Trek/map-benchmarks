@@ -12,7 +12,7 @@ impl DataGen for U64SparseDataGen {
         let mut result = HashSet::new();
         while result.len() < count {
             let candidate = rng.random_range(u64::MIN..u64::MAX);
-            result.insert(candidate as u64);
+            result.insert(candidate);
         }
         result
     }

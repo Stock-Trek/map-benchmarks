@@ -1,4 +1,4 @@
-use crate::maps::BenchMap;
+use crate::maps::{BenchMap, SyncBenchMap};
 use std::hash::Hash;
 
 pub struct MapData<K, V> {
@@ -24,6 +24,16 @@ where
         M: BenchMap<K, V>,
     {
         let mut map = M::new();
+        for (key, value) in &self.entries {
+            map.insert(key.clone(), value.clone());
+        }
+        map
+    }
+    pub fn create_map_sync<M>(&self) -> M
+    where
+        M: SyncBenchMap<K, V>,
+    {
+        let map = M::new();
         for (key, value) in &self.entries {
             map.insert(key.clone(), value.clone());
         }

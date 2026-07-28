@@ -12,6 +12,7 @@ fluxmap = "0"
 hashbrown = "0"
 immutable-chunkmap = "2"
 indexmap = "2"
+libc = "0"
 rand = "0.10.2"
 rustc-hash = "2"
 starshard = "2"
@@ -36,4 +37,8 @@ harness = false
 
 [[bench]]
 name = "key_sensitivity"
+harness = false
+
+[[bench]]
+name = "concurrency"
 harness = false
