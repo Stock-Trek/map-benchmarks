@@ -79,10 +79,19 @@ fn mixed_read_write(c: &mut Criterion) {
 
         let mut rng = rand::rng();
         let designs: &[(WorkloadDesign, &str)] = &[
-            (WorkloadDesign::write_heavy(MIXED_OPS_PER_DESIGN), "write_heavy"),
-            (WorkloadDesign::high_churn(MIXED_OPS_PER_DESIGN), "high_churn"),
+            (
+                WorkloadDesign::write_heavy(MIXED_OPS_PER_DESIGN),
+                "write_heavy",
+            ),
+            (
+                WorkloadDesign::high_churn(MIXED_OPS_PER_DESIGN),
+                "high_churn",
+            ),
             (WorkloadDesign::balanced(MIXED_OPS_PER_DESIGN), "balanced"),
-            (WorkloadDesign::read_heavy(MIXED_OPS_PER_DESIGN), "read_heavy"),
+            (
+                WorkloadDesign::read_heavy(MIXED_OPS_PER_DESIGN),
+                "read_heavy",
+            ),
         ];
 
         for &(design, name) in designs {
