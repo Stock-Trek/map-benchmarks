@@ -44,7 +44,7 @@ Keys tested are:
 - Medium String, 64 characters in length
 - Long String, 256 characters in length
 
-### TODO - Mixed read/write
+### Mixed read/write
 
 Uses a map with 10K/100K/1M entries.
 Benchmarks 4 use cases:
