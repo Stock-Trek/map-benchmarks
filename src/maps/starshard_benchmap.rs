@@ -23,6 +23,7 @@ where
         }
     }
 }
+
 impl<K, V> BenchMapGetCloned<K, V> for StarshardBenchMap<K, V>
 where
     K: Clone + Hash + Eq + Send + Sync,
@@ -32,6 +33,7 @@ where
         self.map.get(key)
     }
 }
+
 impl<K, V> BenchMapInsert<K, V> for StarshardBenchMap<K, V>
 where
     K: Clone + Hash + Eq + Send + Sync,
@@ -41,6 +43,7 @@ where
         self.map.insert(key, value);
     }
 }
+
 impl<K, V> BenchMapMutInsert<K, V> for StarshardBenchMap<K, V>
 where
     K: Clone + Hash + Eq + Send + Sync,
@@ -50,6 +53,7 @@ where
         self.map.insert(key, value);
     }
 }
+
 impl<K, V> BenchMapIter<K, V> for StarshardBenchMap<K, V>
 where
     K: Clone + Hash + Eq + Send + Sync,
@@ -72,6 +76,7 @@ where
         &item.1
     }
 }
+
 impl<K, V> BenchMapRemove<K, V> for StarshardBenchMap<K, V>
 where
     K: Clone + Hash + Eq + Send + Sync,
@@ -81,6 +86,7 @@ where
         self.map.remove(key)
     }
 }
+
 impl<K, V> BenchMapMutRemove<K, V> for StarshardBenchMap<K, V>
 where
     K: Clone + Hash + Eq + Send + Sync,

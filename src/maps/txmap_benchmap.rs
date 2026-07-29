@@ -24,6 +24,7 @@ where
         }
     }
 }
+
 impl<K, V> BenchMapGetCloned<K, V> for TxMapBenchMap<K, V>
 where
     K: Hash + Eq,
@@ -33,6 +34,7 @@ where
         self.map.get_cloned(key)
     }
 }
+
 impl<K, V> BenchMapInsert<K, V> for TxMapBenchMap<K, V>
 where
     K: Hash + Eq,
@@ -42,6 +44,7 @@ where
         self.map.insert(key, value);
     }
 }
+
 impl<K, V> BenchMapMutInsert<K, V> for TxMapBenchMap<K, V>
 where
     K: Hash + Eq,
@@ -51,6 +54,7 @@ where
         self.map.insert(key, value);
     }
 }
+
 impl<K, V> BenchMapIter<K, V> for TxMapBenchMap<K, V>
 where
     K: Hash + Eq,
@@ -73,6 +77,7 @@ where
         item.1
     }
 }
+
 impl<K, V> BenchMapRemove<K, V> for TxMapBenchMap<K, V>
 where
     K: Hash + Eq,
@@ -82,6 +87,7 @@ where
         self.map.remove(key)
     }
 }
+
 impl<K, V> BenchMapMutRemove<K, V> for TxMapBenchMap<K, V>
 where
     K: Hash + Eq,

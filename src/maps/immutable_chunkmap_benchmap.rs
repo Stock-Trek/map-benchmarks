@@ -22,6 +22,7 @@ where
         }
     }
 }
+
 impl<K, V> BenchMapGetCloned<K, V> for ImmutableChunkMapBenchMap<K, V>
 where
     K: Clone + Ord,
@@ -31,6 +32,7 @@ where
         self.map.get(key).cloned()
     }
 }
+
 impl<K, V> BenchMapInsert<K, V> for ImmutableChunkMapBenchMap<K, V>
 where
     K: Clone + Ord,
@@ -40,6 +42,7 @@ where
         self.map.insert(key, value);
     }
 }
+
 impl<K, V> BenchMapMutInsert<K, V> for ImmutableChunkMapBenchMap<K, V>
 where
     K: Clone + Ord,
@@ -49,6 +52,7 @@ where
         self.map.insert(key, value);
     }
 }
+
 impl<K, V> BenchMapRemove<K, V> for ImmutableChunkMapBenchMap<K, V>
 where
     K: Clone + Ord,
@@ -58,6 +62,7 @@ where
         self.map.remove(key).1
     }
 }
+
 impl<K, V> BenchMapMutRemove<K, V> for ImmutableChunkMapBenchMap<K, V>
 where
     K: Clone + Ord,

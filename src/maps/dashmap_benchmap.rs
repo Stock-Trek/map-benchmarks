@@ -20,6 +20,7 @@ where
         }
     }
 }
+
 impl<K, V> BenchMapGetCloned<K, V> for DashMapBenchMap<K, V>
 where
     K: Hash + Eq,
@@ -29,6 +30,7 @@ where
         self.map.get(key).map(|entry| entry.value().clone())
     }
 }
+
 impl<K, V> BenchMapInsert<K, V> for DashMapBenchMap<K, V>
 where
     K: Hash + Eq,
@@ -38,6 +40,7 @@ where
         self.map.insert(key, value);
     }
 }
+
 impl<K, V> BenchMapMutInsert<K, V> for DashMapBenchMap<K, V>
 where
     K: Hash + Eq,
@@ -47,6 +50,7 @@ where
         self.map.insert(key, value);
     }
 }
+
 impl<K, V> BenchMapIter<K, V> for DashMapBenchMap<K, V>
 where
     K: Hash + Eq,
@@ -69,6 +73,7 @@ where
         item.value()
     }
 }
+
 impl<K, V> BenchMapRemove<K, V> for DashMapBenchMap<K, V>
 where
     K: Hash + Eq,
@@ -78,6 +83,7 @@ where
         self.map.remove(key).map(|entry| entry.1)
     }
 }
+
 impl<K, V> BenchMapMutRemove<K, V> for DashMapBenchMap<K, V>
 where
     K: Hash + Eq,

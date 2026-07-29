@@ -18,6 +18,7 @@ where
         }
     }
 }
+
 impl<K, V> BenchMapGetCloned<K, V> for BTreeMapBenchMap<K, V>
 where
     K: Ord,
@@ -27,6 +28,7 @@ where
         self.map.get(key).cloned()
     }
 }
+
 impl<K, V> BenchMapMutInsert<K, V> for BTreeMapBenchMap<K, V>
 where
     K: Ord,
@@ -36,6 +38,7 @@ where
         self.map.insert(key, value);
     }
 }
+
 impl<K, V> BenchMapIter<K, V> for BTreeMapBenchMap<K, V>
 where
     K: Ord,
@@ -58,6 +61,7 @@ where
         item.1
     }
 }
+
 impl<K, V> BenchMapMutRemove<K, V> for BTreeMapBenchMap<K, V>
 where
     K: Ord,

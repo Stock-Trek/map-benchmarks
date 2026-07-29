@@ -23,6 +23,7 @@ where
         }
     }
 }
+
 impl<K, V> BenchMapGetCloned<K, V> for ConcreadBenchMap<K, V>
 where
     K: Clone + Debug + Hash + Eq + Send + Sync + 'static,
@@ -32,6 +33,7 @@ where
         self.map.read().get(key).cloned()
     }
 }
+
 impl<K, V> BenchMapInsert<K, V> for ConcreadBenchMap<K, V>
 where
     K: Clone + Debug + Hash + Eq + Send + Sync + 'static,
@@ -41,6 +43,7 @@ where
         self.map.write().insert(key, value);
     }
 }
+
 impl<K, V> BenchMapMutInsert<K, V> for ConcreadBenchMap<K, V>
 where
     K: Clone + Debug + Hash + Eq + Send + Sync + 'static,
@@ -50,6 +53,7 @@ where
         self.map.write().insert(key, value);
     }
 }
+
 impl<K, V> BenchMapRemove<K, V> for ConcreadBenchMap<K, V>
 where
     K: Clone + Debug + Hash + Eq + Send + Sync + 'static,
@@ -59,6 +63,7 @@ where
         self.map.write().remove(key)
     }
 }
+
 impl<K, V> BenchMapMutRemove<K, V> for ConcreadBenchMap<K, V>
 where
     K: Clone + Debug + Hash + Eq + Send + Sync + 'static,
