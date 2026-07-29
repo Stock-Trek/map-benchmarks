@@ -24,6 +24,10 @@ name = "baseline_insert"
 harness = false
 
 [[bench]]
+name = "baseline_iterate"
+harness = false
+
+[[bench]]
 name = "baseline_lookup_hit"
 harness = false
 
@@ -39,6 +43,6 @@ harness = false
 name = "key_sensitivity"
 harness = false
 
-[[bench]]
-name = "concurrency"
-harness = false
+#[[bench]]
+#name = "concurrency"
+#harness = false

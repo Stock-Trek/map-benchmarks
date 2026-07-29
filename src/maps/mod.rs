@@ -9,15 +9,13 @@ pub mod indexmap_benchmap;
 pub mod rustc_hash_benchmap;
 pub mod starshard_benchmap;
 pub mod std_benchmap;
-pub mod sync_benchmap;
-pub mod sync_concread_benchmap;
-pub mod sync_dashmap_benchmap;
-pub mod sync_starshard_benchmap;
-pub mod sync_txmap_benchmap;
 pub mod txmap_benchmap;
 
 pub use ahash_benchmap::AhashBenchMap;
-pub use benchmap::BenchMap;
+pub use benchmap::{
+    BenchMapGetCloned, BenchMapInsert, BenchMapIter, BenchMapMutInsert, BenchMapMutRemove,
+    BenchMapNew, BenchMapRemove,
+};
 pub use btreemap_benchmap::BTreeMapBenchMap;
 pub use concread_benchmap::ConcreadBenchMap;
 pub use dashmap_benchmap::DashMapBenchMap;
@@ -27,11 +25,4 @@ pub use indexmap_benchmap::IndexMapBenchMap;
 pub use rustc_hash_benchmap::RustCHashBenchMap;
 pub use starshard_benchmap::StarshardBenchMap;
 pub use std_benchmap::StdBenchMap;
-pub use sync_benchmap::SyncBenchMap;
-pub use sync_concread_benchmap::SyncConcreadBenchMap;
-pub use sync_dashmap_benchmap::SyncDashMapBenchMap;
-pub use sync_starshard_benchmap::SyncStarshardBenchMap;
-pub use sync_txmap_benchmap::SyncTxMapBenchMap;
 pub use txmap_benchmap::TxMapBenchMap;
-
-pub fn main() {}

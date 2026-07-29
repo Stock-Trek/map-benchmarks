@@ -1,11 +1,15 @@
-use crate::maps::BenchMap;
+use crate::maps::benchmap::{
+    BenchMapGetCloned, BenchMapInsert, BenchMapIter, BenchMapMutInsert, BenchMapMutRemove,
+    BenchMapNew, BenchMapRemove,
+};
+use dashmap::mapref::multiple::RefMulti;
 use std::hash::Hash;
 
 pub struct DashMapBenchMap<K, V> {
     map: dashmap::DashMap<K, V>,
 }
 
-impl<K, V> BenchMap<K, V> for DashMapBenchMap<K, V>
+impl<K, V> BenchMapNew<K, V> for DashMapBenchMap<K, V>
 where
     K: Hash + Eq,
     V: Clone,
@@ -15,13 +19,71 @@ where
             map: dashmap::DashMap::new(),
         }
     }
-    fn get_cloned(&mut self, key: &K) -> Option<V> {
-        self.map.get(key).map(|r| r.value().clone())
+}
+impl<K, V> BenchMapGetCloned<K, V> for DashMapBenchMap<K, V>
+where
+    K: Hash + Eq,
+    V: Clone,
+{
+    fn get_cloned(&self, key: &K) -> Option<V> {
+        self.map.get(key).map(|entry| entry.value().clone())
     }
+}
+impl<K, V> BenchMapInsert<K, V> for DashMapBenchMap<K, V>
+where
+    K: Hash + Eq,
+    V: Clone,
+{
+    fn insert(&self, key: K, value: V) {
+        self.map.insert(key, value);
+    }
+}
+impl<K, V> BenchMapMutInsert<K, V> for DashMapBenchMap<K, V>
+where
+    K: Hash + Eq,
+    V: Clone,
+{
     fn insert(&mut self, key: K, value: V) {
         self.map.insert(key, value);
     }
+}
+impl<K, V> BenchMapIter<K, V> for DashMapBenchMap<K, V>
+where
+    K: Hash + Eq,
+    V: Clone,
+{
+    type Item<'a>
+        = RefMulti<'a, K, V>
+    where
+        Self: 'a,
+        K: 'a,
+        V: 'a;
+    fn iter<'a>(&'a self) -> impl Iterator<Item = Self::Item<'a>>
+    where
+        K: 'a,
+        V: 'a,
+    {
+        self.map.iter()
+    }
+    fn item_value_ref<'a>(&'a self, item: &'a Self::Item<'a>) -> &'a V {
+        item.value()
+    }
+}
+impl<K, V> BenchMapRemove<K, V> for DashMapBenchMap<K, V>
+where
+    K: Hash + Eq,
+    V: Clone,
+{
+    fn remove(&self, key: &K) -> Option<V> {
+        self.map.remove(key).map(|entry| entry.1)
+    }
+}
+impl<K, V> BenchMapMutRemove<K, V> for DashMapBenchMap<K, V>
+where
+    K: Hash + Eq,
+    V: Clone,
+{
     fn remove(&mut self, key: &K) -> Option<V> {
-        self.map.remove(key).map(|e| e.1)
+        self.map.remove(key).map(|entry| entry.1)
     }
 }

@@ -27,10 +27,10 @@ All benchmarks use blackbox to avoid any overly aggressive compiler optimisation
 ### Baseline
 
 - **Insert**: Inserts 10K/100K/1M entries into an empty map
+- **Iterate**: Uses maps containing 10k/100K/1M entries. Iterates through each entry
 - **Lookup hit**: Uses maps containing 10k/100K/1M entries. Finds 100 extant values, found values are cloned to ensure all maps are treated consistently
 - **Lookup miss**: Uses maps containing 10k/100K/1M entries. Finds 100 non-existent values
 - **Remove**: Uses maps containing 10k/100K/1M entries. Removes 100 entries
-- **TODO - Iterate**: Uses maps containing 10k/100K/1M entries. Iterates through each entry
 
 ### Key sensitivity
 

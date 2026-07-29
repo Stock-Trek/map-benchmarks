@@ -2,10 +2,15 @@ use bench_map::{
     config::*,
     data::u64_sparse::U64SparseDataGen,
     map_gen::MapGen,
+    maps::{
+        AhashBenchMap, BTreeMapBenchMap, ConcreadBenchMap, DashMapBenchMap, HashbrownBenchMap,
+        ImmutableChunkMapBenchMap, IndexMapBenchMap, RustCHashBenchMap, StarshardBenchMap,
+        StdBenchMap, TxMapBenchMap,
+    },
     pin_thread::PinThread,
-    workload::{WorkloadDesign, generate_workloads, run_workload},
+    workload::{design::WorkloadDesign, workload::ThreadWorkload},
 };
-use criterion::{Criterion, Throughput, criterion_group, criterion_main};
+use criterion::{BatchSize, Criterion, Throughput, criterion_group, criterion_main};
 use std::sync::Arc;
 
 macro_rules! bench_concurrent {
@@ -13,87 +18,80 @@ macro_rules! bench_concurrent {
         let map_data = $map_data.clone();
         let workloads = $workloads.clone();
         $group.bench_function($name, move |b| {
-            b.iter(|| {
-                let map = map_data.create_map_sync::<$map_type>();
-                let map = Arc::new(map);
-                let mut handles = Vec::with_capacity($thread_count);
-                for thread_id in 0..$thread_count {
-                    let map = Arc::clone(&map);
-                    let workload = workloads[thread_id].clone();
-                    handles.push(std::thread::spawn(move || {
-                        PinThread::try_pin(thread_id).expect("failed to pin thread to CPU");
-                        run_workload::<$map_type, u64, u64>(&*map, &workload);
-                    }));
-                }
-                for handle in handles {
-                    handle.join().unwrap();
-                }
-            });
+            b.iter_batched(
+                || {
+                    let map = map_data.create_map::<$map_type>();
+                    let map = Arc::new(map);
+                    let workloads = workloads.clone();
+                    (map, workloads)
+                },
+                |(_map, _workloads)| {
+                    let mut handles = Vec::with_capacity($thread_count);
+                    for thread_id in 0..$thread_count {
+                        // let map = Arc::clone(&map);
+                        // let workload = workloads[thread_id].clone();
+                        handles.push(std::thread::spawn(move || {
+                            PinThread::try_pin(thread_id).expect("failed to pin thread to CPU");
+                            // workload.run(&*map);
+                        }));
+                    }
+                    for handle in handles {
+                        handle.join().unwrap();
+                    }
+                },
+                BatchSize::PerIteration,
+            );
         });
     };
 }
 
 fn concurrency(c: &mut Criterion) {
-    let entry_count = 1_000_000;
     let max_threads = CONCURRENCY_THREAD_COUNTS.last().unwrap();
-
+    let entry_count = 1_000_000;
+    let existing_key_count = entry_count;
+    let missing_key_count = max_threads * CONCURRENCY_OPS_PER_THREAD;
+    let sort_keys = false;
     let map_data = std::rc::Rc::new(MapGen::generate(
         U64SparseDataGen,
         U64SparseDataGen,
         entry_count,
-        entry_count,
-        max_threads * CONCURRENCY_OPS_PER_THREAD,
-        false,
+        existing_key_count,
+        missing_key_count,
+        sort_keys,
     ));
 
     let design = WorkloadDesign::balanced(CONCURRENCY_OPS_PER_THREAD);
+    let mut rng = rand::rng();
 
     for &thread_count in CONCURRENCY_THREAD_COUNTS {
         let total_ops = thread_count * CONCURRENCY_OPS_PER_THREAD;
-        let workloads = generate_workloads(
-            &design,
-            map_data.existing_keys(),
-            map_data.missing_keys(),
-            thread_count,
-        );
+        let workloads = (0..thread_count)
+            .map(|_| {
+                ThreadWorkload::new(
+                    &design,
+                    map_data.existing_keys(),
+                    map_data.missing_keys(),
+                    &mut rng,
+                )
+            })
+            .collect::<Vec<_>>();
 
         let mut group = c.benchmark_group(format!("concurrency/{}_threads", thread_count));
         group.warm_up_time(WARM_UP_TIME);
         group.measurement_time(MEASUREMENT_TIME);
         group.throughput(Throughput::Elements(total_ops as u64));
 
-        bench_concurrent!(
-            group,
-            map_data,
-            thread_count,
-            workloads,
-            bench_map::maps::sync_dashmap_benchmap::SyncDashMapBenchMap<_, _>,
-            "dashmap"
-        );
-        bench_concurrent!(
-            group,
-            map_data,
-            thread_count,
-            workloads,
-            bench_map::maps::sync_concread_benchmap::SyncConcreadBenchMap<_, _>,
-            "concread"
-        );
-        bench_concurrent!(
-            group,
-            map_data,
-            thread_count,
-            workloads,
-            bench_map::maps::sync_starshard_benchmap::SyncStarshardBenchMap<_, _>,
-            "starshard"
-        );
-        bench_concurrent!(
-            group,
-            map_data,
-            thread_count,
-            workloads,
-            bench_map::maps::sync_txmap_benchmap::SyncTxMapBenchMap<_, _>,
-            "txmap"
-        );
+        bench_concurrent!(group, map_data, thread_count, workloads, AhashBenchMap<_, _>, "ahash");
+        bench_concurrent!(group, map_data, thread_count, workloads, BTreeMapBenchMap<_, _>, "btreemap");
+        bench_concurrent!(group, map_data, thread_count, workloads, ConcreadBenchMap<_, _>, "concread");
+        bench_concurrent!(group, map_data, thread_count, workloads, DashMapBenchMap<_, _>, "dashmap");
+        bench_concurrent!(group, map_data, thread_count, workloads, HashbrownBenchMap<_, _>, "hashbrown");
+        bench_concurrent!(group, map_data, thread_count, workloads, ImmutableChunkMapBenchMap<_, _>, "immutable-chunkmap");
+        bench_concurrent!(group, map_data, thread_count, workloads, IndexMapBenchMap<_, _>, "indexmap");
+        bench_concurrent!(group, map_data, thread_count, workloads, RustCHashBenchMap<_, _>, "rustc-hash");
+        bench_concurrent!(group, map_data, thread_count, workloads, StarshardBenchMap<_, _>, "starshard");
+        bench_concurrent!(group, map_data, thread_count, workloads, StdBenchMap<_, _>, "std");
+        bench_concurrent!(group, map_data, thread_count, workloads, TxMapBenchMap<_, _>, "txmap");
     }
 }
 
