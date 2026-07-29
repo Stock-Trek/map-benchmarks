@@ -46,3 +46,7 @@ harness = false
 [[bench]]
 name = "concurrency"
 harness = false
+
+[[bench]]
+name = "mixed_read_write"
+harness = false
