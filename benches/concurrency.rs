@@ -10,10 +10,10 @@ use bench_map::{
     pin_thread::PinThread,
     workload::{design::WorkloadDesign, thread_workload::ThreadWorkload},
 };
+use std::sync::{Arc, Mutex};
 use criterion::{BatchSize, Criterion, Throughput, criterion_group, criterion_main};
-use std::sync::Arc;
 
-macro_rules! bench_concurrent {
+macro_rules! bench_concurrent_shared {
     ($group:ident, $map_data:expr, $thread_count:expr, $workloads:expr, $map_type:path, $name:expr) => {
         let map_data = $map_data.clone();
         let workloads = $workloads.clone();
@@ -25,14 +25,46 @@ macro_rules! bench_concurrent {
                     let workloads = workloads.clone();
                     (map, workloads)
                 },
-                |(_map, _workloads)| {
+                |(map, workloads)| {
                     let mut handles = Vec::with_capacity($thread_count);
                     for thread_id in 0..$thread_count {
-                        // let map = Arc::clone(&map);
-                        // let workload = workloads[thread_id].clone();
+                        let map = Arc::clone(&map);
+                        let workload = workloads[thread_id].clone();
                         handles.push(std::thread::spawn(move || {
                             PinThread::try_pin(thread_id).expect("failed to pin thread to CPU");
-                            // workload.run(&*map);
+                            workload.run_shared(&*map);
+                        }));
+                    }
+                    for handle in handles {
+                        handle.join().unwrap();
+                    }
+                },
+                BatchSize::PerIteration,
+            );
+        });
+    };
+}
+
+macro_rules! bench_concurrent_mutex {
+    ($group:ident, $map_data:expr, $thread_count:expr, $workloads:expr, $map_type:path, $name:expr) => {
+        let map_data = $map_data.clone();
+        let workloads = $workloads.clone();
+        $group.bench_function($name, move |b| {
+            b.iter_batched(
+                || {
+                    let map = map_data.create_map::<$map_type>();
+                    let map = Arc::new(Mutex::new(map));
+                    let workloads = workloads.clone();
+                    (map, workloads)
+                },
+                |(map, workloads)| {
+                    let mut handles = Vec::with_capacity($thread_count);
+                    for thread_id in 0..$thread_count {
+                        let map = Arc::clone(&map);
+                        let workload = workloads[thread_id].clone();
+                        handles.push(std::thread::spawn(move || {
+                            PinThread::try_pin(thread_id).expect("failed to pin thread to CPU");
+                            workload.run_mutex(&*map);
                         }));
                     }
                     for handle in handles {
@@ -81,17 +113,20 @@ fn concurrency(c: &mut Criterion) {
         group.measurement_time(MEASUREMENT_TIME);
         group.throughput(Throughput::Elements(total_ops as u64));
 
-        bench_concurrent!(group, map_data, thread_count, workloads, AhashBenchMap<_, _>, "ahash");
-        bench_concurrent!(group, map_data, thread_count, workloads, BTreeMapBenchMap<_, _>, "btreemap");
-        bench_concurrent!(group, map_data, thread_count, workloads, ConcreadBenchMap<_, _>, "concread");
-        bench_concurrent!(group, map_data, thread_count, workloads, DashMapBenchMap<_, _>, "dashmap");
-        bench_concurrent!(group, map_data, thread_count, workloads, HashbrownBenchMap<_, _>, "hashbrown");
-        bench_concurrent!(group, map_data, thread_count, workloads, ImmutableChunkMapBenchMap<_, _>, "immutable-chunkmap");
-        bench_concurrent!(group, map_data, thread_count, workloads, IndexMapBenchMap<_, _>, "indexmap");
-        bench_concurrent!(group, map_data, thread_count, workloads, RustCHashBenchMap<_, _>, "rustc-hash");
-        bench_concurrent!(group, map_data, thread_count, workloads, StarshardBenchMap<_, _>, "starshard");
-        bench_concurrent!(group, map_data, thread_count, workloads, StdBenchMap<_, _>, "std");
-        bench_concurrent!(group, map_data, thread_count, workloads, TxMapBenchMap<_, _>, "txmap");
+        // Concurrent maps (support &self for all operations)
+        bench_concurrent_shared!(group, map_data, thread_count, workloads, DashMapBenchMap<_, _>, "dashmap");
+        bench_concurrent_shared!(group, map_data, thread_count, workloads, StarshardBenchMap<_, _>, "starshard");
+        bench_concurrent_shared!(group, map_data, thread_count, workloads, ConcreadBenchMap<_, _>, "concread");
+        bench_concurrent_shared!(group, map_data, thread_count, workloads, TxMapBenchMap<_, _>, "txmap");
+        bench_concurrent_shared!(group, map_data, thread_count, workloads, ImmutableChunkMapBenchMap<_, _>, "immutable-chunkmap");
+
+        // Non-concurrent maps (require &mut self for inserts/removes, wrapped in Mutex)
+        bench_concurrent_mutex!(group, map_data, thread_count, workloads, AhashBenchMap<_, _>, "ahash");
+        bench_concurrent_mutex!(group, map_data, thread_count, workloads, BTreeMapBenchMap<_, _>, "btreemap");
+        bench_concurrent_mutex!(group, map_data, thread_count, workloads, HashbrownBenchMap<_, _>, "hashbrown");
+        bench_concurrent_mutex!(group, map_data, thread_count, workloads, IndexMapBenchMap<_, _>, "indexmap");
+        bench_concurrent_mutex!(group, map_data, thread_count, workloads, RustCHashBenchMap<_, _>, "rustc-hash");
+        bench_concurrent_mutex!(group, map_data, thread_count, workloads, StdBenchMap<_, _>, "std");
     }
 }
 
