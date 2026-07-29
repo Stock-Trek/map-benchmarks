@@ -54,7 +54,7 @@ Benchmarks 4 use cases:
 - **Balanced** [80% lookup, 5% insert, 10% update, 5% remove]
 - **Read heavy** [95% lookup, 5% insert]
 
-### TODO - Concurrency
+### Concurrency
 
 Uses a map with 1M entries.
 Uses the balanced case of [80% lookup, 5% insert, 10% update, 5% remove].
