@@ -43,6 +43,6 @@ harness = false
 name = "key_sensitivity"
 harness = false
 
-#[[bench]]
-#name = "concurrency"
-#harness = false
+[[bench]]
+name = "concurrency"
+harness = false
