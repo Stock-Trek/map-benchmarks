@@ -40,11 +40,11 @@ name = "baseline_remove"
 harness = false
 
 [[bench]]
-name = "key_sensitivity"
+name = "concurrency"
 harness = false
 
 [[bench]]
-name = "concurrency"
+name = "key_sensitivity"
 harness = false
 
 [[bench]]

@@ -56,139 +56,66 @@ macro_rules! bench_mixed {
 }
 
 fn mixed_read_write(c: &mut Criterion) {
+    let missing_key_count = MIXED_MISSING_KEY_COUNT;
     let sort_keys = false;
 
-    for &map_size in BASELINE_ENTRY_COUNT {
+    for &entry_count in MIXED_ENTRY_COUNT {
+        let existing_key_count = entry_count;
+
         let map_data = Rc::new(MapGen::generate(
             U64SparseDataGen,
             U64SparseDataGen,
-            0,
-            0,
-            MIXED_MISSING_KEY_COUNT,
-            sort_keys,
-        ));
-
-        let map_data_with_entries = Rc::new(MapGen::generate(
-            U64SparseDataGen,
-            U64SparseDataGen,
-            map_size,
-            map_size,
-            MIXED_MISSING_KEY_COUNT,
+            entry_count,
+            existing_key_count,
+            missing_key_count,
             sort_keys,
         ));
 
         let mut rng = rand::rng();
-        let designs: &[(WorkloadDesign, &str)] = &[
+        let designs: &[(&str, WorkloadDesign)] = &[
             (
+                "write-heavy",
                 WorkloadDesign::write_heavy(MIXED_OPS_PER_DESIGN),
-                "write_heavy",
             ),
             (
+                "high-churn",
                 WorkloadDesign::high_churn(MIXED_OPS_PER_DESIGN),
-                "high_churn",
             ),
-            (WorkloadDesign::balanced(MIXED_OPS_PER_DESIGN), "balanced"),
+            ("balanced", WorkloadDesign::balanced(MIXED_OPS_PER_DESIGN)),
             (
+                "read-heavy",
                 WorkloadDesign::read_heavy(MIXED_OPS_PER_DESIGN),
-                "read_heavy",
             ),
         ];
 
-        for &(design, name) in designs {
+        for &(name, design) in designs {
             let workload = ThreadWorkload::new(
                 &design,
-                map_data_with_entries.existing_keys(),
+                map_data.existing_keys(),
                 map_data.missing_keys(),
                 &mut rng,
             );
 
             let mut group = c.benchmark_group(format!(
-                "mixed-read-write/{}/{}/{}",
+                "mixed-read-write/{}/{}",
                 name,
-                format_with_underscores(map_size),
-                MIXED_OPS_PER_DESIGN
+                format_with_underscores(entry_count),
             ));
             group.warm_up_time(WARM_UP_TIME);
             group.measurement_time(MEASUREMENT_TIME);
             group.throughput(Throughput::Elements(MIXED_OPS_PER_DESIGN as u64));
 
-            bench_mixed!(
-                group,
-                map_data_with_entries.clone(),
-                workload.clone(),
-                AhashBenchMap<_, _>,
-                "ahash"
-            );
-            bench_mixed!(
-                group,
-                map_data_with_entries.clone(),
-                workload.clone(),
-                BTreeMapBenchMap<_, _>,
-                "btreemap"
-            );
-            bench_mixed!(
-                group,
-                map_data_with_entries.clone(),
-                workload.clone(),
-                ConcreadBenchMap<_, _>,
-                "concread"
-            );
-            bench_mixed!(
-                group,
-                map_data_with_entries.clone(),
-                workload.clone(),
-                DashMapBenchMap<_, _>,
-                "dashmap"
-            );
-            bench_mixed!(
-                group,
-                map_data_with_entries.clone(),
-                workload.clone(),
-                HashbrownBenchMap<_, _>,
-                "hashbrown"
-            );
-            bench_mixed!(
-                group,
-                map_data_with_entries.clone(),
-                workload.clone(),
-                ImmutableChunkMapBenchMap<_, _>,
-                "immutable-chunkmap"
-            );
-            bench_mixed!(
-                group,
-                map_data_with_entries.clone(),
-                workload.clone(),
-                IndexMapBenchMap<_, _>,
-                "indexmap"
-            );
-            bench_mixed!(
-                group,
-                map_data_with_entries.clone(),
-                workload.clone(),
-                RustCHashBenchMap<_, _>,
-                "rustc-hash"
-            );
-            bench_mixed!(
-                group,
-                map_data_with_entries.clone(),
-                workload.clone(),
-                StarshardBenchMap<_, _>,
-                "starshard"
-            );
-            bench_mixed!(
-                group,
-                map_data_with_entries.clone(),
-                workload.clone(),
-                StdBenchMap<_, _>,
-                "std"
-            );
-            bench_mixed!(
-                group,
-                map_data_with_entries.clone(),
-                workload.clone(),
-                TxMapBenchMap<_, _>,
-                "txmap"
-            );
+            bench_mixed!(group, map_data.clone(),workload.clone(), AhashBenchMap<_, _>, "ahash");
+            bench_mixed!(group, map_data.clone(), workload.clone(), BTreeMapBenchMap<_, _>, "btreemap");
+            bench_mixed!(group, map_data.clone(), workload.clone(), ConcreadBenchMap<_, _>, "concread");
+            bench_mixed!(group, map_data.clone(), workload.clone(), DashMapBenchMap<_, _>, "dashmap");
+            bench_mixed!(group, map_data.clone(), workload.clone(), HashbrownBenchMap<_, _>, "hashbrown");
+            bench_mixed!(group, map_data.clone(), workload.clone(), ImmutableChunkMapBenchMap<_, _>, "immutable-chunkmap");
+            bench_mixed!(group, map_data.clone(), workload.clone(), IndexMapBenchMap<_, _>, "indexmap");
+            bench_mixed!(group, map_data.clone(), workload.clone(), RustCHashBenchMap<_, _>, "rustc-hash");
+            bench_mixed!(group, map_data.clone(), workload.clone(), StarshardBenchMap<_, _>, "starshard");
+            bench_mixed!(group, map_data.clone(), workload.clone(), StdBenchMap<_, _>, "std");
+            bench_mixed!(group, map_data.clone(), workload.clone(), TxMapBenchMap<_, _>, "txmap");
         }
     }
 }
