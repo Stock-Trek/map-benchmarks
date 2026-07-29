@@ -50,7 +50,7 @@ fn baseline_insert(c: &mut Criterion) {
             sort_keys,
         ));
         let mut group = c.benchmark_group(format!(
-            "baseline/insert/{}",
+            "baseline/insert/map-size-{}",
             format_with_underscores(*missing_key_count)
         ));
         group.warm_up_time(WARM_UP_TIME);

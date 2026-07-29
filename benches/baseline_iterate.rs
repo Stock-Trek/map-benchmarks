@@ -42,7 +42,7 @@ fn baseline_iterate(c: &mut Criterion) {
             sort_keys,
         ));
         let mut group = c.benchmark_group(format!(
-            "baseline/iterate/{}",
+            "baseline/iterate/map-size-{}",
             format_with_underscores(*entry_count)
         ));
         group.warm_up_time(WARM_UP_TIME);

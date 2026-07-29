@@ -96,7 +96,10 @@ fn concurrency(c: &mut Criterion) {
             })
             .collect::<Vec<_>>();
 
-        let mut group = c.benchmark_group(format!("concurrency/{}_threads", thread_count));
+        let mut group = c.benchmark_group(format!(
+            "concurrency/balanced-workload/{}_threads",
+            thread_count
+        ));
         group.warm_up_time(WARM_UP_TIME);
         group.measurement_time(MEASUREMENT_TIME);
         group.throughput(Throughput::Elements(total_ops as u64));
