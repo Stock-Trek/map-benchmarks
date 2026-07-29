@@ -8,7 +8,7 @@ use bench_map::{
         StdBenchMap, TxMapBenchMap,
     },
     pin_thread::PinThread,
-    workload::{design::WorkloadDesign, workload::ThreadWorkload},
+    workload::{design::WorkloadDesign, thread_workload::ThreadWorkload},
 };
 use criterion::{BatchSize, Criterion, Throughput, criterion_group, criterion_main};
 use std::sync::Arc;
