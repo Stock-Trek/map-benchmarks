@@ -10,8 +10,8 @@ use bench_map::{
     pin_thread::PinThread,
     workload::{design::WorkloadDesign, thread_workload::ThreadWorkload},
 };
-use std::sync::{Arc, Mutex};
 use criterion::{BatchSize, Criterion, Throughput, criterion_group, criterion_main};
+use std::sync::{Arc, Mutex};
 
 macro_rules! bench_concurrent_shared {
     ($group:ident, $map_data:expr, $thread_count:expr, $workloads:expr, $map_type:path, $name:expr) => {
