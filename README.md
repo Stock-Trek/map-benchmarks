@@ -1,8 +1,6 @@
 # Map benchmarks
 
-Benchmarks 11 map implementations with a focus on atomicity
-
-Uses [Criterion](https://crates.io/crates/criterion)
+Benchmarks 11 map implementations
 
 [Criterion report can be found here](https://stock-trek.github.io/map-benchmarks)
 
