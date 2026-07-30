@@ -3,8 +3,8 @@ use bench_map::{
     data::u64_sparse::U64SparseDataGen,
     map_gen::MapGen,
     maps::{
-        AhashBenchMap, BTreeMapBenchMap, BenchMapIter, DashMapBenchMap, HashbrownBenchMap,
-        IndexMapBenchMap, RustCHashBenchMap, StarshardBenchMap, StdBenchMap, TxMapBenchMap,
+        AhashBenchMap, BenchMapIter, DashMapBenchMap, HashbrownBenchMap, IndexMapBenchMap,
+        RustCHashBenchMap, StarshardBenchMap, StdBenchMap, TxMapBenchMap,
     },
     thousands_format::format_with_underscores,
 };
@@ -49,7 +49,7 @@ fn baseline_iterate(c: &mut Criterion) {
         group.measurement_time(MEASUREMENT_TIME);
         group.throughput(Throughput::Elements(*entry_count as u64));
         bench_iterate!(group, map_data.clone(), AhashBenchMap<u64, u64>, "ahash");
-        bench_iterate!(group, map_data.clone(), BTreeMapBenchMap<u64, u64>, "btreemap");
+        // bench_iterate!(group, map_data.clone(), BTreeMapBenchMap<u64, u64>, "btreemap"); // too slow
         // bench_iterate!(group, map_data.clone(), ConcreadBenchMap<u64, u64>, "concread"); // read guard prevents storing iterator
         bench_iterate!(group, map_data.clone(), DashMapBenchMap<u64, u64>, "dashmap");
         bench_iterate!(group, map_data.clone(), HashbrownBenchMap<u64, u64>, "hashbrown");

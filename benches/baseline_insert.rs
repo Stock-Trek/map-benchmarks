@@ -3,9 +3,9 @@ use bench_map::{
     data::u64_sparse::U64SparseDataGen,
     map_gen::MapGen,
     maps::{
-        AhashBenchMap, BTreeMapBenchMap, BenchMapMutInsert, ConcreadBenchMap, DashMapBenchMap,
-        HashbrownBenchMap, ImmutableChunkMapBenchMap, IndexMapBenchMap, RustCHashBenchMap,
-        StarshardBenchMap, StdBenchMap, TxMapBenchMap,
+        AhashBenchMap, BenchMapMutInsert, ConcreadBenchMap, DashMapBenchMap, HashbrownBenchMap,
+        ImmutableChunkMapBenchMap, IndexMapBenchMap, RustCHashBenchMap, StarshardBenchMap,
+        StdBenchMap, TxMapBenchMap,
     },
     thousands_format::format_with_underscores,
 };
@@ -57,7 +57,7 @@ fn baseline_insert(c: &mut Criterion) {
         group.measurement_time(MEASUREMENT_TIME);
         group.throughput(Throughput::Elements(*missing_key_count as u64));
         bench_insert_missing!(group, map_data.clone(), AhashBenchMap<_, _>, "ahash");
-        bench_insert_missing!(group, map_data.clone(), BTreeMapBenchMap<_, _>, "btreemap");
+        // bench_insert_missing!(group, map_data.clone(), BTreeMapBenchMap<_, _>, "btreemap"); // too slow
         bench_insert_missing!(group, map_data.clone(), ConcreadBenchMap<_, _>, "concread");
         bench_insert_missing!(group, map_data.clone(), DashMapBenchMap<_, _>, "dashmap");
         bench_insert_missing!(group, map_data.clone(), HashbrownBenchMap<_, _>, "hashbrown");

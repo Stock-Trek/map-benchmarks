@@ -3,9 +3,9 @@ use bench_map::{
     data::u64_sparse::U64SparseDataGen,
     map_gen::MapGen,
     maps::{
-        AhashBenchMap, BTreeMapBenchMap, BenchMapGetCloned, BenchMapMutInsert, BenchMapMutRemove,
-        ConcreadBenchMap, DashMapBenchMap, HashbrownBenchMap, ImmutableChunkMapBenchMap,
-        IndexMapBenchMap, RustCHashBenchMap, StarshardBenchMap, StdBenchMap, TxMapBenchMap,
+        AhashBenchMap, BenchMapGetCloned, BenchMapMutInsert, BenchMapMutRemove, ConcreadBenchMap,
+        DashMapBenchMap, HashbrownBenchMap, ImmutableChunkMapBenchMap, IndexMapBenchMap,
+        RustCHashBenchMap, StarshardBenchMap, StdBenchMap, TxMapBenchMap,
     },
     thousands_format::format_with_underscores,
     workload::{design::WorkloadDesign, op::WorkloadOp, thread_workload::ThreadWorkload},
@@ -106,7 +106,7 @@ fn mixed_read_write(c: &mut Criterion) {
             group.throughput(Throughput::Elements(MIXED_OPS_PER_DESIGN as u64));
 
             bench_mixed!(group, map_data.clone(),workload.clone(), AhashBenchMap<_, _>, "ahash");
-            bench_mixed!(group, map_data.clone(), workload.clone(), BTreeMapBenchMap<_, _>, "btreemap");
+            // bench_mixed!(group, map_data.clone(), workload.clone(), BTreeMapBenchMap<_, _>, "btreemap"); too slow
             bench_mixed!(group, map_data.clone(), workload.clone(), ConcreadBenchMap<_, _>, "concread");
             bench_mixed!(group, map_data.clone(), workload.clone(), DashMapBenchMap<_, _>, "dashmap");
             bench_mixed!(group, map_data.clone(), workload.clone(), HashbrownBenchMap<_, _>, "hashbrown");

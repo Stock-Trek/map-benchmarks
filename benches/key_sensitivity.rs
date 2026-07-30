@@ -6,9 +6,9 @@ use bench_map::{
     },
     map_gen::MapGen,
     maps::{
-        AhashBenchMap, BTreeMapBenchMap, BenchMapGetCloned, ConcreadBenchMap, DashMapBenchMap,
-        HashbrownBenchMap, ImmutableChunkMapBenchMap, IndexMapBenchMap, RustCHashBenchMap,
-        StarshardBenchMap, StdBenchMap, TxMapBenchMap,
+        AhashBenchMap, BenchMapGetCloned, ConcreadBenchMap, DashMapBenchMap, HashbrownBenchMap,
+        ImmutableChunkMapBenchMap, IndexMapBenchMap, RustCHashBenchMap, StarshardBenchMap,
+        StdBenchMap, TxMapBenchMap,
     },
 };
 use criterion::{Criterion, Throughput, criterion_group, criterion_main};
@@ -50,7 +50,7 @@ fn baseline_key_sensitivity(c: &mut Criterion) {
         group.measurement_time(MEASUREMENT_TIME);
         group.throughput(Throughput::Elements(existing_key_count));
         bench_lookup_hit!(group, map_data.clone(), AhashBenchMap<_, _>, "ahash");
-        bench_lookup_hit!(group, map_data.clone(), BTreeMapBenchMap<_, _>, "btreemap");
+        // bench_lookup_hit!(group, map_data.clone(), BTreeMapBenchMap<_, _>, "btreemap"); // too slow
         bench_lookup_hit!(group, map_data.clone(), ConcreadBenchMap<_, _>, "concread");
         bench_lookup_hit!(group, map_data.clone(), DashMapBenchMap<_, _>, "dashmap");
         bench_lookup_hit!(group, map_data.clone(), HashbrownBenchMap<_, _>, "hashbrown");
@@ -76,7 +76,7 @@ fn baseline_key_sensitivity(c: &mut Criterion) {
         group.measurement_time(MEASUREMENT_TIME);
         group.throughput(Throughput::Elements(existing_key_count));
         bench_lookup_hit!(group, map_data.clone(), AhashBenchMap<_, _>, "ahash");
-        bench_lookup_hit!(group, map_data.clone(), BTreeMapBenchMap<_, _>, "btreemap");
+        // bench_lookup_hit!(group, map_data.clone(), BTreeMapBenchMap<_, _>, "btreemap"); // too slow
         bench_lookup_hit!(group, map_data.clone(), ConcreadBenchMap<_, _>, "concread");
         bench_lookup_hit!(group, map_data.clone(), DashMapBenchMap<_, _>, "dashmap");
         bench_lookup_hit!(group, map_data.clone(), HashbrownBenchMap<_, _>, "hashbrown");
@@ -102,7 +102,7 @@ fn baseline_key_sensitivity(c: &mut Criterion) {
         group.measurement_time(MEASUREMENT_TIME);
         group.throughput(Throughput::Elements(existing_key_count));
         bench_lookup_hit!(group, map_data.clone(), AhashBenchMap<_, _>, "ahash");
-        bench_lookup_hit!(group, map_data.clone(), BTreeMapBenchMap<_, _>, "btreemap");
+        // bench_lookup_hit!(group, map_data.clone(), BTreeMapBenchMap<_, _>, "btreemap"); // too slow
         bench_lookup_hit!(group, map_data.clone(), ConcreadBenchMap<_, _>, "concread");
         bench_lookup_hit!(group, map_data.clone(), DashMapBenchMap<_, _>, "dashmap");
         bench_lookup_hit!(group, map_data.clone(), HashbrownBenchMap<_, _>, "hashbrown");
@@ -128,7 +128,7 @@ fn baseline_key_sensitivity(c: &mut Criterion) {
         group.measurement_time(MEASUREMENT_TIME);
         group.throughput(Throughput::Elements(existing_key_count));
         bench_lookup_hit!(group, map_data.clone(), AhashBenchMap<_, _>, "ahash");
-        bench_lookup_hit!(group, map_data.clone(), BTreeMapBenchMap<_, _>, "btreemap");
+        // bench_lookup_hit!(group, map_data.clone(), BTreeMapBenchMap<_, _>, "btreemap"); // too slow
         bench_lookup_hit!(group, map_data.clone(), ConcreadBenchMap<_, _>, "concread");
         bench_lookup_hit!(group, map_data.clone(), DashMapBenchMap<_, _>, "dashmap");
         bench_lookup_hit!(group, map_data.clone(), HashbrownBenchMap<_, _>, "hashbrown");
@@ -154,7 +154,7 @@ fn baseline_key_sensitivity(c: &mut Criterion) {
         group.measurement_time(MEASUREMENT_TIME);
         group.throughput(Throughput::Elements(existing_key_count));
         bench_lookup_hit!(group, map_data.clone(), AhashBenchMap<_, _>, "ahash");
-        bench_lookup_hit!(group, map_data.clone(), BTreeMapBenchMap<_, _>, "btreemap");
+        // bench_lookup_hit!(group, map_data.clone(), BTreeMapBenchMap<_, _>, "btreemap"); // too slow
         bench_lookup_hit!(group, map_data.clone(), ConcreadBenchMap<_, _>, "concread");
         bench_lookup_hit!(group, map_data.clone(), DashMapBenchMap<_, _>, "dashmap");
         bench_lookup_hit!(group, map_data.clone(), HashbrownBenchMap<_, _>, "hashbrown");
