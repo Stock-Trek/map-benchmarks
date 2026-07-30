@@ -3,11 +3,10 @@ use crate::maps::benchmap::{
     BenchMapNew, BenchMapRemove,
 };
 use std::hash::Hash;
-use txmap::shards::Shards;
 
 pub struct TxMapBenchMap<K, V>
 where
-    K: Hash + Eq,
+    K: Clone + Hash + Eq,
     V: Clone,
 {
     map: txmap::prelude::TxMap<K, V>,
@@ -15,19 +14,19 @@ where
 
 impl<K, V> BenchMapNew<K, V> for TxMapBenchMap<K, V>
 where
-    K: Hash + Eq,
+    K: Clone + Hash + Eq,
     V: Clone,
 {
     fn new() -> Self {
         Self {
-            map: txmap::prelude::TxMap::new(Shards::_8),
+            map: txmap::prelude::TxMap::new(),
         }
     }
 }
 
 impl<K, V> BenchMapGetCloned<K, V> for TxMapBenchMap<K, V>
 where
-    K: Hash + Eq,
+    K: Clone + Hash + Eq,
     V: Clone,
 {
     fn get_cloned(&self, key: &K) -> Option<V> {
@@ -37,7 +36,7 @@ where
 
 impl<K, V> BenchMapInsert<K, V> for TxMapBenchMap<K, V>
 where
-    K: Hash + Eq,
+    K: Clone + Hash + Eq,
     V: Clone,
 {
     fn insert(&self, key: K, value: V) {
@@ -47,7 +46,7 @@ where
 
 impl<K, V> BenchMapMutInsert<K, V> for TxMapBenchMap<K, V>
 where
-    K: Hash + Eq,
+    K: Clone + Hash + Eq,
     V: Clone,
 {
     fn insert(&mut self, key: K, value: V) {
@@ -57,7 +56,7 @@ where
 
 impl<K, V> BenchMapIter<K, V> for TxMapBenchMap<K, V>
 where
-    K: Hash + Eq,
+    K: Clone + Hash + Eq,
     V: Clone,
 {
     type Item<'a>
@@ -80,7 +79,7 @@ where
 
 impl<K, V> BenchMapRemove<K, V> for TxMapBenchMap<K, V>
 where
-    K: Hash + Eq,
+    K: Clone + Hash + Eq,
     V: Clone,
 {
     fn remove(&self, key: &K) -> Option<V> {
@@ -90,7 +89,7 @@ where
 
 impl<K, V> BenchMapMutRemove<K, V> for TxMapBenchMap<K, V>
 where
-    K: Hash + Eq,
+    K: Clone + Hash + Eq,
     V: Clone,
 {
     fn remove(&mut self, key: &K) -> Option<V> {

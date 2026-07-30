@@ -1042,9 +1042,9 @@ dependencies = [
 
 [[package]]
 name = "txmap"
-version = "2.2.2"
+version = "3.0.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "e5ae8f5aa7c54f48121cf91c9e57217d880d796fa32387b51dd520695bf10e8b"
+checksum = "2f67d8c822b9e042c3b6bb257ae5c122b5341ab15d45e38c96eb44cf5f0f5cdf"
 dependencies = [
  "hashbrown 0.17.1",
  "intmap",
