@@ -8,7 +8,7 @@ use bench_map::{
         ImmutableChunkMapBenchMap, IndexMapBenchMap, RustCHashBenchMap, StarshardBenchMap,
         StdBenchMap, TxMapBenchMap,
     },
-    thousands_format::format_with_underscores,
+    number_formatter::format_n,
 };
 use criterion::{
     BatchSize, BenchmarkGroup, Criterion, Throughput, criterion_group, criterion_main,
@@ -55,7 +55,7 @@ fn baseline_insert(c: &mut Criterion) {
         );
         let mut group = c.benchmark_group(format!(
             "baseline/insert/map-size-{}",
-            format_with_underscores(*missing_key_count)
+            format_n(*missing_key_count)
         ));
         group.warm_up_time(WARM_UP_TIME);
         group.measurement_time(MEASUREMENT_TIME);

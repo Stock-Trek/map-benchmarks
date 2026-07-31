@@ -8,7 +8,7 @@ use bench_map::{
         HashbrownBenchMap, IndexMapBenchMap, RustCHashBenchMap, StarshardBenchMap, StdBenchMap,
         TxMapBenchMap,
     },
-    thousands_format::format_with_underscores,
+    number_formatter::format_n,
 };
 use criterion::{
     BenchmarkGroup, Criterion, Throughput, criterion_group, criterion_main, measurement::WallTime,
@@ -47,7 +47,7 @@ fn baseline_iterate(c: &mut Criterion) {
         );
         let mut group = c.benchmark_group(format!(
             "baseline/iterate/map-size-{}",
-            format_with_underscores(*entry_count)
+            format_n(*entry_count)
         ));
         group.warm_up_time(WARM_UP_TIME);
         group.measurement_time(MEASUREMENT_TIME);

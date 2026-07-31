@@ -8,7 +8,7 @@ use bench_map::{
         HashbrownBenchMap, ImmutableChunkMapBenchMap, IndexMapBenchMap, RustCHashBenchMap,
         StarshardBenchMap, StdBenchMap, TxMapBenchMap,
     },
-    thousands_format::format_with_underscores,
+    number_formatter::format_n,
 };
 use criterion::{
     BatchSize, BenchmarkGroup, Criterion, Throughput, criterion_group, criterion_main,
@@ -56,7 +56,7 @@ fn baseline_remove(c: &mut Criterion) {
         );
         let mut group = c.benchmark_group(format!(
             "baseline/remove/map-size-{}",
-            format_with_underscores(*entry_count)
+            format_n(*entry_count)
         ));
         group.warm_up_time(WARM_UP_TIME);
         group.measurement_time(MEASUREMENT_TIME);

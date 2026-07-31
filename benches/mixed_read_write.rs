@@ -8,7 +8,7 @@ use bench_map::{
         DashMapBenchMap, HashbrownBenchMap, ImmutableChunkMapBenchMap, IndexMapBenchMap,
         RustCHashBenchMap, StarshardBenchMap, StdBenchMap, TxMapBenchMap,
     },
-    thousands_format::format_with_underscores,
+    number_formatter::format_n,
     workload::{design::WorkloadDesign, op::WorkloadOp, thread_workload::ThreadWorkload},
 };
 use criterion::{
@@ -110,7 +110,7 @@ fn mixed_read_write(c: &mut Criterion) {
             let mut group = c.benchmark_group(format!(
                 "mixed-read-write/{}-workload/map-size-{}",
                 name,
-                format_with_underscores(entry_count),
+                format_n(entry_count),
             ));
             group.warm_up_time(WARM_UP_TIME);
             group.measurement_time(MEASUREMENT_TIME);
