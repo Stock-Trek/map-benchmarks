@@ -10,8 +10,8 @@ use bench_map::{
     data::u64_sparse::U64SparseDataGen,
     map_gen::MapGen,
     maps::{
-        AhashBenchMap, BenchMapGetCloned, BenchMapInsert, BenchMapMutInsert, BenchMapMutRemove,
-        BenchMapNew, BenchMapRemove, BTreeMapBenchMap, ConcreadBenchMap, DashMapBenchMap,
+        AhashBenchMap, BTreeMapBenchMap, BenchMapGetCloned, BenchMapInsert, BenchMapMutInsert,
+        BenchMapMutRemove, BenchMapNew, BenchMapRemove, ConcreadBenchMap, DashMapBenchMap,
         HashbrownBenchMap, ImmutableChunkMapBenchMap, IndexMapBenchMap, RustCHashBenchMap,
         StarshardBenchMap, StdBenchMap, TxMapBenchMap,
     },
