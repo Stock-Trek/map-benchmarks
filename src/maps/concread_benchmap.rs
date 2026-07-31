@@ -40,7 +40,11 @@ where
     V: Clone + Send + Sync + 'static,
 {
     fn insert(&self, key: K, value: V) {
-        self.map.write().insert(key, value);
+        let mut write = self.map.write();
+        write.insert(key, value);
+        // Uncommitted write transactions are discarded on drop, which would
+        // silently elide all inserts; commit so reads observe the change.
+        write.commit();
     }
 }
 
@@ -50,7 +54,9 @@ where
     V: Clone + Send + Sync + 'static,
 {
     fn insert(&mut self, key: K, value: V) {
-        self.map.write().insert(key, value);
+        let mut write = self.map.write();
+        write.insert(key, value);
+        write.commit();
     }
 }
 
@@ -60,7 +66,10 @@ where
     V: Clone + Send + Sync + 'static,
 {
     fn remove(&self, key: &K) -> Option<V> {
-        self.map.write().remove(key)
+        let mut write = self.map.write();
+        let removed = write.remove(key);
+        write.commit();
+        removed
     }
 }
 
@@ -70,6 +79,9 @@ where
     V: Clone + Send + Sync + 'static,
 {
     fn remove(&mut self, key: &K) -> Option<V> {
-        self.map.write().remove(key)
+        let mut write = self.map.write();
+        let removed = write.remove(key);
+        write.commit();
+        removed
     }
 }
