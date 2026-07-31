@@ -1,7 +1,4 @@
-use crate::maps::benchmap::{
-    BenchMapGetCloned, BenchMapInsert, BenchMapMutInsert, BenchMapMutRemove, BenchMapNew,
-    BenchMapRemove,
-};
+use crate::maps::benchmap::{BenchMapGetCloned, BenchMapMutInsert, BenchMapMutRemove, BenchMapNew};
 
 pub struct ImmutableChunkMapBenchMap<K, V>
 where
@@ -33,33 +30,16 @@ where
     }
 }
 
-impl<K, V> BenchMapInsert<K, V> for ImmutableChunkMapBenchMap<K, V>
-where
-    K: Clone + Ord,
-    V: Clone,
-{
-    fn insert(&self, key: K, value: V) {
-        self.map.insert(key, value);
-    }
-}
-
 impl<K, V> BenchMapMutInsert<K, V> for ImmutableChunkMapBenchMap<K, V>
 where
     K: Clone + Ord,
     V: Clone,
 {
     fn insert(&mut self, key: K, value: V) {
-        self.map.insert(key, value);
-    }
-}
-
-impl<K, V> BenchMapRemove<K, V> for ImmutableChunkMapBenchMap<K, V>
-where
-    K: Clone + Ord,
-    V: Clone,
-{
-    fn remove(&self, key: &K) -> Option<V> {
-        self.map.remove(key).1
+        // insert_cow mutates the map in place (copy-on-write if shared),
+        // unlike `insert`, which returns a new map that would otherwise
+        // be silently discarded, leaving the map empty.
+        self.map.insert_cow(key, value);
     }
 }
 
@@ -69,6 +49,6 @@ where
     V: Clone,
 {
     fn remove(&mut self, key: &K) -> Option<V> {
-        self.map.remove(key).1
+        self.map.remove_cow(key)
     }
 }

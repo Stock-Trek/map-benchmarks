@@ -4,7 +4,7 @@ use bench_map::{
     map_gen::MapGen,
     maps::{
         BenchMapGetCloned, BenchMapInsert, BenchMapRemove, ConcreadBenchMap, DashMapBenchMap,
-        ImmutableChunkMapBenchMap, StarshardBenchMap, TxMapBenchMap,
+        StarshardBenchMap, TxMapBenchMap,
     },
     pin_thread::PinThread,
     workload::{design::WorkloadDesign, op::WorkloadOp, thread_workload::ThreadWorkload},
@@ -112,7 +112,7 @@ fn concurrency(c: &mut Criterion) {
         bench_concurrent_shared!(group, map_data, thread_count, workloads, ConcreadBenchMap<_, _>, "concread");
         bench_concurrent_shared!(group, map_data, thread_count, workloads, DashMapBenchMap<_, _>, "dashmap");
         // bench_concurrent_shared!(group, map_data, thread_count, workloads, HashbrownBenchMap<_, _>, "hashbrown");
-        bench_concurrent_shared!(group, map_data, thread_count, workloads, ImmutableChunkMapBenchMap<_, _>, "immutable-chunkmap");
+        // bench_concurrent_shared!(group, map_data, thread_count, workloads, ImmutableChunkMapBenchMap<_, _>, "immutable-chunkmap"); // mutation returns a new map; requires &mut or storing the result, cannot mutate through a shared reference
         // bench_concurrent_shared!(group, map_data, thread_count, workloads, IndexMapBenchMap<_, _>, "indexmap");
         // bench_concurrent_shared!(group, map_data, thread_count, workloads, RustCHashBenchMap<_, _>, "rustc-hash");
         bench_concurrent_shared!(group, map_data, thread_count, workloads, StarshardBenchMap<_, _>, "starshard");
