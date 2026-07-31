@@ -69,7 +69,7 @@ where
     {
         self.map.iter()
     }
-    fn item_value_ref<'a>(&'a self, item: &'a Self::Item<'a>) -> &'a V {
+    fn item_value_ref<'a, 'b>(&'a self, item: &'b Self::Item<'a>) -> &'b V {
         item.value()
     }
 }

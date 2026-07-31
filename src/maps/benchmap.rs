@@ -17,7 +17,7 @@ pub trait BenchMapIter<K, V> {
     where
         K: 'a,
         V: 'a;
-    fn item_value_ref<'a>(&'a self, item: &'a Self::Item<'a>) -> &'a V;
+    fn item_value_ref<'a, 'b>(&'a self, item: &'b Self::Item<'a>) -> &'b V;
 }
 pub trait BenchMapRemove<K, V> {
     fn remove(&self, key: &K) -> Option<V>;
