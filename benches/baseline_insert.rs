@@ -14,6 +14,7 @@ use criterion::{
     BatchSize, BenchmarkGroup, Criterion, Throughput, criterion_group, criterion_main,
     measurement::WallTime,
 };
+use std::hint::black_box;
 
 fn bench<Map>(group: &mut BenchmarkGroup<WallTime>, map_data: &MapData<u64, u64>, name: &str)
 where
@@ -29,10 +30,10 @@ where
             },
             |(mut map, mut keys)| {
                 for key in keys.drain(..) {
-                    let key = std::hint::black_box(key);
+                    let key = black_box(key);
                     map.insert(key, 42);
                 }
-                std::hint::black_box(map)
+                black_box(map)
             },
             BatchSize::PerIteration,
         );

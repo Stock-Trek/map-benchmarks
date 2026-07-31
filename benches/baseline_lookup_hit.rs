@@ -13,6 +13,7 @@ use bench_map::{
 use criterion::{
     BenchmarkGroup, Criterion, Throughput, criterion_group, criterion_main, measurement::WallTime,
 };
+use std::hint::black_box;
 
 fn bench<Map>(group: &mut BenchmarkGroup<WallTime>, map_data: &MapData<u64, u64>, name: &str)
 where
@@ -23,8 +24,8 @@ where
         let keys = map_data.existing_keys();
         b.iter(|| {
             for key in keys {
-                let key = std::hint::black_box(key);
-                std::hint::black_box(map.get_cloned(key));
+                let key = black_box(key);
+                black_box(map.get_cloned(key));
             }
         });
     });

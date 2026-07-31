@@ -15,6 +15,7 @@ use criterion::{
     BatchSize, BenchmarkGroup, Criterion, Throughput, criterion_group, criterion_main,
     measurement::WallTime,
 };
+use std::hint::black_box;
 
 fn run_workload<M>(workload: &ThreadWorkload, map: &mut M)
 where
@@ -25,16 +26,16 @@ where
     for item in &workload.items {
         match item.op {
             WorkloadOp::Lookup => {
-                let key = std::hint::black_box(&item.key);
-                std::hint::black_box(map.get_cloned(key));
+                let key = black_box(&item.key);
+                black_box(map.get_cloned(key));
             }
             WorkloadOp::Insert => {
-                let key = std::hint::black_box(item.key);
+                let key = black_box(item.key);
                 map.insert(key, 42u64);
             }
             WorkloadOp::Remove => {
-                let key = std::hint::black_box(&item.key);
-                std::hint::black_box(map.remove(key));
+                let key = black_box(&item.key);
+                black_box(map.remove(key));
             }
         }
     }

@@ -15,7 +15,7 @@ use bench_map::{
 use criterion::{
     BenchmarkGroup, Criterion, Throughput, criterion_group, criterion_main, measurement::WallTime,
 };
-use std::{hash::Hash, rc::Rc};
+use std::{hash::Hash, hint::black_box, rc::Rc};
 use uuid::Uuid;
 
 fn bench<Map, K, V>(group: &mut BenchmarkGroup<WallTime>, map_data: &MapData<K, V>, name: &str)
@@ -29,8 +29,8 @@ where
         let keys = map_data.existing_keys();
         b.iter(|| {
             for key in keys {
-                let key = std::hint::black_box(key);
-                std::hint::black_box(map.get_cloned(key));
+                let key = black_box(key);
+                black_box(map.get_cloned(key));
             }
         });
     });

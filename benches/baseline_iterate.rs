@@ -13,6 +13,7 @@ use bench_map::{
 use criterion::{
     BenchmarkGroup, Criterion, Throughput, criterion_group, criterion_main, measurement::WallTime,
 };
+use std::hint::black_box;
 
 fn bench<Map>(group: &mut BenchmarkGroup<WallTime>, map_data: &MapData<u64, u64>, name: &str)
 where
@@ -26,7 +27,7 @@ where
                 let value_ref = map.item_value_ref(&entry);
                 sum = sum.wrapping_add(*value_ref);
             }
-            std::hint::black_box(sum);
+            black_box(sum);
         });
     });
 }
