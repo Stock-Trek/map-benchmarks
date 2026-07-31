@@ -7,9 +7,9 @@ use bench_map::{
     map_data::MapData,
     map_gen::MapGen,
     maps::{
-        AhashBenchMap, BenchMapGetCloned, BenchMapMutInsert, BenchMapNew, ConcreadBenchMap,
-        DashMapBenchMap, HashbrownBenchMap, ImmutableChunkMapBenchMap, IndexMapBenchMap,
-        RustCHashBenchMap, StarshardBenchMap, StdBenchMap, TxMapBenchMap,
+        AhashBenchMap, BTreeMapBenchMap, BenchMapGetCloned, BenchMapMutInsert, BenchMapNew,
+        ConcreadBenchMap, DashMapBenchMap, HashbrownBenchMap, ImmutableChunkMapBenchMap,
+        IndexMapBenchMap, RustCHashBenchMap, StarshardBenchMap, StdBenchMap, TxMapBenchMap,
     },
 };
 use criterion::{
@@ -18,11 +18,8 @@ use criterion::{
 use std::{hash::Hash, rc::Rc};
 use uuid::Uuid;
 
-fn bench_lookup_hit<Map, K, V>(
-    group: &mut BenchmarkGroup<WallTime>,
-    map_data: Rc<MapData<K, V>>,
-    name: &str,
-) where
+fn bench<Map, K, V>(group: &mut BenchmarkGroup<WallTime>, map_data: &MapData<K, V>, name: &str)
+where
     Map: BenchMapNew<K, V> + BenchMapMutInsert<K, V> + BenchMapGetCloned<K, V>,
     K: Clone + Hash + Eq,
     V: Clone,
@@ -46,65 +43,34 @@ fn baseline_key_sensitivity(c: &mut Criterion) {
     let sort_keys = false;
     // u64 keys
     {
-        let map_data = Rc::new(MapGen::generate(
+        let map_data = MapGen::generate(
             U64SparseDataGen,
             U64SparseDataGen,
             entry_count,
             existing_key_count as usize,
             missing_key_count as usize,
             sort_keys,
-        ));
+        );
         let mut group = c.benchmark_group("key-sensitivity/u64");
         group.warm_up_time(WARM_UP_TIME);
         group.measurement_time(MEASUREMENT_TIME);
         group.throughput(Throughput::Elements(existing_key_count));
-        bench_lookup_hit::<AhashBenchMap<u64, u64>, u64, u64>(
+
+        bench::<AhashBenchMap<u64, u64>, u64, u64>(&mut group, &map_data, "ahash");
+        bench::<BTreeMapBenchMap<u64, u64>, u64, u64>(&mut group, &map_data, "btreemap");
+        bench::<ConcreadBenchMap<u64, u64>, u64, u64>(&mut group, &map_data, "concread");
+        bench::<DashMapBenchMap<u64, u64>, u64, u64>(&mut group, &map_data, "dashmap");
+        bench::<HashbrownBenchMap<u64, u64>, u64, u64>(&mut group, &map_data, "hashbrown");
+        bench::<ImmutableChunkMapBenchMap<u64, u64>, u64, u64>(
             &mut group,
-            map_data.clone(),
-            "ahash",
-        );
-        // bench_lookup_hit::<BTreeMapBenchMap<u64, u64>, u64, u64>(&mut group, map_data.clone(), "btreemap"); // too slow
-        bench_lookup_hit::<ConcreadBenchMap<u64, u64>, u64, u64>(
-            &mut group,
-            map_data.clone(),
-            "concread",
-        );
-        bench_lookup_hit::<DashMapBenchMap<u64, u64>, u64, u64>(
-            &mut group,
-            map_data.clone(),
-            "dashmap",
-        );
-        bench_lookup_hit::<HashbrownBenchMap<u64, u64>, u64, u64>(
-            &mut group,
-            map_data.clone(),
-            "hashbrown",
-        );
-        bench_lookup_hit::<ImmutableChunkMapBenchMap<u64, u64>, u64, u64>(
-            &mut group,
-            map_data.clone(),
+            &map_data,
             "immutable-chunkmap",
         );
-        bench_lookup_hit::<IndexMapBenchMap<u64, u64>, u64, u64>(
-            &mut group,
-            map_data.clone(),
-            "indexmap",
-        );
-        bench_lookup_hit::<RustCHashBenchMap<u64, u64>, u64, u64>(
-            &mut group,
-            map_data.clone(),
-            "rustc-hash",
-        );
-        bench_lookup_hit::<StarshardBenchMap<u64, u64>, u64, u64>(
-            &mut group,
-            map_data.clone(),
-            "starshard",
-        );
-        bench_lookup_hit::<StdBenchMap<u64, u64>, u64, u64>(&mut group, map_data.clone(), "std");
-        bench_lookup_hit::<TxMapBenchMap<u64, u64>, u64, u64>(
-            &mut group,
-            map_data.clone(),
-            "txmap",
-        );
+        bench::<IndexMapBenchMap<u64, u64>, u64, u64>(&mut group, &map_data, "indexmap");
+        bench::<RustCHashBenchMap<u64, u64>, u64, u64>(&mut group, &map_data, "rustc-hash");
+        bench::<StarshardBenchMap<u64, u64>, u64, u64>(&mut group, &map_data, "starshard");
+        bench::<StdBenchMap<u64, u64>, u64, u64>(&mut group, &map_data, "std");
+        bench::<TxMapBenchMap<u64, u64>, u64, u64>(&mut group, &map_data, "txmap");
     }
     // UUID v4 keys
     {
@@ -120,53 +86,22 @@ fn baseline_key_sensitivity(c: &mut Criterion) {
         group.warm_up_time(WARM_UP_TIME);
         group.measurement_time(MEASUREMENT_TIME);
         group.throughput(Throughput::Elements(existing_key_count));
-        bench_lookup_hit::<AhashBenchMap<Uuid, u64>, Uuid, u64>(
+
+        bench::<AhashBenchMap<Uuid, u64>, Uuid, u64>(&mut group, &map_data, "ahash");
+        bench::<BTreeMapBenchMap<Uuid, u64>, Uuid, u64>(&mut group, &map_data, "btreemap");
+        bench::<ConcreadBenchMap<Uuid, u64>, Uuid, u64>(&mut group, &map_data, "concread");
+        bench::<DashMapBenchMap<Uuid, u64>, Uuid, u64>(&mut group, &map_data, "dashmap");
+        bench::<HashbrownBenchMap<Uuid, u64>, Uuid, u64>(&mut group, &map_data, "hashbrown");
+        bench::<ImmutableChunkMapBenchMap<Uuid, u64>, Uuid, u64>(
             &mut group,
-            map_data.clone(),
-            "ahash",
-        );
-        // bench_lookup_hit::<BTreeMapBenchMap<Uuid, u64>, Uuid, u64>(&mut group, map_data.clone(), "btreemap"); // too slow
-        bench_lookup_hit::<ConcreadBenchMap<Uuid, u64>, Uuid, u64>(
-            &mut group,
-            map_data.clone(),
-            "concread",
-        );
-        bench_lookup_hit::<DashMapBenchMap<Uuid, u64>, Uuid, u64>(
-            &mut group,
-            map_data.clone(),
-            "dashmap",
-        );
-        bench_lookup_hit::<HashbrownBenchMap<Uuid, u64>, Uuid, u64>(
-            &mut group,
-            map_data.clone(),
-            "hashbrown",
-        );
-        bench_lookup_hit::<ImmutableChunkMapBenchMap<Uuid, u64>, Uuid, u64>(
-            &mut group,
-            map_data.clone(),
+            &map_data,
             "immutable-chunkmap",
         );
-        bench_lookup_hit::<IndexMapBenchMap<Uuid, u64>, Uuid, u64>(
-            &mut group,
-            map_data.clone(),
-            "indexmap",
-        );
-        bench_lookup_hit::<RustCHashBenchMap<Uuid, u64>, Uuid, u64>(
-            &mut group,
-            map_data.clone(),
-            "rustc-hash",
-        );
-        bench_lookup_hit::<StarshardBenchMap<Uuid, u64>, Uuid, u64>(
-            &mut group,
-            map_data.clone(),
-            "starshard",
-        );
-        bench_lookup_hit::<StdBenchMap<Uuid, u64>, Uuid, u64>(&mut group, map_data.clone(), "std");
-        bench_lookup_hit::<TxMapBenchMap<Uuid, u64>, Uuid, u64>(
-            &mut group,
-            map_data.clone(),
-            "txmap",
-        );
+        bench::<IndexMapBenchMap<Uuid, u64>, Uuid, u64>(&mut group, &map_data, "indexmap");
+        bench::<RustCHashBenchMap<Uuid, u64>, Uuid, u64>(&mut group, &map_data, "rustc-hash");
+        bench::<StarshardBenchMap<Uuid, u64>, Uuid, u64>(&mut group, &map_data, "starshard");
+        bench::<StdBenchMap<Uuid, u64>, Uuid, u64>(&mut group, &map_data, "std");
+        bench::<TxMapBenchMap<Uuid, u64>, Uuid, u64>(&mut group, &map_data, "txmap");
     }
     // Byte(32) keys
     {
@@ -182,57 +117,33 @@ fn baseline_key_sensitivity(c: &mut Criterion) {
         group.warm_up_time(WARM_UP_TIME);
         group.measurement_time(MEASUREMENT_TIME);
         group.throughput(Throughput::Elements(existing_key_count));
-        bench_lookup_hit::<AhashBenchMap<[u8; 32], u64>, [u8; 32], u64>(
+        bench::<AhashBenchMap<[u8; 32], u64>, [u8; 32], u64>(&mut group, &map_data, "ahash");
+        bench::<BTreeMapBenchMap<[u8; 32], u64>, [u8; 32], u64>(&mut group, &map_data, "btreemap");
+        bench::<ConcreadBenchMap<[u8; 32], u64>, [u8; 32], u64>(&mut group, &map_data, "concread");
+        bench::<DashMapBenchMap<[u8; 32], u64>, [u8; 32], u64>(&mut group, &map_data, "dashmap");
+        bench::<HashbrownBenchMap<[u8; 32], u64>, [u8; 32], u64>(
             &mut group,
-            map_data.clone(),
-            "ahash",
-        );
-        // bench_lookup_hit::<BTreeMapBenchMap<[u8; 32], u64>, [u8; 32], u64>(&mut group, map_data.clone(), "btreemap"); // too slow
-        bench_lookup_hit::<ConcreadBenchMap<[u8; 32], u64>, [u8; 32], u64>(
-            &mut group,
-            map_data.clone(),
-            "concread",
-        );
-        bench_lookup_hit::<DashMapBenchMap<[u8; 32], u64>, [u8; 32], u64>(
-            &mut group,
-            map_data.clone(),
-            "dashmap",
-        );
-        bench_lookup_hit::<HashbrownBenchMap<[u8; 32], u64>, [u8; 32], u64>(
-            &mut group,
-            map_data.clone(),
+            &map_data,
             "hashbrown",
         );
-        bench_lookup_hit::<ImmutableChunkMapBenchMap<[u8; 32], u64>, [u8; 32], u64>(
+        bench::<ImmutableChunkMapBenchMap<[u8; 32], u64>, [u8; 32], u64>(
             &mut group,
-            map_data.clone(),
+            &map_data,
             "immutable-chunkmap",
         );
-        bench_lookup_hit::<IndexMapBenchMap<[u8; 32], u64>, [u8; 32], u64>(
+        bench::<IndexMapBenchMap<[u8; 32], u64>, [u8; 32], u64>(&mut group, &map_data, "indexmap");
+        bench::<RustCHashBenchMap<[u8; 32], u64>, [u8; 32], u64>(
             &mut group,
-            map_data.clone(),
-            "indexmap",
-        );
-        bench_lookup_hit::<RustCHashBenchMap<[u8; 32], u64>, [u8; 32], u64>(
-            &mut group,
-            map_data.clone(),
+            &map_data,
             "rustc-hash",
         );
-        bench_lookup_hit::<StarshardBenchMap<[u8; 32], u64>, [u8; 32], u64>(
+        bench::<StarshardBenchMap<[u8; 32], u64>, [u8; 32], u64>(
             &mut group,
-            map_data.clone(),
+            &map_data,
             "starshard",
         );
-        bench_lookup_hit::<StdBenchMap<[u8; 32], u64>, [u8; 32], u64>(
-            &mut group,
-            map_data.clone(),
-            "std",
-        );
-        bench_lookup_hit::<TxMapBenchMap<[u8; 32], u64>, [u8; 32], u64>(
-            &mut group,
-            map_data.clone(),
-            "txmap",
-        );
+        bench::<StdBenchMap<[u8; 32], u64>, [u8; 32], u64>(&mut group, &map_data, "std");
+        bench::<TxMapBenchMap<[u8; 32], u64>, [u8; 32], u64>(&mut group, &map_data, "txmap");
     }
     // String<16> keys
     {
@@ -248,57 +159,21 @@ fn baseline_key_sensitivity(c: &mut Criterion) {
         group.warm_up_time(WARM_UP_TIME);
         group.measurement_time(MEASUREMENT_TIME);
         group.throughput(Throughput::Elements(existing_key_count));
-        bench_lookup_hit::<AhashBenchMap<String, u64>, String, u64>(
+        bench::<AhashBenchMap<String, u64>, String, u64>(&mut group, &map_data, "ahash");
+        bench::<BTreeMapBenchMap<String, u64>, String, u64>(&mut group, &map_data, "btreemap");
+        bench::<ConcreadBenchMap<String, u64>, String, u64>(&mut group, &map_data, "concread");
+        bench::<DashMapBenchMap<String, u64>, String, u64>(&mut group, &map_data, "dashmap");
+        bench::<HashbrownBenchMap<String, u64>, String, u64>(&mut group, &map_data, "hashbrown");
+        bench::<ImmutableChunkMapBenchMap<String, u64>, String, u64>(
             &mut group,
-            map_data.clone(),
-            "ahash",
-        );
-        // bench_lookup_hit::<BTreeMapBenchMap<String, u64>, String, u64>(&mut group, map_data.clone(), "btreemap"); // too slow
-        bench_lookup_hit::<ConcreadBenchMap<String, u64>, String, u64>(
-            &mut group,
-            map_data.clone(),
-            "concread",
-        );
-        bench_lookup_hit::<DashMapBenchMap<String, u64>, String, u64>(
-            &mut group,
-            map_data.clone(),
-            "dashmap",
-        );
-        bench_lookup_hit::<HashbrownBenchMap<String, u64>, String, u64>(
-            &mut group,
-            map_data.clone(),
-            "hashbrown",
-        );
-        bench_lookup_hit::<ImmutableChunkMapBenchMap<String, u64>, String, u64>(
-            &mut group,
-            map_data.clone(),
+            &map_data,
             "immutable-chunkmap",
         );
-        bench_lookup_hit::<IndexMapBenchMap<String, u64>, String, u64>(
-            &mut group,
-            map_data.clone(),
-            "indexmap",
-        );
-        bench_lookup_hit::<RustCHashBenchMap<String, u64>, String, u64>(
-            &mut group,
-            map_data.clone(),
-            "rustc-hash",
-        );
-        bench_lookup_hit::<StarshardBenchMap<String, u64>, String, u64>(
-            &mut group,
-            map_data.clone(),
-            "starshard",
-        );
-        bench_lookup_hit::<StdBenchMap<String, u64>, String, u64>(
-            &mut group,
-            map_data.clone(),
-            "std",
-        );
-        bench_lookup_hit::<TxMapBenchMap<String, u64>, String, u64>(
-            &mut group,
-            map_data.clone(),
-            "txmap",
-        );
+        bench::<IndexMapBenchMap<String, u64>, String, u64>(&mut group, &map_data, "indexmap");
+        bench::<RustCHashBenchMap<String, u64>, String, u64>(&mut group, &map_data, "rustc-hash");
+        bench::<StarshardBenchMap<String, u64>, String, u64>(&mut group, &map_data, "starshard");
+        bench::<StdBenchMap<String, u64>, String, u64>(&mut group, &map_data, "std");
+        bench::<TxMapBenchMap<String, u64>, String, u64>(&mut group, &map_data, "txmap");
     }
     // String<128> keys
     {
@@ -314,57 +189,21 @@ fn baseline_key_sensitivity(c: &mut Criterion) {
         group.warm_up_time(WARM_UP_TIME);
         group.measurement_time(MEASUREMENT_TIME);
         group.throughput(Throughput::Elements(existing_key_count));
-        bench_lookup_hit::<AhashBenchMap<String, u64>, String, u64>(
+        bench::<AhashBenchMap<String, u64>, String, u64>(&mut group, &map_data, "ahash");
+        bench::<BTreeMapBenchMap<String, u64>, String, u64>(&mut group, &map_data, "btreemap");
+        bench::<ConcreadBenchMap<String, u64>, String, u64>(&mut group, &map_data, "concread");
+        bench::<DashMapBenchMap<String, u64>, String, u64>(&mut group, &map_data, "dashmap");
+        bench::<HashbrownBenchMap<String, u64>, String, u64>(&mut group, &map_data, "hashbrown");
+        bench::<ImmutableChunkMapBenchMap<String, u64>, String, u64>(
             &mut group,
-            map_data.clone(),
-            "ahash",
-        );
-        // bench_lookup_hit::<BTreeMapBenchMap<String, u64>, String, u64>(&mut group, map_data.clone(), "btreemap"); // too slow
-        bench_lookup_hit::<ConcreadBenchMap<String, u64>, String, u64>(
-            &mut group,
-            map_data.clone(),
-            "concread",
-        );
-        bench_lookup_hit::<DashMapBenchMap<String, u64>, String, u64>(
-            &mut group,
-            map_data.clone(),
-            "dashmap",
-        );
-        bench_lookup_hit::<HashbrownBenchMap<String, u64>, String, u64>(
-            &mut group,
-            map_data.clone(),
-            "hashbrown",
-        );
-        bench_lookup_hit::<ImmutableChunkMapBenchMap<String, u64>, String, u64>(
-            &mut group,
-            map_data.clone(),
+            &map_data,
             "immutable-chunkmap",
         );
-        bench_lookup_hit::<IndexMapBenchMap<String, u64>, String, u64>(
-            &mut group,
-            map_data.clone(),
-            "indexmap",
-        );
-        bench_lookup_hit::<RustCHashBenchMap<String, u64>, String, u64>(
-            &mut group,
-            map_data.clone(),
-            "rustc-hash",
-        );
-        bench_lookup_hit::<StarshardBenchMap<String, u64>, String, u64>(
-            &mut group,
-            map_data.clone(),
-            "starshard",
-        );
-        bench_lookup_hit::<StdBenchMap<String, u64>, String, u64>(
-            &mut group,
-            map_data.clone(),
-            "std",
-        );
-        bench_lookup_hit::<TxMapBenchMap<String, u64>, String, u64>(
-            &mut group,
-            map_data.clone(),
-            "txmap",
-        );
+        bench::<IndexMapBenchMap<String, u64>, String, u64>(&mut group, &map_data, "indexmap");
+        bench::<RustCHashBenchMap<String, u64>, String, u64>(&mut group, &map_data, "rustc-hash");
+        bench::<StarshardBenchMap<String, u64>, String, u64>(&mut group, &map_data, "starshard");
+        bench::<StdBenchMap<String, u64>, String, u64>(&mut group, &map_data, "std");
+        bench::<TxMapBenchMap<String, u64>, String, u64>(&mut group, &map_data, "txmap");
     }
 }
 

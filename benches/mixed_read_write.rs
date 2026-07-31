@@ -5,8 +5,8 @@ use bench_map::{
     map_gen::MapGen,
     maps::{
         AhashBenchMap, BenchMapGetCloned, BenchMapMutInsert, BenchMapMutRemove, BenchMapNew,
-        ConcreadBenchMap, DashMapBenchMap, HashbrownBenchMap, ImmutableChunkMapBenchMap,
-        IndexMapBenchMap, RustCHashBenchMap, StarshardBenchMap, StdBenchMap, TxMapBenchMap,
+        DashMapBenchMap, HashbrownBenchMap, ImmutableChunkMapBenchMap, IndexMapBenchMap,
+        RustCHashBenchMap, StarshardBenchMap, StdBenchMap, TxMapBenchMap,
     },
     thousands_format::format_with_underscores,
     workload::{design::WorkloadDesign, op::WorkloadOp, thread_workload::ThreadWorkload},
@@ -15,7 +15,6 @@ use criterion::{
     BatchSize, BenchmarkGroup, Criterion, Throughput, criterion_group, criterion_main,
     measurement::WallTime,
 };
-use std::rc::Rc;
 
 fn run_workload<M>(workload: &ThreadWorkload, map: &mut M)
 where
@@ -41,10 +40,10 @@ where
     }
 }
 
-fn bench_mixed<Map>(
+fn bench<Map>(
     group: &mut BenchmarkGroup<WallTime>,
-    map_data: Rc<MapData<u64, u64>>,
-    workload: ThreadWorkload,
+    map_data: &MapData<u64, u64>,
+    workload: &ThreadWorkload,
     name: &str,
 ) where
     Map: BenchMapNew<u64, u64>
@@ -53,14 +52,12 @@ fn bench_mixed<Map>(
         + BenchMapGetCloned<u64, u64>,
 {
     group.bench_function(name, move |b| {
-        let map_data = map_data.clone();
-        let workload = workload.clone();
         b.iter_batched(
             move || {
                 let map = map_data.create_map::<Map>();
-                (map, workload.clone())
+                map
             },
-            |(mut map, workload)| {
+            |mut map| {
                 run_workload(&workload, &mut map);
             },
             BatchSize::PerIteration,
@@ -75,14 +72,14 @@ fn mixed_read_write(c: &mut Criterion) {
     for &entry_count in MIXED_ENTRY_COUNT {
         let existing_key_count = entry_count;
 
-        let map_data = Rc::new(MapGen::generate(
+        let map_data = MapGen::generate(
             U64SparseDataGen,
             U64SparseDataGen,
             entry_count,
             existing_key_count,
             missing_key_count,
             sort_keys,
-        ));
+        );
 
         let mut rng = rand::rng();
         let designs: &[(&str, WorkloadDesign)] = &[
@@ -118,67 +115,22 @@ fn mixed_read_write(c: &mut Criterion) {
             group.measurement_time(MEASUREMENT_TIME);
             group.throughput(Throughput::Elements(MIXED_OPS_PER_DESIGN as u64));
 
-            bench_mixed::<AhashBenchMap<u64, u64>>(
+            bench::<AhashBenchMap<u64, u64>>(&mut group, &map_data, &workload, "ahash");
+            // bench::<BTreeMapBenchMap<u64, u64>>(&mut group, &map_data, &workload, "btreemap"); too slow
+            // bench::<ConcreadBenchMap<u64, u64>>(&mut group, &map_data, &workload, "concread"); too slow
+            bench::<DashMapBenchMap<u64, u64>>(&mut group, &map_data, &workload, "dashmap");
+            bench::<HashbrownBenchMap<u64, u64>>(&mut group, &map_data, &workload, "hashbrown");
+            bench::<ImmutableChunkMapBenchMap<u64, u64>>(
                 &mut group,
-                map_data.clone(),
-                workload.clone(),
-                "ahash",
-            );
-            // bench_mixed::<BTreeMapBenchMap<u64, u64>>(&mut group, map_data.clone(), workload.clone(), "btreemap"); too slow
-            bench_mixed::<ConcreadBenchMap<u64, u64>>(
-                &mut group,
-                map_data.clone(),
-                workload.clone(),
-                "concread",
-            );
-            bench_mixed::<DashMapBenchMap<u64, u64>>(
-                &mut group,
-                map_data.clone(),
-                workload.clone(),
-                "dashmap",
-            );
-            bench_mixed::<HashbrownBenchMap<u64, u64>>(
-                &mut group,
-                map_data.clone(),
-                workload.clone(),
-                "hashbrown",
-            );
-            bench_mixed::<ImmutableChunkMapBenchMap<u64, u64>>(
-                &mut group,
-                map_data.clone(),
-                workload.clone(),
+                &map_data,
+                &workload,
                 "immutable-chunkmap",
             );
-            bench_mixed::<IndexMapBenchMap<u64, u64>>(
-                &mut group,
-                map_data.clone(),
-                workload.clone(),
-                "indexmap",
-            );
-            bench_mixed::<RustCHashBenchMap<u64, u64>>(
-                &mut group,
-                map_data.clone(),
-                workload.clone(),
-                "rustc-hash",
-            );
-            bench_mixed::<StarshardBenchMap<u64, u64>>(
-                &mut group,
-                map_data.clone(),
-                workload.clone(),
-                "starshard",
-            );
-            bench_mixed::<StdBenchMap<u64, u64>>(
-                &mut group,
-                map_data.clone(),
-                workload.clone(),
-                "std",
-            );
-            bench_mixed::<TxMapBenchMap<u64, u64>>(
-                &mut group,
-                map_data.clone(),
-                workload.clone(),
-                "txmap",
-            );
+            bench::<IndexMapBenchMap<u64, u64>>(&mut group, &map_data, &workload, "indexmap");
+            bench::<RustCHashBenchMap<u64, u64>>(&mut group, &map_data, &workload, "rustc-hash");
+            bench::<StarshardBenchMap<u64, u64>>(&mut group, &map_data, &workload, "starshard");
+            bench::<StdBenchMap<u64, u64>>(&mut group, &map_data, &workload, "std");
+            bench::<TxMapBenchMap<u64, u64>>(&mut group, &map_data, &workload, "txmap");
         }
     }
 }

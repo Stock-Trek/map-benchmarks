@@ -13,13 +13,9 @@ use bench_map::{
 use criterion::{
     BenchmarkGroup, Criterion, Throughput, criterion_group, criterion_main, measurement::WallTime,
 };
-use std::rc::Rc;
 
-fn bench_iterate<Map>(
-    group: &mut BenchmarkGroup<WallTime>,
-    map_data: Rc<MapData<u64, u64>>,
-    name: &str,
-) where
+fn bench<Map>(group: &mut BenchmarkGroup<WallTime>, map_data: &MapData<u64, u64>, name: &str)
+where
     Map: BenchMapNew<u64, u64> + BenchMapMutInsert<u64, u64> + BenchMapIter<u64, u64>,
 {
     group.bench_function(name, move |b| {
@@ -40,14 +36,14 @@ fn baseline_iterate(c: &mut Criterion) {
     let missing_key_count = 0;
     let sort_keys = false;
     for entry_count in BASELINE_ENTRY_COUNT {
-        let map_data = Rc::new(MapGen::generate(
+        let map_data = MapGen::generate(
             U64SparseDataGen,
             U64SparseDataGen,
             *entry_count,
             existing_key_count,
             missing_key_count,
             sort_keys,
-        ));
+        );
         let mut group = c.benchmark_group(format!(
             "baseline/iterate/map-size-{}",
             format_with_underscores(*entry_count)
@@ -55,17 +51,18 @@ fn baseline_iterate(c: &mut Criterion) {
         group.warm_up_time(WARM_UP_TIME);
         group.measurement_time(MEASUREMENT_TIME);
         group.throughput(Throughput::Elements(*entry_count as u64));
-        bench_iterate::<AhashBenchMap<u64, u64>>(&mut group, map_data.clone(), "ahash");
-        // bench_iterate::<BTreeMapBenchMap<u64, u64>>(&mut group, map_data.clone(), "btreemap"); // too slow
-        // bench_iterate::<ConcreadBenchMap<u64, u64>>(&mut group, map_data.clone(), "concread"); // read guard prevents storing iterator
-        bench_iterate::<DashMapBenchMap<u64, u64>>(&mut group, map_data.clone(), "dashmap");
-        bench_iterate::<HashbrownBenchMap<u64, u64>>(&mut group, map_data.clone(), "hashbrown");
-        // bench_iterate::<ImmutableChunkMapBenchMap<u64, u64>>(&mut group, map_data.clone(), "immutable-chunkmap"); // no immutable iter
-        bench_iterate::<IndexMapBenchMap<u64, u64>>(&mut group, map_data.clone(), "indexmap");
-        bench_iterate::<RustCHashBenchMap<u64, u64>>(&mut group, map_data.clone(), "rustc-hash");
-        bench_iterate::<StarshardBenchMap<u64, u64>>(&mut group, map_data.clone(), "starshard");
-        bench_iterate::<StdBenchMap<u64, u64>>(&mut group, map_data.clone(), "std");
-        bench_iterate::<TxMapBenchMap<u64, u64>>(&mut group, map_data.clone(), "txmap");
+
+        bench::<AhashBenchMap<u64, u64>>(&mut group, &map_data, "ahash");
+        // bench::<BTreeMapBenchMap<u64, u64>>(&mut group, &map_data, "btreemap"); // too slow
+        // bench::<ConcreadBenchMap<u64, u64>>(&mut group, &map_data, "concread"); // read guard prevents storing iterator
+        bench::<DashMapBenchMap<u64, u64>>(&mut group, &map_data, "dashmap");
+        bench::<HashbrownBenchMap<u64, u64>>(&mut group, &map_data, "hashbrown");
+        // bench::<ImmutableChunkMapBenchMap<u64, u64>>(&mut group, &map_data, "immutable-chunkmap"); // no immutable iter
+        bench::<IndexMapBenchMap<u64, u64>>(&mut group, &map_data, "indexmap");
+        bench::<RustCHashBenchMap<u64, u64>>(&mut group, &map_data, "rustc-hash");
+        bench::<StarshardBenchMap<u64, u64>>(&mut group, &map_data, "starshard");
+        bench::<StdBenchMap<u64, u64>>(&mut group, &map_data, "std");
+        bench::<TxMapBenchMap<u64, u64>>(&mut group, &map_data, "txmap");
     }
 }
 

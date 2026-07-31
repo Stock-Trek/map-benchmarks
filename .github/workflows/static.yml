@@ -29,6 +29,9 @@ jobs:
       - name: Update dependencies
         run: cargo update
 
+      - name: Run normal tests
+        run: cargo test
+
       - name: Run benchmarks
         run: cargo bench
 
