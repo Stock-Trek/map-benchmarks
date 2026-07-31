@@ -22,13 +22,16 @@ where
     for item in &workload.items {
         match item.op {
             WorkloadOp::Lookup => {
-                let _ = map.get_cloned(&item.key);
+                let key = std::hint::black_box(&item.key);
+                std::hint::black_box(map.get_cloned(key));
             }
             WorkloadOp::Insert => {
-                map.insert(item.key, 42u64);
+                let key = std::hint::black_box(item.key);
+                map.insert(key, 42u64);
             }
             WorkloadOp::Remove => {
-                map.remove(&item.key);
+                let key = std::hint::black_box(&item.key);
+                std::hint::black_box(map.remove(key));
             }
         }
     }
