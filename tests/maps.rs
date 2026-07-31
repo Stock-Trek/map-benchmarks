@@ -70,30 +70,70 @@ where
     assert_eq!(found, 100);
 }
 
-macro_rules! map_tests {
-    ($($map_name:ident => $map_type:ty),* $(,)?) => {
-        $(
-            #[test]
-            fn $map_name() {
-                assert_mut_insert_remove::<$map_type>();
-                assert_create_map_populates_existing_keys::<$map_type>();
-            }
-        )*
-    };
+fn run_map_tests<M>()
+where
+    M: BenchMapNew<u64, u64>
+        + BenchMapMutInsert<u64, u64>
+        + BenchMapMutRemove<u64, u64>
+        + BenchMapGetCloned<u64, u64>,
+{
+    assert_mut_insert_remove::<M>();
+    assert_create_map_populates_existing_keys::<M>();
 }
 
-map_tests! {
-    ahash => AhashBenchMap<u64, u64>,
-    btree_map => BTreeMapBenchMap<u64, u64>,
-    concread => ConcreadBenchMap<u64, u64>,
-    dashmap => DashMapBenchMap<u64, u64>,
-    hashbrown => HashbrownBenchMap<u64, u64>,
-    immutable_chunkmap => ImmutableChunkMapBenchMap<u64, u64>,
-    indexmap => IndexMapBenchMap<u64, u64>,
-    rustc_hash => RustCHashBenchMap<u64, u64>,
-    starshard => StarshardBenchMap<u64, u64>,
-    std => StdBenchMap<u64, u64>,
-    txmap => TxMapBenchMap<u64, u64>,
+#[test]
+fn ahash() {
+    run_map_tests::<AhashBenchMap<u64, u64>>();
+}
+
+#[test]
+fn btree_map() {
+    run_map_tests::<BTreeMapBenchMap<u64, u64>>();
+}
+
+#[test]
+fn concread() {
+    run_map_tests::<ConcreadBenchMap<u64, u64>>();
+}
+
+#[test]
+fn dashmap() {
+    run_map_tests::<DashMapBenchMap<u64, u64>>();
+}
+
+#[test]
+fn hashbrown() {
+    run_map_tests::<HashbrownBenchMap<u64, u64>>();
+}
+
+#[test]
+fn immutable_chunkmap() {
+    run_map_tests::<ImmutableChunkMapBenchMap<u64, u64>>();
+}
+
+#[test]
+fn indexmap() {
+    run_map_tests::<IndexMapBenchMap<u64, u64>>();
+}
+
+#[test]
+fn rustc_hash() {
+    run_map_tests::<RustCHashBenchMap<u64, u64>>();
+}
+
+#[test]
+fn starshard() {
+    run_map_tests::<StarshardBenchMap<u64, u64>>();
+}
+
+#[test]
+fn std() {
+    run_map_tests::<StdBenchMap<u64, u64>>();
+}
+
+#[test]
+fn txmap() {
+    run_map_tests::<TxMapBenchMap<u64, u64>>();
 }
 
 #[test]

@@ -1,16 +1,20 @@
 use bench_map::{
     config::*,
     data::u64_sparse::U64SparseDataGen,
+    map_data::MapData,
     map_gen::MapGen,
     maps::{
-        AhashBenchMap, BenchMapGetCloned, BenchMapMutInsert, BenchMapMutRemove, ConcreadBenchMap,
-        DashMapBenchMap, HashbrownBenchMap, ImmutableChunkMapBenchMap, IndexMapBenchMap,
-        RustCHashBenchMap, StarshardBenchMap, StdBenchMap, TxMapBenchMap,
+        AhashBenchMap, BenchMapGetCloned, BenchMapMutInsert, BenchMapMutRemove, BenchMapNew,
+        ConcreadBenchMap, DashMapBenchMap, HashbrownBenchMap, ImmutableChunkMapBenchMap,
+        IndexMapBenchMap, RustCHashBenchMap, StarshardBenchMap, StdBenchMap, TxMapBenchMap,
     },
     thousands_format::format_with_underscores,
     workload::{design::WorkloadDesign, op::WorkloadOp, thread_workload::ThreadWorkload},
 };
-use criterion::{BatchSize, Criterion, Throughput, criterion_group, criterion_main};
+use criterion::{
+    BatchSize, BenchmarkGroup, Criterion, Throughput, criterion_group, criterion_main,
+    measurement::WallTime,
+};
 use std::rc::Rc;
 
 fn run_workload<M>(workload: &ThreadWorkload, map: &mut M)
@@ -37,25 +41,31 @@ where
     }
 }
 
-macro_rules! bench_mixed {
-    ($group:ident, $map_data:expr, $workload:expr, $map_type:path, $name:expr) => {
-        let map_data = $map_data.clone();
-        let workload = $workload.clone();
-        $group.bench_function($name, move |b| {
-            let map_data = map_data.clone();
-            let workload = workload.clone();
-            b.iter_batched(
-                move || {
-                    let map = map_data.create_map::<$map_type>();
-                    (map, workload.clone())
-                },
-                |(mut map, workload)| {
-                    run_workload(&workload, &mut map);
-                },
-                BatchSize::PerIteration,
-            );
-        });
-    };
+fn bench_mixed<Map>(
+    group: &mut BenchmarkGroup<WallTime>,
+    map_data: Rc<MapData<u64, u64>>,
+    workload: ThreadWorkload,
+    name: &str,
+) where
+    Map: BenchMapNew<u64, u64>
+        + BenchMapMutInsert<u64, u64>
+        + BenchMapMutRemove<u64, u64>
+        + BenchMapGetCloned<u64, u64>,
+{
+    group.bench_function(name, move |b| {
+        let map_data = map_data.clone();
+        let workload = workload.clone();
+        b.iter_batched(
+            move || {
+                let map = map_data.create_map::<Map>();
+                (map, workload.clone())
+            },
+            |(mut map, workload)| {
+                run_workload(&workload, &mut map);
+            },
+            BatchSize::PerIteration,
+        );
+    });
 }
 
 fn mixed_read_write(c: &mut Criterion) {
@@ -108,17 +118,67 @@ fn mixed_read_write(c: &mut Criterion) {
             group.measurement_time(MEASUREMENT_TIME);
             group.throughput(Throughput::Elements(MIXED_OPS_PER_DESIGN as u64));
 
-            bench_mixed!(group, map_data.clone(),workload.clone(), AhashBenchMap<_, _>, "ahash");
-            // bench_mixed!(group, map_data.clone(), workload.clone(), BTreeMapBenchMap<_, _>, "btreemap"); too slow
-            bench_mixed!(group, map_data.clone(), workload.clone(), ConcreadBenchMap<_, _>, "concread");
-            bench_mixed!(group, map_data.clone(), workload.clone(), DashMapBenchMap<_, _>, "dashmap");
-            bench_mixed!(group, map_data.clone(), workload.clone(), HashbrownBenchMap<_, _>, "hashbrown");
-            bench_mixed!(group, map_data.clone(), workload.clone(), ImmutableChunkMapBenchMap<_, _>, "immutable-chunkmap");
-            bench_mixed!(group, map_data.clone(), workload.clone(), IndexMapBenchMap<_, _>, "indexmap");
-            bench_mixed!(group, map_data.clone(), workload.clone(), RustCHashBenchMap<_, _>, "rustc-hash");
-            bench_mixed!(group, map_data.clone(), workload.clone(), StarshardBenchMap<_, _>, "starshard");
-            bench_mixed!(group, map_data.clone(), workload.clone(), StdBenchMap<_, _>, "std");
-            bench_mixed!(group, map_data.clone(), workload.clone(), TxMapBenchMap<_, _>, "txmap");
+            bench_mixed::<AhashBenchMap<u64, u64>>(
+                &mut group,
+                map_data.clone(),
+                workload.clone(),
+                "ahash",
+            );
+            // bench_mixed::<BTreeMapBenchMap<u64, u64>>(&mut group, map_data.clone(), workload.clone(), "btreemap"); too slow
+            bench_mixed::<ConcreadBenchMap<u64, u64>>(
+                &mut group,
+                map_data.clone(),
+                workload.clone(),
+                "concread",
+            );
+            bench_mixed::<DashMapBenchMap<u64, u64>>(
+                &mut group,
+                map_data.clone(),
+                workload.clone(),
+                "dashmap",
+            );
+            bench_mixed::<HashbrownBenchMap<u64, u64>>(
+                &mut group,
+                map_data.clone(),
+                workload.clone(),
+                "hashbrown",
+            );
+            bench_mixed::<ImmutableChunkMapBenchMap<u64, u64>>(
+                &mut group,
+                map_data.clone(),
+                workload.clone(),
+                "immutable-chunkmap",
+            );
+            bench_mixed::<IndexMapBenchMap<u64, u64>>(
+                &mut group,
+                map_data.clone(),
+                workload.clone(),
+                "indexmap",
+            );
+            bench_mixed::<RustCHashBenchMap<u64, u64>>(
+                &mut group,
+                map_data.clone(),
+                workload.clone(),
+                "rustc-hash",
+            );
+            bench_mixed::<StarshardBenchMap<u64, u64>>(
+                &mut group,
+                map_data.clone(),
+                workload.clone(),
+                "starshard",
+            );
+            bench_mixed::<StdBenchMap<u64, u64>>(
+                &mut group,
+                map_data.clone(),
+                workload.clone(),
+                "std",
+            );
+            bench_mixed::<TxMapBenchMap<u64, u64>>(
+                &mut group,
+                map_data.clone(),
+                workload.clone(),
+                "txmap",
+            );
         }
     }
 }

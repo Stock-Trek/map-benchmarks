@@ -1,31 +1,37 @@
 use bench_map::{
     config::*,
     data::u64_sparse::U64SparseDataGen,
+    map_data::MapData,
     map_gen::MapGen,
     maps::{
-        AhashBenchMap, BenchMapGetCloned, ConcreadBenchMap, DashMapBenchMap, HashbrownBenchMap,
-        ImmutableChunkMapBenchMap, IndexMapBenchMap, RustCHashBenchMap, StarshardBenchMap,
-        StdBenchMap, TxMapBenchMap,
+        AhashBenchMap, BenchMapGetCloned, BenchMapMutInsert, BenchMapNew, ConcreadBenchMap,
+        DashMapBenchMap, HashbrownBenchMap, ImmutableChunkMapBenchMap, IndexMapBenchMap,
+        RustCHashBenchMap, StarshardBenchMap, StdBenchMap, TxMapBenchMap,
     },
     thousands_format::format_with_underscores,
 };
-use criterion::{Criterion, Throughput, criterion_group, criterion_main};
+use criterion::{
+    BenchmarkGroup, Criterion, Throughput, criterion_group, criterion_main, measurement::WallTime,
+};
 use std::rc::Rc;
 
-macro_rules! bench_lookup_miss {
-    ($group:ident, $map_data:expr, $map_type:path, $name:expr) => {
-        let map_data = $map_data;
-        $group.bench_function($name, move |b| {
-            let map = map_data.create_map::<$map_type>();
-            let keys = map_data.missing_keys();
-            b.iter(|| {
-                for key in keys {
-                    let key = std::hint::black_box(key);
-                    std::hint::black_box(map.get_cloned(key));
-                }
-            });
+fn bench_lookup_miss<Map>(
+    group: &mut BenchmarkGroup<WallTime>,
+    map_data: Rc<MapData<u64, u64>>,
+    name: &str,
+) where
+    Map: BenchMapNew<u64, u64> + BenchMapMutInsert<u64, u64> + BenchMapGetCloned<u64, u64>,
+{
+    group.bench_function(name, move |b| {
+        let map = map_data.create_map::<Map>();
+        let keys = map_data.missing_keys();
+        b.iter(|| {
+            for key in keys {
+                let key = std::hint::black_box(key);
+                std::hint::black_box(map.get_cloned(key));
+            }
         });
-    };
+    });
 }
 
 fn baseline_lookup_miss(c: &mut Criterion) {
@@ -48,17 +54,25 @@ fn baseline_lookup_miss(c: &mut Criterion) {
         group.warm_up_time(WARM_UP_TIME);
         group.measurement_time(MEASUREMENT_TIME);
         group.throughput(Throughput::Elements(missing_key_count as u64));
-        bench_lookup_miss!(group, map_data.clone(), AhashBenchMap<_, _>, "ahash");
-        // bench_lookup_miss!(group, map_data.clone(), BTreeMapBenchMap<_, _>, "btreemap"); // too slow
-        bench_lookup_miss!(group, map_data.clone(), ConcreadBenchMap<_, _>, "concread");
-        bench_lookup_miss!(group, map_data.clone(), DashMapBenchMap<_, _>, "dashmap");
-        bench_lookup_miss!(group, map_data.clone(), HashbrownBenchMap<_, _>, "hashbrown");
-        bench_lookup_miss!(group, map_data.clone(), ImmutableChunkMapBenchMap<_, _>, "immutable-chunkmap");
-        bench_lookup_miss!(group, map_data.clone(), IndexMapBenchMap<_, _>, "indexmap");
-        bench_lookup_miss!(group, map_data.clone(), RustCHashBenchMap<_, _>, "rustc-hash");
-        bench_lookup_miss!(group, map_data.clone(), StarshardBenchMap<_, _>, "starshard");
-        bench_lookup_miss!(group, map_data.clone(), StdBenchMap<_, _>, "std");
-        bench_lookup_miss!(group, map_data.clone(), TxMapBenchMap<_, _>, "txmap");
+        bench_lookup_miss::<AhashBenchMap<u64, u64>>(&mut group, map_data.clone(), "ahash");
+        // bench_lookup_miss::<BTreeMapBenchMap<u64, u64>>(&mut group, map_data.clone(), "btreemap"); // too slow
+        bench_lookup_miss::<ConcreadBenchMap<u64, u64>>(&mut group, map_data.clone(), "concread");
+        bench_lookup_miss::<DashMapBenchMap<u64, u64>>(&mut group, map_data.clone(), "dashmap");
+        bench_lookup_miss::<HashbrownBenchMap<u64, u64>>(&mut group, map_data.clone(), "hashbrown");
+        bench_lookup_miss::<ImmutableChunkMapBenchMap<u64, u64>>(
+            &mut group,
+            map_data.clone(),
+            "immutable-chunkmap",
+        );
+        bench_lookup_miss::<IndexMapBenchMap<u64, u64>>(&mut group, map_data.clone(), "indexmap");
+        bench_lookup_miss::<RustCHashBenchMap<u64, u64>>(
+            &mut group,
+            map_data.clone(),
+            "rustc-hash",
+        );
+        bench_lookup_miss::<StarshardBenchMap<u64, u64>>(&mut group, map_data.clone(), "starshard");
+        bench_lookup_miss::<StdBenchMap<u64, u64>>(&mut group, map_data.clone(), "std");
+        bench_lookup_miss::<TxMapBenchMap<u64, u64>>(&mut group, map_data.clone(), "txmap");
     }
 }
 
