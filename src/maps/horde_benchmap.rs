@@ -38,9 +38,7 @@ where
     V: Clone,
 {
     fn insert(&mut self, key: K, value: V) {
-        horde::collect::pin(|_| {
-            self.map.write().insert(key, value, None);
-        })
+        self.map.write().insert(key, value, None);
     }
 }
 
@@ -50,11 +48,9 @@ where
     V: Clone,
 {
     fn remove(&mut self, key: &K) -> Option<V> {
-        horde::collect::pin(|_| {
-            self.map
-                .write()
-                .remove(key, None)
-                .and_then(|tuple| Some(tuple.1.clone()))
-        })
+        self.map
+            .write()
+            .remove(key, None)
+            .and_then(|tuple| Some(tuple.1.clone()))
     }
 }
