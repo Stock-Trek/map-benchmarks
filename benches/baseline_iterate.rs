@@ -58,6 +58,7 @@ fn baseline_iterate(c: &mut Criterion) {
         // bench::<ConcreadBenchMap<u64, u64>>(&mut group, &map_data, "concread"); // read guard prevents storing iterator
         bench::<DashMapBenchMap<u64, u64>>(&mut group, &map_data, "dashmap");
         bench::<HashbrownBenchMap<u64, u64>>(&mut group, &map_data, "hashbrown");
+        // bench::<HordeBenchMap<u64, u64>>(&mut group, &map_data, "horde"); // lifetime prevents storing iterator
         // bench::<ImmutableChunkMapBenchMap<u64, u64>>(&mut group, &map_data, "immutable-chunkmap"); // no immutable iter
         bench::<IndexMapBenchMap<u64, u64>>(&mut group, &map_data, "indexmap");
         bench::<RustCHashBenchMap<u64, u64>>(&mut group, &map_data, "rustc-hash");

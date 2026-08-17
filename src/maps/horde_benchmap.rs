@@ -7,7 +7,7 @@ pub struct HordeBenchMap<K, V> {
 
 impl<K, V> BenchMapNew<K, V> for HordeBenchMap<K, V>
 where
-    K: Hash + Eq,
+    K: Clone + Hash + Eq,
     V: Clone,
 {
     fn new() -> Self {
@@ -19,15 +19,14 @@ where
 
 impl<K, V> BenchMapGetCloned<K, V> for HordeBenchMap<K, V>
 where
-    K: Hash + Eq,
+    K: Clone + Hash + Eq,
     V: Clone,
 {
     fn get_cloned(&self, key: &K) -> Option<V> {
-        let hash = self.map.hash_key(key);
         horde::collect::pin(|pin| {
             self.map
                 .read(pin)
-                .get(key, Some(hash))
+                .get(key, None)
                 .and_then(|tuple| Some(tuple.1.clone()))
         })
     }
@@ -35,25 +34,26 @@ where
 
 impl<K, V> BenchMapMutInsert<K, V> for HordeBenchMap<K, V>
 where
-    K: Hash + Eq,
+    K: Clone + Hash + Eq,
     V: Clone,
 {
     fn insert(&mut self, key: K, value: V) {
-        horde::collect::pin(|_| self.map.write().replace(vec![(key, value)], 1))
+        horde::collect::pin(|_| {
+            self.map.write().insert(key, value, None);
+        })
     }
 }
 
 impl<K, V> BenchMapMutRemove<K, V> for HordeBenchMap<K, V>
 where
-    K: Hash + Eq,
+    K: Clone + Hash + Eq,
     V: Clone,
 {
     fn remove(&mut self, key: &K) -> Option<V> {
-        let hash = self.map.hash_key(key);
         horde::collect::pin(|_| {
             self.map
                 .write()
-                .remove(key, Some(hash))
+                .remove(key, None)
                 .and_then(|tuple| Some(tuple.1.clone()))
         })
     }
