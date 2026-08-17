@@ -1,4 +1,6 @@
-use crate::maps::benchmap::{BenchMapGetCloned, BenchMapMutInsert, BenchMapMutRemove, BenchMapNew};
+use crate::maps::benchmap::{
+    BenchMapGetCloned, BenchMapIter, BenchMapMutInsert, BenchMapMutRemove, BenchMapNew,
+};
 use std::hash::Hash;
 
 pub struct HordeBenchMap<K, V> {
@@ -39,6 +41,21 @@ where
 {
     fn insert(&mut self, key: K, value: V) {
         self.map.write().insert(key, value, None);
+    }
+}
+
+impl<K, V> BenchMapIter<K, V> for HordeBenchMap<K, V>
+where
+    K: Clone + Hash + Eq,
+    V: Clone,
+{
+    fn for_each(&self, mut f: impl FnMut(&K, &V)) {
+        horde::collect::pin(|pin| {
+            let guard = self.map.read(pin);
+            for (key, value) in guard.iter() {
+                f(key, value);
+            }
+        });
     }
 }
 
