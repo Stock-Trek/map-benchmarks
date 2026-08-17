@@ -1,53 +1,71 @@
 use crate::maps::benchmap::{
     BenchMapGetCloned, BenchMapIter, BenchMapMutInsert, BenchMapMutRemove, BenchMapNew,
+    BenchMapNewWithHasher,
 };
-use std::hash::Hash;
+use std::hash::{BuildHasher, Hash};
 
-pub struct HordeBenchMap<K, V> {
-    map: horde::SyncTable<K, V>,
+pub struct HordeBenchMap<K, V, H = horde::sync_table::DefaultHashBuilder> {
+    map: horde::SyncTable<K, V, H>,
 }
 
-impl<K, V> BenchMapNew<K, V> for HordeBenchMap<K, V>
+impl<K, V, H> BenchMapNew<K, V> for HordeBenchMap<K, V, H>
 where
     K: Clone + Hash + Eq,
     V: Clone,
+    H: BuildHasher + Default,
 {
     fn new() -> Self {
         Self {
-            map: horde::SyncTable::new(),
+            map: horde::SyncTable::new_with(H::default(), 0),
         }
     }
 }
 
-impl<K, V> BenchMapGetCloned<K, V> for HordeBenchMap<K, V>
+impl<K, V, H> BenchMapNewWithHasher<K, V, H> for HordeBenchMap<K, V, H>
 where
     K: Clone + Hash + Eq,
     V: Clone,
+    H: BuildHasher,
+{
+    fn new_with_hasher(hasher: H) -> Self {
+        Self {
+            map: horde::SyncTable::new_with(hasher, 0),
+        }
+    }
+}
+
+impl<K, V, H> BenchMapGetCloned<K, V> for HordeBenchMap<K, V, H>
+where
+    K: Clone + Hash + Eq,
+    V: Clone,
+    H: BuildHasher,
 {
     fn get_cloned(&self, key: &K) -> Option<V> {
         horde::collect::pin(|pin| {
             self.map
                 .read(pin)
                 .get(key, None)
-                .and_then(|tuple| Some(tuple.1.clone()))
+                .map(|tuple| tuple.1.clone())
         })
     }
 }
 
-impl<K, V> BenchMapMutInsert<K, V> for HordeBenchMap<K, V>
+impl<K, V, H> BenchMapMutInsert<K, V> for HordeBenchMap<K, V, H>
 where
     K: Clone + Hash + Eq,
     V: Clone,
+    H: BuildHasher,
 {
     fn insert(&mut self, key: K, value: V) {
         self.map.write().insert(key, value, None);
     }
 }
 
-impl<K, V> BenchMapIter<K, V> for HordeBenchMap<K, V>
+impl<K, V, H> BenchMapIter<K, V> for HordeBenchMap<K, V, H>
 where
     K: Clone + Hash + Eq,
     V: Clone,
+    H: BuildHasher,
 {
     fn for_each(&self, mut f: impl FnMut(&K, &V)) {
         horde::collect::pin(|pin| {
@@ -59,15 +77,16 @@ where
     }
 }
 
-impl<K, V> BenchMapMutRemove<K, V> for HordeBenchMap<K, V>
+impl<K, V, H> BenchMapMutRemove<K, V> for HordeBenchMap<K, V, H>
 where
     K: Clone + Hash + Eq,
     V: Clone,
+    H: BuildHasher,
 {
     fn remove(&mut self, key: &K) -> Option<V> {
         self.map
             .write()
             .remove(key, None)
-            .and_then(|tuple| Some(tuple.1.clone()))
+            .map(|tuple| tuple.1.clone())
     }
 }

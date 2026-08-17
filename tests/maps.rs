@@ -3,12 +3,13 @@ use bench_map::{
     map_gen::MapGen,
     maps::{
         AhashBenchMap, BTreeMapBenchMap, BenchMapGetCloned, BenchMapInsert, BenchMapIter,
-        BenchMapMutInsert, BenchMapMutRemove, BenchMapNew, BenchMapRemove, ConcreadBenchMap,
-        DashMapBenchMap, HashbrownBenchMap, HordeBenchMap, ImmutableChunkMapBenchMap,
-        IndexMapBenchMap, RustCHashBenchMap, StarshardBenchMap, StdBenchMap, TxMapBenchMap,
+        BenchMapMutInsert, BenchMapMutRemove, BenchMapNew, BenchMapNewWithHasher, BenchMapRemove,
+        ConcreadBenchMap, DashMapBenchMap, HashbrownBenchMap, HordeBenchMap,
+        ImmutableChunkMapBenchMap, IndexMapBenchMap, RustCHashBenchMap, StarshardBenchMap,
+        StdBenchMap, TxMapBenchMap,
     },
 };
-use std::rc::Rc;
+use std::{collections::hash_map::RandomState, hash::BuildHasher, rc::Rc};
 
 #[test]
 fn ahash() {
@@ -149,6 +150,114 @@ where
         + BenchMapGetCloned<u64, u64>,
 {
     let mut map = M::new();
+    map.insert(1, 10);
+    map.insert(2, 20);
+    assert_eq!(map.get_cloned(&1), Some(10));
+    assert_eq!(map.get_cloned(&2), Some(20));
+
+    assert_eq!(map.remove(&1), Some(10));
+    assert_eq!(map.get_cloned(&1), None);
+    assert_eq!(map.get_cloned(&2), Some(20));
+
+    assert_eq!(map.remove(&999), None);
+    assert_eq!(map.get_cloned(&2), Some(20));
+}
+
+#[test]
+fn ahash_with_hasher() {
+    assert_new_with_hasher::<AhashBenchMap<u64, u64, ahash::RandomState>, _>(
+        ahash::RandomState::new(),
+    );
+    assert_new_with_hasher::<AhashBenchMap<u64, u64, RandomState>, _>(RandomState::new());
+}
+
+#[test]
+fn dashmap_with_hasher() {
+    assert_new_with_hasher::<DashMapBenchMap<u64, u64, ahash::RandomState>, _>(
+        ahash::RandomState::new(),
+    );
+    assert_new_with_hasher::<DashMapBenchMap<u64, u64, RandomState>, _>(RandomState::new());
+}
+
+#[test]
+fn hashbrown_with_hasher() {
+    assert_new_with_hasher::<HashbrownBenchMap<u64, u64, ahash::RandomState>, _>(
+        ahash::RandomState::new(),
+    );
+    assert_new_with_hasher::<HashbrownBenchMap<u64, u64, RandomState>, _>(RandomState::new());
+}
+
+#[test]
+fn horde_with_hasher() {
+    assert_new_with_hasher::<HordeBenchMap<u64, u64, ahash::RandomState>, _>(
+        ahash::RandomState::new(),
+    );
+    assert_new_with_hasher::<HordeBenchMap<u64, u64, RandomState>, _>(RandomState::new());
+}
+
+#[test]
+fn indexmap_with_hasher() {
+    assert_new_with_hasher::<IndexMapBenchMap<u64, u64, ahash::RandomState>, _>(
+        ahash::RandomState::new(),
+    );
+    assert_new_with_hasher::<IndexMapBenchMap<u64, u64, RandomState>, _>(RandomState::new());
+}
+
+#[test]
+fn starshard_with_hasher() {
+    assert_new_with_hasher::<StarshardBenchMap<u64, u64, ahash::RandomState>, _>(
+        ahash::RandomState::new(),
+    );
+    assert_new_with_hasher::<StarshardBenchMap<u64, u64, RandomState>, _>(RandomState::new());
+}
+
+#[test]
+fn std_with_hasher() {
+    assert_new_with_hasher::<StdBenchMap<u64, u64, ahash::RandomState>, _>(
+        ahash::RandomState::new(),
+    );
+    assert_new_with_hasher::<StdBenchMap<u64, u64, RandomState>, _>(RandomState::new());
+}
+
+#[test]
+fn txmap_with_hasher() {
+    assert_new_with_hasher::<TxMapBenchMap<u64, u64, ahash::RandomState>, _>(
+        ahash::RandomState::new(),
+    );
+    assert_new_with_hasher::<TxMapBenchMap<u64, u64, RandomState>, _>(RandomState::new());
+}
+
+#[test]
+fn create_map_with_hasher_populates_existing_keys() {
+    let map_data = Rc::new(MapGen::generate(
+        U64SparseDataGen,
+        U64SparseDataGen,
+        100_000,
+        100,
+        0,
+        false,
+    ));
+
+    let map = map_data.create_map_with_hasher::<StdBenchMap<u64, u64, ahash::RandomState>, _>(
+        ahash::RandomState::new(),
+    );
+    let found = map_data
+        .existing_keys()
+        .iter()
+        .filter(|k| map.get_cloned(k).is_some())
+        .count();
+    assert_eq!(found, 100);
+}
+
+fn assert_new_with_hasher<M, H>(hasher: H)
+where
+    M: BenchMapNewWithHasher<u64, u64, H>
+        + BenchMapMutInsert<u64, u64>
+        + BenchMapMutRemove<u64, u64>
+        + BenchMapGetCloned<u64, u64>,
+    H: BuildHasher,
+{
+    let mut map = M::new_with_hasher(hasher);
     map.insert(1, 10);
     map.insert(2, 20);
     assert_eq!(map.get_cloned(&1), Some(10));
