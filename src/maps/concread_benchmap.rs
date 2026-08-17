@@ -1,6 +1,6 @@
 use crate::maps::benchmap::{
-    BenchMapGetCloned, BenchMapInsert, BenchMapMutInsert, BenchMapMutRemove, BenchMapNew,
-    BenchMapRemove,
+    BenchMapGetCloned, BenchMapInsert, BenchMapIter, BenchMapMutInsert, BenchMapMutRemove,
+    BenchMapNew, BenchMapRemove,
 };
 use std::{fmt::Debug, hash::Hash};
 
@@ -57,6 +57,19 @@ where
         let mut write = self.map.write();
         write.insert(key, value);
         write.commit();
+    }
+}
+
+impl<K, V> BenchMapIter<K, V> for ConcreadBenchMap<K, V>
+where
+    K: Clone + Debug + Hash + Eq + Send + Sync + 'static,
+    V: Clone + Send + Sync + 'static,
+{
+    fn for_each(&self, mut f: impl FnMut(&K, &V)) {
+        let guard = self.map.read();
+        for (key, value) in guard.iter() {
+            f(key, value);
+        }
     }
 }
 

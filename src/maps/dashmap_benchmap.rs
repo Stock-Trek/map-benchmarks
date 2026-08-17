@@ -2,7 +2,6 @@ use crate::maps::benchmap::{
     BenchMapGetCloned, BenchMapInsert, BenchMapIter, BenchMapMutInsert, BenchMapMutRemove,
     BenchMapNew, BenchMapRemove,
 };
-use dashmap::mapref::multiple::RefMulti;
 use std::hash::Hash;
 
 pub struct DashMapBenchMap<K, V> {
@@ -56,21 +55,10 @@ where
     K: Hash + Eq,
     V: Clone,
 {
-    type Item<'a>
-        = RefMulti<'a, K, V>
-    where
-        Self: 'a,
-        K: 'a,
-        V: 'a;
-    fn iter<'a>(&'a self) -> impl Iterator<Item = Self::Item<'a>>
-    where
-        K: 'a,
-        V: 'a,
-    {
-        self.map.iter()
-    }
-    fn item_value_ref<'a, 'b>(&'a self, item: &'b Self::Item<'a>) -> &'b V {
-        item.value()
+    fn for_each(&self, mut f: impl FnMut(&K, &V)) {
+        for entry in self.map.iter() {
+            f(entry.key(), entry.value());
+        }
     }
 }
 

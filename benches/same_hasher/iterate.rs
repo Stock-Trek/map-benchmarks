@@ -4,9 +4,9 @@ use bench_map::{
     map_data::MapData,
     map_gen::MapGen,
     maps::{
-        AhashBenchMap, BenchMapIter, BenchMapMutInsert, BenchMapNew, DashMapBenchMap,
-        HashbrownBenchMap, IndexMapBenchMap, RustCHashBenchMap, StarshardBenchMap, StdBenchMap,
-        TxMapBenchMap,
+        AhashBenchMap, BenchMapIter, BenchMapMutInsert, BenchMapNew, ConcreadBenchMap,
+        DashMapBenchMap, HashbrownBenchMap, HordeBenchMap, ImmutableChunkMapBenchMap,
+        IndexMapBenchMap, RustCHashBenchMap, StarshardBenchMap, StdBenchMap, TxMapBenchMap,
     },
     number_formatter::format_n,
 };
@@ -23,10 +23,9 @@ where
         let map = map_data.create_map::<Map>();
         b.iter(|| {
             let mut sum = 0u64;
-            for entry in map.iter() {
-                let value_ref = map.item_value_ref(&entry);
-                sum = sum.wrapping_add(*value_ref);
-            }
+            map.for_each(|_key, value| {
+                sum = sum.wrapping_add(*value);
+            });
             black_box(sum);
         });
     });
@@ -55,11 +54,11 @@ fn structure_iterate(c: &mut Criterion) {
 
         bench::<AhashBenchMap<u64, u64>>(&mut group, &map_data, "ahash");
         // bench::<BTreeMapBenchMap<u64, u64>>(&mut group, &map_data, "btreemap"); // too slow
-        // bench::<ConcreadBenchMap<u64, u64>>(&mut group, &map_data, "concread"); // read guard prevents storing iterator
+        bench::<ConcreadBenchMap<u64, u64>>(&mut group, &map_data, "concread");
         bench::<DashMapBenchMap<u64, u64>>(&mut group, &map_data, "dashmap");
         bench::<HashbrownBenchMap<u64, u64>>(&mut group, &map_data, "hashbrown");
-        // bench::<HordeBenchMap<u64, u64>>(&mut group, &map_data, "horde"); // lifetime prevents storing iterator
-        // bench::<ImmutableChunkMapBenchMap<u64, u64>>(&mut group, &map_data, "immutable-chunkmap"); // no immutable iter
+        bench::<HordeBenchMap<u64, u64>>(&mut group, &map_data, "horde");
+        bench::<ImmutableChunkMapBenchMap<u64, u64>>(&mut group, &map_data, "immutable-chunkmap");
         bench::<IndexMapBenchMap<u64, u64>>(&mut group, &map_data, "indexmap");
         bench::<RustCHashBenchMap<u64, u64>>(&mut group, &map_data, "rustc-hash");
         bench::<StarshardBenchMap<u64, u64>>(&mut group, &map_data, "starshard");

@@ -4,8 +4,8 @@ use bench_map::{
     maps::{
         AhashBenchMap, BTreeMapBenchMap, BenchMapGetCloned, BenchMapInsert, BenchMapIter,
         BenchMapMutInsert, BenchMapMutRemove, BenchMapNew, BenchMapRemove, ConcreadBenchMap,
-        DashMapBenchMap, HashbrownBenchMap, ImmutableChunkMapBenchMap, IndexMapBenchMap,
-        RustCHashBenchMap, StarshardBenchMap, StdBenchMap, TxMapBenchMap,
+        DashMapBenchMap, HashbrownBenchMap, HordeBenchMap, ImmutableChunkMapBenchMap,
+        IndexMapBenchMap, RustCHashBenchMap, StarshardBenchMap, StdBenchMap, TxMapBenchMap,
     },
 };
 use std::rc::Rc;
@@ -29,7 +29,7 @@ fn btree_map() {
 #[test]
 fn concread() {
     assert_create_map_populates_existing_keys::<ConcreadBenchMap<u64, u64>>();
-    // assert_iterate::<ConcreadBenchMap<u64, u64>>();
+    assert_iterate::<ConcreadBenchMap<u64, u64>>();
     assert_mut_insert_remove::<ConcreadBenchMap<u64, u64>>();
     assert_shared_insert_remove::<ConcreadBenchMap<u64, u64>>();
 }
@@ -51,9 +51,16 @@ fn hashbrown() {
 }
 
 #[test]
+fn horde() {
+    assert_create_map_populates_existing_keys::<HordeBenchMap<u64, u64>>();
+    assert_iterate::<HordeBenchMap<u64, u64>>();
+    assert_mut_insert_remove::<HordeBenchMap<u64, u64>>();
+}
+
+#[test]
 fn immutable_chunkmap() {
     assert_create_map_populates_existing_keys::<ImmutableChunkMapBenchMap<u64, u64>>();
-    // assert_iterate::<ImmutableChunkMapBenchMap<u64, u64>>();
+    assert_iterate::<ImmutableChunkMapBenchMap<u64, u64>>();
     assert_mut_insert_remove::<ImmutableChunkMapBenchMap<u64, u64>>();
     // assert_shared_insert_remove::<ImmutableChunkMapBenchMap<u64, u64>>();
 }
@@ -128,9 +135,9 @@ where
     map.insert(2, 20);
 
     let mut count = 0;
-    for _ in map.iter() {
+    map.for_each(|_key, _value| {
         count += 1;
-    }
+    });
     assert_eq!(count, 2);
 }
 

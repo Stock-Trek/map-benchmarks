@@ -8,16 +8,7 @@ pub trait BenchMapInsert<K, V> {
     fn insert(&self, key: K, value: V);
 }
 pub trait BenchMapIter<K, V> {
-    type Item<'a>
-    where
-        Self: 'a,
-        K: 'a,
-        V: 'a;
-    fn iter<'a>(&'a self) -> impl Iterator<Item = Self::Item<'a>>
-    where
-        K: 'a,
-        V: 'a;
-    fn item_value_ref<'a, 'b>(&'a self, item: &'b Self::Item<'a>) -> &'b V;
+    fn for_each(&self, f: impl FnMut(&K, &V));
 }
 pub trait BenchMapRemove<K, V> {
     fn remove(&self, key: &K) -> Option<V>;
