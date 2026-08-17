@@ -44,7 +44,7 @@ fn insert(c: &mut Criterion) {
     let entry_count = 0;
     let existing_key_count = 0;
     let sort_keys = false;
-    for missing_key_count in DATA_ENTRY_COUNT {
+    for missing_key_count in OUT_OF_THE_BOX_ENTRY_COUNT {
         let map_data = MapGen::generate(
             U64SparseDataGen,
             U64SparseDataGen,
