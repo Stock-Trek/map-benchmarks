@@ -1,8 +1,8 @@
 use bench_map::{
     config::*,
     data::{
-        byte_array::ByteArrayDataGen, string::StringDataGen, u64_sparse::U64SparseDataGen,
-        uuid_v4::UuidV4DataGen,
+        byte_array::ByteArrayDataGen, string::StringDataGen, u64_dense::U64DenseDataGen,
+        u64_sparse::U64SparseDataGen, u64_zipfian::U64ZipfianDataGen, uuid_v4::UuidV4DataGen,
     },
     map_data::MapData,
     map_gen::MapGen,
@@ -206,6 +206,71 @@ fn key_sensitivity(c: &mut Criterion) {
         bench::<StarshardBenchMap<String, u64>, String, u64>(&mut group, &map_data, "starshard");
         bench::<StdBenchMap<String, u64>, String, u64>(&mut group, &map_data, "std");
         bench::<TxMapBenchMap<String, u64>, String, u64>(&mut group, &map_data, "txmap");
+    }
+    // Adversarial keys (dense)
+    {
+        let map_data = Rc::new(MapGen::generate(
+            U64DenseDataGen,
+            U64SparseDataGen,
+            entry_count,
+            existing_key_count as usize,
+            missing_key_count as usize,
+            sort_keys,
+        ));
+        let mut group = c.benchmark_group("out-of-the-box/key-sensitivity/u64-dense");
+        group.warm_up_time(WARM_UP_TIME);
+        group.measurement_time(MEASUREMENT_TIME);
+        group.throughput(Throughput::Elements(existing_key_count));
+        bench::<AhashBenchMap<u64, u64>, u64, u64>(&mut group, &map_data, "ahash");
+        bench::<BTreeMapBenchMap<u64, u64>, u64, u64>(&mut group, &map_data, "btreemap");
+        bench::<ConcreadBenchMap<u64, u64>, u64, u64>(&mut group, &map_data, "concread");
+        bench::<DashMapBenchMap<u64, u64>, u64, u64>(&mut group, &map_data, "dashmap");
+        bench::<HashbrownBenchMap<u64, u64>, u64, u64>(&mut group, &map_data, "hashbrown");
+        bench::<HordeBenchMap<u64, u64>, u64, u64>(&mut group, &map_data, "horde");
+        bench::<ImmutableChunkMapBenchMap<u64, u64>, u64, u64>(
+            &mut group,
+            &map_data,
+            "immutable-chunkmap",
+        );
+        bench::<IndexMapBenchMap<u64, u64>, u64, u64>(&mut group, &map_data, "indexmap");
+        bench::<RustCHashBenchMap<u64, u64>, u64, u64>(&mut group, &map_data, "rustc-hash");
+        bench::<StarshardBenchMap<u64, u64>, u64, u64>(&mut group, &map_data, "starshard");
+        bench::<StdBenchMap<u64, u64>, u64, u64>(&mut group, &map_data, "std");
+        bench::<TxMapBenchMap<u64, u64>, u64, u64>(&mut group, &map_data, "txmap");
+    }
+    // Adversarial keys (zipfian)
+    {
+        let map_data = Rc::new(MapGen::generate(
+            U64ZipfianDataGen {
+                num_items: (entry_count * 1_000) as u64,
+                exponent: 1.0,
+            },
+            U64SparseDataGen,
+            entry_count,
+            existing_key_count as usize,
+            missing_key_count as usize,
+            sort_keys,
+        ));
+        let mut group = c.benchmark_group("out-of-the-box/key-sensitivity/u64-zipfian");
+        group.warm_up_time(WARM_UP_TIME);
+        group.measurement_time(MEASUREMENT_TIME);
+        group.throughput(Throughput::Elements(existing_key_count));
+        bench::<AhashBenchMap<u64, u64>, u64, u64>(&mut group, &map_data, "ahash");
+        bench::<BTreeMapBenchMap<u64, u64>, u64, u64>(&mut group, &map_data, "btreemap");
+        bench::<ConcreadBenchMap<u64, u64>, u64, u64>(&mut group, &map_data, "concread");
+        bench::<DashMapBenchMap<u64, u64>, u64, u64>(&mut group, &map_data, "dashmap");
+        bench::<HashbrownBenchMap<u64, u64>, u64, u64>(&mut group, &map_data, "hashbrown");
+        bench::<HordeBenchMap<u64, u64>, u64, u64>(&mut group, &map_data, "horde");
+        bench::<ImmutableChunkMapBenchMap<u64, u64>, u64, u64>(
+            &mut group,
+            &map_data,
+            "immutable-chunkmap",
+        );
+        bench::<IndexMapBenchMap<u64, u64>, u64, u64>(&mut group, &map_data, "indexmap");
+        bench::<RustCHashBenchMap<u64, u64>, u64, u64>(&mut group, &map_data, "rustc-hash");
+        bench::<StarshardBenchMap<u64, u64>, u64, u64>(&mut group, &map_data, "starshard");
+        bench::<StdBenchMap<u64, u64>, u64, u64>(&mut group, &map_data, "std");
+        bench::<TxMapBenchMap<u64, u64>, u64, u64>(&mut group, &map_data, "txmap");
     }
 }
 
