@@ -41,11 +41,11 @@ where
     });
 }
 
-fn baseline_remove(c: &mut Criterion) {
+fn data_remove(c: &mut Criterion) {
     let existing_key_count = 100;
     let missing_key_count = 0;
     let sort_keys = false;
-    for entry_count in BASELINE_ENTRY_COUNT {
+    for entry_count in DATA_ENTRY_COUNT {
         let map_data = MapGen::generate(
             U64SparseDataGen,
             U64SparseDataGen,
@@ -55,7 +55,7 @@ fn baseline_remove(c: &mut Criterion) {
             sort_keys,
         );
         let mut group = c.benchmark_group(format!(
-            "baseline/remove/map-size-{}",
+            "out-of-the-box/remove/map-size-{}",
             format_n(*entry_count)
         ));
         group.warm_up_time(WARM_UP_TIME);
@@ -77,5 +77,5 @@ fn baseline_remove(c: &mut Criterion) {
     }
 }
 
-criterion_group!(group, baseline_remove);
+criterion_group!(group, data_remove);
 criterion_main!(group);

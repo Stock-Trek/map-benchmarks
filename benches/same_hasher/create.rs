@@ -24,8 +24,8 @@ where
     });
 }
 
-fn baseline_new(c: &mut Criterion) {
-    let mut group = c.benchmark_group("baseline/new");
+fn structure_new(c: &mut Criterion) {
+    let mut group = c.benchmark_group("same-hasher/create");
     group.warm_up_time(WARM_UP_TIME);
     group.measurement_time(MEASUREMENT_TIME);
     group.throughput(Throughput::Elements(NEW_MAP_COUNT as u64));
@@ -44,5 +44,5 @@ fn baseline_new(c: &mut Criterion) {
     bench::<TxMapBenchMap<u64, u64>>(&mut group, "txmap");
 }
 
-criterion_group!(group, baseline_new);
+criterion_group!(group, structure_new);
 criterion_main!(group);

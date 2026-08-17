@@ -21,7 +21,7 @@ where
 {
     group.bench_function(name, move |b| {
         let map = map_data.create_map::<Map>();
-        let keys = map_data.existing_keys();
+        let keys = map_data.missing_keys();
         b.iter(|| {
             for key in keys {
                 let key = black_box(key);
@@ -31,11 +31,11 @@ where
     });
 }
 
-fn baseline_lookup_hit(c: &mut Criterion) {
-    let existing_key_count = 100;
-    let missing_key_count = 0;
+fn data_lookup_miss(c: &mut Criterion) {
+    let existing_key_count = 0;
+    let missing_key_count = 100;
     let sort_keys = false;
-    for entry_count in BASELINE_ENTRY_COUNT {
+    for entry_count in DATA_ENTRY_COUNT {
         let map_data = MapGen::generate(
             U64SparseDataGen,
             U64SparseDataGen,
@@ -45,12 +45,12 @@ fn baseline_lookup_hit(c: &mut Criterion) {
             sort_keys,
         );
         let mut group = c.benchmark_group(format!(
-            "baseline/lookup-hit/map-size-{}",
+            "out-of-the-box/lookup-miss/map-size-{}",
             format_n(*entry_count)
         ));
         group.warm_up_time(WARM_UP_TIME);
         group.measurement_time(MEASUREMENT_TIME);
-        group.throughput(Throughput::Elements(existing_key_count as u64));
+        group.throughput(Throughput::Elements(missing_key_count as u64));
 
         bench::<AhashBenchMap<u64, u64>>(&mut group, &map_data, "ahash");
         // bench::<BTreeMapBenchMap<u64, u64>>(&mut group, &map_data, "btreemap"); // too slow
@@ -67,5 +67,5 @@ fn baseline_lookup_hit(c: &mut Criterion) {
     }
 }
 
-criterion_group!(group, baseline_lookup_hit);
+criterion_group!(group, data_lookup_miss);
 criterion_main!(group);

@@ -37,7 +37,7 @@ where
     });
 }
 
-fn baseline_key_sensitivity(c: &mut Criterion) {
+fn key_sensitivity(c: &mut Criterion) {
     let entry_count = KEY_SENSITIVITY_ENTRY_COUNT;
     let existing_key_count: u64 = 100;
     let missing_key_count: u64 = 0;
@@ -52,7 +52,7 @@ fn baseline_key_sensitivity(c: &mut Criterion) {
             missing_key_count as usize,
             sort_keys,
         );
-        let mut group = c.benchmark_group("key-sensitivity/u64");
+        let mut group = c.benchmark_group("out-of-the-box/key-sensitivity/u64");
         group.warm_up_time(WARM_UP_TIME);
         group.measurement_time(MEASUREMENT_TIME);
         group.throughput(Throughput::Elements(existing_key_count));
@@ -83,7 +83,7 @@ fn baseline_key_sensitivity(c: &mut Criterion) {
             missing_key_count as usize,
             sort_keys,
         ));
-        let mut group = c.benchmark_group("key-sensitivity/UUID");
+        let mut group = c.benchmark_group("out-of-the-box/key-sensitivity/UUID");
         group.warm_up_time(WARM_UP_TIME);
         group.measurement_time(MEASUREMENT_TIME);
         group.throughput(Throughput::Elements(existing_key_count));
@@ -114,7 +114,7 @@ fn baseline_key_sensitivity(c: &mut Criterion) {
             missing_key_count as usize,
             sort_keys,
         ));
-        let mut group = c.benchmark_group("key-sensitivity/Byte<32>");
+        let mut group = c.benchmark_group("out-of-the-box/key-sensitivity/Byte<32>");
         group.warm_up_time(WARM_UP_TIME);
         group.measurement_time(MEASUREMENT_TIME);
         group.throughput(Throughput::Elements(existing_key_count));
@@ -156,7 +156,7 @@ fn baseline_key_sensitivity(c: &mut Criterion) {
             missing_key_count as usize,
             sort_keys,
         ));
-        let mut group = c.benchmark_group("key-sensitivity/String<16>");
+        let mut group = c.benchmark_group("out-of-the-box/key-sensitivity/String<16>");
         group.warm_up_time(WARM_UP_TIME);
         group.measurement_time(MEASUREMENT_TIME);
         group.throughput(Throughput::Elements(existing_key_count));
@@ -186,7 +186,7 @@ fn baseline_key_sensitivity(c: &mut Criterion) {
             missing_key_count as usize,
             sort_keys,
         ));
-        let mut group = c.benchmark_group("key-sensitivity/String<128>");
+        let mut group = c.benchmark_group("out-of-the-box/key-sensitivity/String<128>");
         group.warm_up_time(WARM_UP_TIME);
         group.measurement_time(MEASUREMENT_TIME);
         group.throughput(Throughput::Elements(existing_key_count));
@@ -209,5 +209,5 @@ fn baseline_key_sensitivity(c: &mut Criterion) {
     }
 }
 
-criterion_group!(group, baseline_key_sensitivity);
+criterion_group!(group, key_sensitivity);
 criterion_main!(group);

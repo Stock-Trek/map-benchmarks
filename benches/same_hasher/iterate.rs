@@ -32,11 +32,11 @@ where
     });
 }
 
-fn baseline_iterate(c: &mut Criterion) {
+fn structure_iterate(c: &mut Criterion) {
     let existing_key_count = 0;
     let missing_key_count = 0;
     let sort_keys = false;
-    for entry_count in BASELINE_ENTRY_COUNT {
+    for entry_count in DATA_ENTRY_COUNT {
         let map_data = MapGen::generate(
             U64SparseDataGen,
             U64SparseDataGen,
@@ -46,7 +46,7 @@ fn baseline_iterate(c: &mut Criterion) {
             sort_keys,
         );
         let mut group = c.benchmark_group(format!(
-            "baseline/iterate/map-size-{}",
+            "same-hasher/iterate/map-size-{}",
             format_n(*entry_count)
         ));
         group.warm_up_time(WARM_UP_TIME);
@@ -68,5 +68,5 @@ fn baseline_iterate(c: &mut Criterion) {
     }
 }
 
-criterion_group!(group, baseline_iterate);
+criterion_group!(group, structure_iterate);
 criterion_main!(group);
