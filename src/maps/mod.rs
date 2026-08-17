@@ -21,6 +21,7 @@ pub use btreemap_benchmap::BTreeMapBenchMap;
 pub use concread_benchmap::ConcreadBenchMap;
 pub use dashmap_benchmap::DashMapBenchMap;
 pub use hashbrown_benchmap::HashbrownBenchMap;
+pub use horde_benchmap::HordeBenchMap;
 pub use immutable_chunkmap_benchmap::ImmutableChunkMapBenchMap;
 pub use indexmap_benchmap::IndexMapBenchMap;
 pub use rustc_hash_benchmap::RustCHashBenchMap;

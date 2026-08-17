@@ -44,21 +44,10 @@ where
     K: Hash + Eq,
     V: Clone,
 {
-    type Item<'a>
-        = (&'a K, &'a V)
-    where
-        Self: 'a,
-        K: 'a,
-        V: 'a;
-    fn iter<'a>(&'a self) -> impl Iterator<Item = Self::Item<'a>>
-    where
-        K: 'a,
-        V: 'a,
-    {
-        self.map.iter()
-    }
-    fn item_value_ref<'a, 'b>(&'a self, item: &'b Self::Item<'a>) -> &'b V {
-        item.1
+    fn for_each(&self, mut f: impl FnMut(&K, &V)) {
+        for (key, value) in self.map.iter() {
+            f(key, value);
+        }
     }
 }
 
