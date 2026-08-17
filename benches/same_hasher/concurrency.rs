@@ -117,7 +117,7 @@ fn concurrency(c: &mut Criterion) {
             .collect::<Vec<_>>();
 
         let mut group = c.benchmark_group(format!(
-            "concurrency/balanced-workload/{}_threads",
+            "same-hasher/concurrency/balanced-workload/{}_threads",
             thread_count
         ));
         group.warm_up_time(WARM_UP_TIME);

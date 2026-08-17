@@ -4,9 +4,9 @@ use bench_map::{
     map_data::MapData,
     map_gen::MapGen,
     maps::{
-        AhashBenchMap, BenchMapIter, BenchMapMutInsert, BenchMapNew, ConcreadBenchMap,
-        DashMapBenchMap, HashbrownBenchMap, HordeBenchMap, ImmutableChunkMapBenchMap,
-        IndexMapBenchMap, RustCHashBenchMap, StarshardBenchMap, StdBenchMap, TxMapBenchMap,
+        AhashBenchMap, BenchMapGetCloned, BenchMapMutInsert, BenchMapNew, DashMapBenchMap,
+        HashbrownBenchMap, ImmutableChunkMapBenchMap, IndexMapBenchMap, RustCHashBenchMap,
+        StarshardBenchMap, StdBenchMap, TxMapBenchMap, horde_benchmap::HordeBenchMap,
     },
     number_formatter::format_n,
 };
@@ -17,25 +17,25 @@ use std::hint::black_box;
 
 fn bench<Map>(group: &mut BenchmarkGroup<WallTime>, map_data: &MapData<u64, u64>, name: &str)
 where
-    Map: BenchMapNew<u64, u64> + BenchMapMutInsert<u64, u64> + BenchMapIter<u64, u64>,
+    Map: BenchMapNew<u64, u64> + BenchMapMutInsert<u64, u64> + BenchMapGetCloned<u64, u64>,
 {
     group.bench_function(name, move |b| {
         let map = map_data.create_map::<Map>();
+        let keys = map_data.existing_keys();
         b.iter(|| {
-            let mut sum = 0u64;
-            map.for_each(|_key, value| {
-                sum = sum.wrapping_add(*value);
-            });
-            black_box(sum);
+            for key in keys {
+                let key = black_box(key);
+                black_box(map.get_cloned(key));
+            }
         });
     });
 }
 
-fn baseline_iterate(c: &mut Criterion) {
-    let existing_key_count = 0;
+fn lookup_hit(c: &mut Criterion) {
+    let existing_key_count = 100;
     let missing_key_count = 0;
     let sort_keys = false;
-    for entry_count in BASELINE_ENTRY_COUNT {
+    for entry_count in OUT_OF_THE_BOX_ENTRY_COUNT {
         let map_data = MapGen::generate(
             U64SparseDataGen,
             U64SparseDataGen,
@@ -45,16 +45,16 @@ fn baseline_iterate(c: &mut Criterion) {
             sort_keys,
         );
         let mut group = c.benchmark_group(format!(
-            "baseline/iterate/map-size-{}",
+            "out-of-the-box/lookup-hit/map-size-{}",
             format_n(*entry_count)
         ));
         group.warm_up_time(WARM_UP_TIME);
         group.measurement_time(MEASUREMENT_TIME);
-        group.throughput(Throughput::Elements(*entry_count as u64));
+        group.throughput(Throughput::Elements(existing_key_count as u64));
 
         bench::<AhashBenchMap<u64, u64>>(&mut group, &map_data, "ahash");
         // bench::<BTreeMapBenchMap<u64, u64>>(&mut group, &map_data, "btreemap"); // too slow
-        bench::<ConcreadBenchMap<u64, u64>>(&mut group, &map_data, "concread");
+        // bench::<ConcreadBenchMap<u64, u64>>(&mut group, &map_data, "concread"); // too slow
         bench::<DashMapBenchMap<u64, u64>>(&mut group, &map_data, "dashmap");
         bench::<HashbrownBenchMap<u64, u64>>(&mut group, &map_data, "hashbrown");
         bench::<HordeBenchMap<u64, u64>>(&mut group, &map_data, "horde");
@@ -67,5 +67,5 @@ fn baseline_iterate(c: &mut Criterion) {
     }
 }
 
-criterion_group!(group, baseline_iterate);
+criterion_group!(group, lookup_hit);
 criterion_main!(group);

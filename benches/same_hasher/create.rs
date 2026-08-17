@@ -17,18 +17,18 @@ where
 {
     group.bench_function(name, move |b| {
         b.iter(|| {
-            for _ in 0..NEW_MAP_COUNT {
+            for _ in 0..SAME_HASHER_MAP_COUNT {
                 black_box(Map::new());
             }
         });
     });
 }
 
-fn baseline_new(c: &mut Criterion) {
-    let mut group = c.benchmark_group("baseline/new");
+fn structure_new(c: &mut Criterion) {
+    let mut group = c.benchmark_group("same-hasher/create");
     group.warm_up_time(WARM_UP_TIME);
     group.measurement_time(MEASUREMENT_TIME);
-    group.throughput(Throughput::Elements(NEW_MAP_COUNT as u64));
+    group.throughput(Throughput::Elements(SAME_HASHER_MAP_COUNT as u64));
 
     bench::<AhashBenchMap<u64, u64>>(&mut group, "ahash");
     bench::<BTreeMapBenchMap<u64, u64>>(&mut group, "btreemap");
@@ -44,5 +44,5 @@ fn baseline_new(c: &mut Criterion) {
     bench::<TxMapBenchMap<u64, u64>>(&mut group, "txmap");
 }
 
-criterion_group!(group, baseline_new);
+criterion_group!(group, structure_new);
 criterion_main!(group);
