@@ -36,6 +36,10 @@ name = "baseline_lookup_miss"
 harness = false
 
 [[bench]]
+name = "baseline_new"
+harness = false
+
+[[bench]]
 name = "baseline_remove"
 harness = false
 
