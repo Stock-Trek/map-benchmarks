@@ -72,6 +72,7 @@ dependencies = [
  "criterion",
  "dashmap",
  "hashbrown 0.17.1",
+ "horde",
  "immutable-chunkmap",
  "indexmap",
  "libc",
@@ -457,6 +458,15 @@ dependencies = [
  "equivalent",
  "foldhash",
  "rayon",
+]
+
+[[package]]
+name = "horde"
+version = "0.1.5"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "a61c061cf5c6363cbd605c6907dc1bf95a90e2d1da0461264b2395e0c47cb41f"
+dependencies = [
+ "parking_lot",
 ]
 
 [[package]]

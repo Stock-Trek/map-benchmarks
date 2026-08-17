@@ -10,6 +10,7 @@ use bench_map::{
         AhashBenchMap, BTreeMapBenchMap, BenchMapGetCloned, BenchMapMutInsert, BenchMapNew,
         ConcreadBenchMap, DashMapBenchMap, HashbrownBenchMap, ImmutableChunkMapBenchMap,
         IndexMapBenchMap, RustCHashBenchMap, StarshardBenchMap, StdBenchMap, TxMapBenchMap,
+        horde_benchmap::HordeBenchMap,
     },
 };
 use criterion::{
@@ -194,6 +195,7 @@ fn baseline_key_sensitivity(c: &mut Criterion) {
         bench::<ConcreadBenchMap<String, u64>, String, u64>(&mut group, &map_data, "concread");
         bench::<DashMapBenchMap<String, u64>, String, u64>(&mut group, &map_data, "dashmap");
         bench::<HashbrownBenchMap<String, u64>, String, u64>(&mut group, &map_data, "hashbrown");
+        bench::<HordeBenchMap<String, u64>, String, u64>(&mut group, &map_data, "horde");
         bench::<ImmutableChunkMapBenchMap<String, u64>, String, u64>(
             &mut group,
             &map_data,

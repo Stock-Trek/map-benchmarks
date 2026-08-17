@@ -4,6 +4,7 @@ pub mod btreemap_benchmap;
 pub mod concread_benchmap;
 pub mod dashmap_benchmap;
 pub mod hashbrown_benchmap;
+pub mod horde_benchmap;
 pub mod immutable_chunkmap_benchmap;
 pub mod indexmap_benchmap;
 pub mod rustc_hash_benchmap;

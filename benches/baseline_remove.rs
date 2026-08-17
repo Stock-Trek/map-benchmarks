@@ -6,7 +6,7 @@ use bench_map::{
     maps::{
         AhashBenchMap, BenchMapMutInsert, BenchMapMutRemove, BenchMapNew, DashMapBenchMap,
         HashbrownBenchMap, ImmutableChunkMapBenchMap, IndexMapBenchMap, RustCHashBenchMap,
-        StarshardBenchMap, StdBenchMap, TxMapBenchMap,
+        StarshardBenchMap, StdBenchMap, TxMapBenchMap, horde_benchmap::HordeBenchMap,
     },
     number_formatter::format_n,
 };
@@ -67,6 +67,7 @@ fn baseline_remove(c: &mut Criterion) {
         // bench::<ConcreadBenchMap<u64, u64>>(&mut group, &map_data, "concread"); // too slow
         bench::<DashMapBenchMap<u64, u64>>(&mut group, &map_data, "dashmap");
         bench::<HashbrownBenchMap<u64, u64>>(&mut group, &map_data, "hashbrown");
+        bench::<HordeBenchMap<u64, u64>>(&mut group, &map_data, "horde");
         bench::<ImmutableChunkMapBenchMap<u64, u64>>(&mut group, &map_data, "immutable-chunkmap");
         bench::<IndexMapBenchMap<u64, u64>>(&mut group, &map_data, "indexmap");
         bench::<RustCHashBenchMap<u64, u64>>(&mut group, &map_data, "rustc-hash");
