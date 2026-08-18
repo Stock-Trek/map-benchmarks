@@ -5,8 +5,8 @@ use bench_map::{
     map_gen::MapGen,
     maps::{
         AhashBenchMap, BenchMapGetCloned, BenchMapMutInsert, BenchMapMutRemove, BenchMapNew,
-        DashMapBenchMap, HashbrownBenchMap, ImmutableChunkMapBenchMap, IndexMapBenchMap,
-        RustCHashBenchMap, StarshardBenchMap, StdBenchMap, TxMapBenchMap,
+        BenchMapNewWithHasher, DashMapBenchMap, HashbrownBenchMap, ImmutableChunkMapBenchMap,
+        IndexMapBenchMap, RustCHashBenchMap, StarshardBenchMap, StdBenchMap, TxMapBenchMap,
         horde_benchmap::HordeBenchMap,
     },
     number_formatter::format_n,
@@ -16,7 +16,9 @@ use criterion::{
     BatchSize, BenchmarkGroup, Criterion, Throughput, criterion_group, criterion_main,
     measurement::WallTime,
 };
-use std::hint::black_box;
+use std::{hash::BuildHasher, hint::black_box};
+
+type CommonHasher = ahash::RandomState;
 
 fn run_workload<M>(workload: &ThreadWorkload, map: &mut M)
 where
@@ -42,7 +44,31 @@ where
     }
 }
 
-fn bench<Map>(
+fn bench<Map, H>(
+    group: &mut BenchmarkGroup<WallTime>,
+    map_data: &MapData<u64, u64>,
+    workload: &ThreadWorkload,
+    name: &str,
+    hasher: H,
+) where
+    Map: BenchMapNewWithHasher<u64, u64, H>
+        + BenchMapMutInsert<u64, u64>
+        + BenchMapMutRemove<u64, u64>
+        + BenchMapGetCloned<u64, u64>,
+    H: BuildHasher + Clone,
+{
+    group.bench_function(name, move |b| {
+        b.iter_batched(
+            || map_data.create_map_with_hasher::<Map, H>(hasher.clone()),
+            |mut map| {
+                run_workload(workload, &mut map);
+            },
+            BatchSize::PerIteration,
+        );
+    });
+}
+
+fn bench_default<Map>(
     group: &mut BenchmarkGroup<WallTime>,
     map_data: &MapData<u64, u64>,
     workload: &ThreadWorkload,
@@ -55,12 +81,9 @@ fn bench<Map>(
 {
     group.bench_function(name, move |b| {
         b.iter_batched(
-            move || {
-                let map = map_data.create_map::<Map>();
-                map
-            },
+            || map_data.create_map::<Map>(),
             |mut map| {
-                run_workload(&workload, &mut map);
+                run_workload(workload, &mut map);
             },
             BatchSize::PerIteration,
         );
@@ -117,23 +140,78 @@ fn mixed_read_write(c: &mut Criterion) {
             group.measurement_time(MEASUREMENT_TIME);
             group.throughput(Throughput::Elements(MIXED_OPS_PER_DESIGN as u64));
 
-            bench::<AhashBenchMap<u64, u64>>(&mut group, &map_data, &workload, "ahash");
+            let hasher = CommonHasher::new();
+
+            bench::<AhashBenchMap<u64, u64, CommonHasher>, CommonHasher>(
+                &mut group,
+                &map_data,
+                &workload,
+                "ahash",
+                hasher.clone(),
+            );
             // bench::<BTreeMapBenchMap<u64, u64>>(&mut group, &map_data, &workload, "btreemap"); too slow
             // bench::<ConcreadBenchMap<u64, u64>>(&mut group, &map_data, &workload, "concread"); too slow
-            bench::<DashMapBenchMap<u64, u64>>(&mut group, &map_data, &workload, "dashmap");
-            bench::<HashbrownBenchMap<u64, u64>>(&mut group, &map_data, &workload, "hashbrown");
-            bench::<HordeBenchMap<u64, u64>>(&mut group, &map_data, &workload, "horde");
-            bench::<ImmutableChunkMapBenchMap<u64, u64>>(
+            bench::<DashMapBenchMap<u64, u64, CommonHasher>, CommonHasher>(
+                &mut group,
+                &map_data,
+                &workload,
+                "dashmap",
+                hasher.clone(),
+            );
+            bench::<HashbrownBenchMap<u64, u64, CommonHasher>, CommonHasher>(
+                &mut group,
+                &map_data,
+                &workload,
+                "hashbrown",
+                hasher.clone(),
+            );
+            bench::<HordeBenchMap<u64, u64, CommonHasher>, CommonHasher>(
+                &mut group,
+                &map_data,
+                &workload,
+                "horde",
+                hasher.clone(),
+            );
+            bench_default::<ImmutableChunkMapBenchMap<u64, u64>>(
                 &mut group,
                 &map_data,
                 &workload,
                 "immutable-chunkmap",
             );
-            bench::<IndexMapBenchMap<u64, u64>>(&mut group, &map_data, &workload, "indexmap");
-            bench::<RustCHashBenchMap<u64, u64>>(&mut group, &map_data, &workload, "rustc-hash");
-            bench::<StarshardBenchMap<u64, u64>>(&mut group, &map_data, &workload, "starshard");
-            bench::<StdBenchMap<u64, u64>>(&mut group, &map_data, &workload, "std");
-            bench::<TxMapBenchMap<u64, u64>>(&mut group, &map_data, &workload, "txmap");
+            bench::<IndexMapBenchMap<u64, u64, CommonHasher>, CommonHasher>(
+                &mut group,
+                &map_data,
+                &workload,
+                "indexmap",
+                hasher.clone(),
+            );
+            bench_default::<RustCHashBenchMap<u64, u64>>(
+                &mut group,
+                &map_data,
+                &workload,
+                "rustc-hash",
+            );
+            bench::<StarshardBenchMap<u64, u64, CommonHasher>, CommonHasher>(
+                &mut group,
+                &map_data,
+                &workload,
+                "starshard",
+                hasher.clone(),
+            );
+            bench::<StdBenchMap<u64, u64, CommonHasher>, CommonHasher>(
+                &mut group,
+                &map_data,
+                &workload,
+                "std",
+                hasher.clone(),
+            );
+            bench::<TxMapBenchMap<u64, u64, CommonHasher>, CommonHasher>(
+                &mut group,
+                &map_data,
+                &workload,
+                "txmap",
+                hasher.clone(),
+            );
         }
     }
 }

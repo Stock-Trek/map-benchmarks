@@ -5,7 +5,7 @@ pub fn format_n(n: usize) -> String {
     let len = s.len();
     let mut formatted = String::with_capacity(len + (len.saturating_sub(1) / 3));
     for (i, ch) in s.chars().enumerate() {
-        if i > 0 && (len - i) % 3 == 0 {
+        if i > 0 && (len - i).is_multiple_of(3) {
             formatted.push('_');
         }
         formatted.push(ch);

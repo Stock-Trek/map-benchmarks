@@ -4,9 +4,10 @@ use bench_map::{
     map_data::MapData,
     map_gen::MapGen,
     maps::{
-        AhashBenchMap, BenchMapMutInsert, BenchMapMutRemove, BenchMapNew, DashMapBenchMap,
-        HashbrownBenchMap, ImmutableChunkMapBenchMap, IndexMapBenchMap, RustCHashBenchMap,
-        StarshardBenchMap, StdBenchMap, TxMapBenchMap, horde_benchmap::HordeBenchMap,
+        AhashBenchMap, BenchMapMutInsert, BenchMapMutRemove, BenchMapNew, BenchMapNewWithHasher,
+        DashMapBenchMap, HashbrownBenchMap, ImmutableChunkMapBenchMap, IndexMapBenchMap,
+        RustCHashBenchMap, StarshardBenchMap, StdBenchMap, TxMapBenchMap,
+        horde_benchmap::HordeBenchMap,
     },
     number_formatter::format_n,
 };
@@ -14,17 +15,54 @@ use criterion::{
     BatchSize, BenchmarkGroup, Criterion, Throughput, criterion_group, criterion_main,
     measurement::WallTime,
 };
-use std::hint::black_box;
+use std::{hash::BuildHasher, hint::black_box};
 
-fn bench<Map>(group: &mut BenchmarkGroup<WallTime>, map_data: &MapData<u64, u64>, name: &str)
-where
+type CommonHasher = ahash::RandomState;
+
+fn bench<Map, H>(
+    group: &mut BenchmarkGroup<WallTime>,
+    map_data: &MapData<u64, u64>,
+    name: &str,
+    hasher: H,
+) where
+    Map: BenchMapNewWithHasher<u64, u64, H>
+        + BenchMapMutInsert<u64, u64>
+        + BenchMapMutRemove<u64, u64>,
+    H: BuildHasher + Clone,
+{
+    group.bench_function(name, move |b| {
+        let map_data_ref = &map_data;
+        let removal_keys = map_data_ref.existing_keys();
+        b.iter_batched(
+            || {
+                let map = map_data_ref.create_map_with_hasher::<Map, H>(hasher.clone());
+                let keys_to_remove = removal_keys.clone();
+                (map, keys_to_remove)
+            },
+            |(mut map, mut keys_to_remove)| {
+                for key in keys_to_remove.drain(..) {
+                    let key = black_box(key);
+                    black_box(map.remove(&key));
+                }
+                black_box(map)
+            },
+            BatchSize::PerIteration,
+        );
+    });
+}
+
+fn bench_default<Map>(
+    group: &mut BenchmarkGroup<WallTime>,
+    map_data: &MapData<u64, u64>,
+    name: &str,
+) where
     Map: BenchMapNew<u64, u64> + BenchMapMutInsert<u64, u64> + BenchMapMutRemove<u64, u64>,
 {
     group.bench_function(name, move |b| {
         let map_data_ref = &map_data;
         let removal_keys = map_data_ref.existing_keys();
         b.iter_batched(
-            move || {
+            || {
                 let map = map_data_ref.create_map::<Map>();
                 let keys_to_remove = removal_keys.clone();
                 (map, keys_to_remove)
@@ -62,18 +100,64 @@ fn data_remove(c: &mut Criterion) {
         group.measurement_time(MEASUREMENT_TIME);
         group.throughput(Throughput::Elements(existing_key_count as u64));
 
-        bench::<AhashBenchMap<u64, u64>>(&mut group, &map_data, "ahash");
+        let hasher = CommonHasher::new();
+
+        bench::<AhashBenchMap<u64, u64, CommonHasher>, CommonHasher>(
+            &mut group,
+            &map_data,
+            "ahash",
+            hasher.clone(),
+        );
         // bench::<BTreeMapBenchMap<u64, u64>>(&mut group, &map_data, "btreemap"); // too slow
         // bench::<ConcreadBenchMap<u64, u64>>(&mut group, &map_data, "concread"); // too slow
-        bench::<DashMapBenchMap<u64, u64>>(&mut group, &map_data, "dashmap");
-        bench::<HashbrownBenchMap<u64, u64>>(&mut group, &map_data, "hashbrown");
-        bench::<HordeBenchMap<u64, u64>>(&mut group, &map_data, "horde");
-        bench::<ImmutableChunkMapBenchMap<u64, u64>>(&mut group, &map_data, "immutable-chunkmap");
-        bench::<IndexMapBenchMap<u64, u64>>(&mut group, &map_data, "indexmap");
-        bench::<RustCHashBenchMap<u64, u64>>(&mut group, &map_data, "rustc-hash");
-        bench::<StarshardBenchMap<u64, u64>>(&mut group, &map_data, "starshard");
-        bench::<StdBenchMap<u64, u64>>(&mut group, &map_data, "std");
-        bench::<TxMapBenchMap<u64, u64>>(&mut group, &map_data, "txmap");
+        bench::<DashMapBenchMap<u64, u64, CommonHasher>, CommonHasher>(
+            &mut group,
+            &map_data,
+            "dashmap",
+            hasher.clone(),
+        );
+        bench::<HashbrownBenchMap<u64, u64, CommonHasher>, CommonHasher>(
+            &mut group,
+            &map_data,
+            "hashbrown",
+            hasher.clone(),
+        );
+        bench::<HordeBenchMap<u64, u64, CommonHasher>, CommonHasher>(
+            &mut group,
+            &map_data,
+            "horde",
+            hasher.clone(),
+        );
+        bench_default::<ImmutableChunkMapBenchMap<u64, u64>>(
+            &mut group,
+            &map_data,
+            "immutable-chunkmap",
+        );
+        bench::<IndexMapBenchMap<u64, u64, CommonHasher>, CommonHasher>(
+            &mut group,
+            &map_data,
+            "indexmap",
+            hasher.clone(),
+        );
+        bench_default::<RustCHashBenchMap<u64, u64>>(&mut group, &map_data, "rustc-hash");
+        bench::<StarshardBenchMap<u64, u64, CommonHasher>, CommonHasher>(
+            &mut group,
+            &map_data,
+            "starshard",
+            hasher.clone(),
+        );
+        bench::<StdBenchMap<u64, u64, CommonHasher>, CommonHasher>(
+            &mut group,
+            &map_data,
+            "std",
+            hasher.clone(),
+        );
+        bench::<TxMapBenchMap<u64, u64, CommonHasher>, CommonHasher>(
+            &mut group,
+            &map_data,
+            "txmap",
+            hasher.clone(),
+        );
     }
 }
 
