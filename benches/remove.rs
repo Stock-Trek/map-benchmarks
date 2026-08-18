@@ -64,7 +64,7 @@ fn remove(c: &mut Criterion) {
             sort_keys,
         );
         let mut group = c.benchmark_group(format!(
-            "{SAME_HASHER_GROUP_NAME}/remove/map-size-{}",
+            "remove/{SAME_HASHER_GROUP_NAME}/map-size-{}",
             format_n(*entry_count)
         ));
         group.warm_up_time(WARM_UP_TIME);

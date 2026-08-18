@@ -92,7 +92,7 @@ fn insert(c: &mut Criterion) {
         // Each map uses its default hasher
         {
             let mut group = c.benchmark_group(format!(
-                "{OUT_OF_THE_BOX_GROUP_NAME}/insert/map-size-{}",
+                "insert/{OUT_OF_THE_BOX_GROUP_NAME}/map-size-{}",
                 format_n(*missing_key_count)
             ));
             group.warm_up_time(WARM_UP_TIME);

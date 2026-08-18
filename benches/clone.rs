@@ -42,7 +42,7 @@ fn clone(c: &mut Criterion) {
             sort_keys,
         );
         let mut group = c.benchmark_group(format!(
-            "{OUT_OF_THE_BOX_GROUP_NAME}/clone/map-size-{}",
+            "clone/{OUT_OF_THE_BOX_GROUP_NAME}/map-size-{}",
             format_n(*entry_count)
         ));
         group.warm_up_time(WARM_UP_TIME);

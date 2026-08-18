@@ -47,7 +47,7 @@ fn bulk_clear(c: &mut Criterion) {
             sort_keys,
         );
         let mut group = c.benchmark_group(format!(
-            "{OUT_OF_THE_BOX_GROUP_NAME}/bulk-clear/map-size-{}",
+            "bulk-clear/{OUT_OF_THE_BOX_GROUP_NAME}/map-size-{}",
             format_n(*entry_count)
         ));
         group.warm_up_time(WARM_UP_TIME);

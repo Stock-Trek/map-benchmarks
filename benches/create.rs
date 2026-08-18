@@ -26,7 +26,7 @@ where
 }
 
 fn create(c: &mut Criterion) {
-    let mut group = c.benchmark_group(format!("{OUT_OF_THE_BOX_GROUP_NAME}/create"));
+    let mut group = c.benchmark_group(format!("create/{OUT_OF_THE_BOX_GROUP_NAME}"));
     group.warm_up_time(WARM_UP_TIME);
     group.measurement_time(MEASUREMENT_TIME);
     group.throughput(Throughput::Elements(SAME_HASHER_MAP_COUNT as u64));
