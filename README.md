@@ -39,8 +39,8 @@ There are 3 groups of tests, `out-of-the-box` which uses each map's default impl
 - **Lookup hit**: Uses maps containing 100/10K/1M entries. Finds 100 extant values, found values are cloned to ensure all maps are treated consistently
 - **Lookup miss**: Uses maps containing 100/10K/1M entries. Finds 100 non-existent values
 - **Remove**: Uses maps containing 100/10K/1M entries. Removes 100 entries
-- **Iterate**: Uses maps containing 100/10K/1M entries. Iterates through each entry
 
 ### Both
 
 - **Insert**: Inserts 100/10K/1M entries into an empty map
+- **Iterate**: Uses maps containing 100/10K/1M entries. Iterates through each entry
