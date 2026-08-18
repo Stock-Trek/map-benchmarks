@@ -12,39 +12,31 @@ impl WorkloadDesign {
         self.lookup_hits + self.lookup_misses + self.inserts + self.updates + self.removes
     }
     pub fn write_heavy(total_ops: usize) -> Self {
-        Self {
-            lookup_hits: (total_ops as f64 * 0.20) as usize,
-            lookup_misses: 0,
-            inserts: (total_ops as f64 * 0.80) as usize,
-            updates: 0,
-            removes: 0,
-        }
+        Self::from_ratios(total_ops, 0.20, 0.0, 0.80, 0.0, 0.0)
     }
     pub fn high_churn(total_ops: usize) -> Self {
-        Self {
-            lookup_hits: (total_ops as f64 * 0.40) as usize,
-            lookup_misses: (total_ops as f64 * 0.10) as usize,
-            inserts: (total_ops as f64 * 0.10) as usize,
-            updates: (total_ops as f64 * 0.30) as usize,
-            removes: (total_ops as f64 * 0.10) as usize,
-        }
+        Self::from_ratios(total_ops, 0.40, 0.10, 0.10, 0.30, 0.10)
     }
     pub fn balanced(total_ops: usize) -> Self {
-        Self {
-            lookup_hits: (total_ops as f64 * 0.75) as usize,
-            lookup_misses: (total_ops as f64 * 0.05) as usize,
-            inserts: (total_ops as f64 * 0.05) as usize,
-            updates: (total_ops as f64 * 0.10) as usize,
-            removes: (total_ops as f64 * 0.05) as usize,
-        }
+        Self::from_ratios(total_ops, 0.75, 0.05, 0.05, 0.10, 0.05)
     }
     pub fn read_heavy(total_ops: usize) -> Self {
+        Self::from_ratios(total_ops, 0.90, 0.05, 0.05, 0.0, 0.0)
+    }
+    fn from_ratios(
+        total_ops: usize,
+        lookup_hits: f64,
+        lookup_misses: f64,
+        inserts: f64,
+        updates: f64,
+        removes: f64,
+    ) -> Self {
         Self {
-            lookup_hits: (total_ops as f64 * 0.90) as usize,
-            lookup_misses: (total_ops as f64 * 0.05) as usize,
-            inserts: (total_ops as f64 * 0.05) as usize,
-            updates: 0,
-            removes: 0,
+            lookup_hits: (total_ops as f64 * lookup_hits) as usize,
+            lookup_misses: (total_ops as f64 * lookup_misses) as usize,
+            inserts: (total_ops as f64 * inserts) as usize,
+            updates: (total_ops as f64 * updates) as usize,
+            removes: (total_ops as f64 * removes) as usize,
         }
     }
 }
