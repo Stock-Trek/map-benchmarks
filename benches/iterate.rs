@@ -40,7 +40,7 @@ fn bench<Map>(
     });
 }
 
-fn structure_iterate(c: &mut Criterion) {
+fn iterate(c: &mut Criterion) {
     let existing_key_count = 0;
     let missing_key_count = 0;
     let sort_keys = false;
@@ -113,5 +113,5 @@ fn structure_iterate(c: &mut Criterion) {
     }
 }
 
-criterion_group!(group, structure_iterate);
+criterion_group!(group, iterate);
 criterion_main!(group);

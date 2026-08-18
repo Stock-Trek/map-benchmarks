@@ -50,7 +50,7 @@ fn bench<Map>(
     });
 }
 
-fn data_remove(c: &mut Criterion) {
+fn remove(c: &mut Criterion) {
     let existing_key_count = 100;
     let missing_key_count = 0;
     let sort_keys = false;
@@ -123,5 +123,5 @@ fn data_remove(c: &mut Criterion) {
     }
 }
 
-criterion_group!(group, data_remove);
+criterion_group!(group, remove);
 criterion_main!(group);

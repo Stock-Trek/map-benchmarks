@@ -25,7 +25,7 @@ where
     });
 }
 
-fn structure_new(c: &mut Criterion) {
+fn create(c: &mut Criterion) {
     let mut group = c.benchmark_group(format!("{OUT_OF_THE_BOX_GROUP_NAME}/create"));
     group.warm_up_time(WARM_UP_TIME);
     group.measurement_time(MEASUREMENT_TIME);
@@ -45,5 +45,5 @@ fn structure_new(c: &mut Criterion) {
     bench::<TxMapBenchMap<u64, u64>>(&mut group, "txmap");
 }
 
-criterion_group!(group, structure_new);
+criterion_group!(group, create);
 criterion_main!(group);

@@ -28,7 +28,7 @@ where
     });
 }
 
-fn structure_clone(c: &mut Criterion) {
+fn clone(c: &mut Criterion) {
     let existing_key_count = 0;
     let missing_key_count = 0;
     let sort_keys = false;
@@ -64,5 +64,5 @@ fn structure_clone(c: &mut Criterion) {
     }
 }
 
-criterion_group!(group, structure_clone);
+criterion_group!(group, clone);
 criterion_main!(group);

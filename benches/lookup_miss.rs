@@ -40,7 +40,7 @@ fn bench<Map>(
     });
 }
 
-fn data_lookup_miss(c: &mut Criterion) {
+fn lookup_miss(c: &mut Criterion) {
     let existing_key_count = 0;
     let missing_key_count = 100;
     let sort_keys = false;
@@ -113,5 +113,5 @@ fn data_lookup_miss(c: &mut Criterion) {
     }
 }
 
-criterion_group!(group, data_lookup_miss);
+criterion_group!(group, lookup_miss);
 criterion_main!(group);

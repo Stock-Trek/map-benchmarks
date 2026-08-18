@@ -33,7 +33,7 @@ where
     });
 }
 
-fn data_bulk_clear(c: &mut Criterion) {
+fn bulk_clear(c: &mut Criterion) {
     let existing_key_count = 0;
     let missing_key_count = 0;
     let sort_keys = false;
@@ -68,5 +68,5 @@ fn data_bulk_clear(c: &mut Criterion) {
     }
 }
 
-criterion_group!(group, data_bulk_clear);
+criterion_group!(group, bulk_clear);
 criterion_main!(group);
