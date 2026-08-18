@@ -13,23 +13,22 @@ use bench_map::{
 use criterion::{
     BenchmarkGroup, Criterion, Throughput, criterion_group, criterion_main, measurement::WallTime,
 };
-use std::{hash::BuildHasher, hint::black_box};
+use std::hint::black_box;
 
 type CommonHasher = ahash::RandomState;
 
-fn bench<Map, H>(
+fn bench<Map>(
     group: &mut BenchmarkGroup<WallTime>,
     map_data: &MapData<u64, u64>,
     name: &str,
-    hasher: H,
+    hasher: CommonHasher,
 ) where
-    Map: BenchMapNewWithHasher<u64, u64, H>
+    Map: BenchMapNewWithHasher<u64, u64, CommonHasher>
         + BenchMapMutInsert<u64, u64>
         + BenchMapGetCloned<u64, u64>,
-    H: BuildHasher + Clone,
 {
     group.bench_function(name, move |b| {
-        let map = map_data.create_map_with_hasher::<Map, H>(hasher.clone());
+        let map = map_data.create_map_with_hasher::<Map, CommonHasher>(hasher.clone());
         let keys = map_data.existing_keys();
         b.iter(|| {
             for key in keys {
@@ -63,53 +62,48 @@ fn lookup_hit(c: &mut Criterion) {
 
         let hasher = CommonHasher::new();
 
-        bench::<AhashBenchMap<u64, u64, CommonHasher>, CommonHasher>(
+        bench::<AhashBenchMap<u64, u64, CommonHasher>>(
             &mut group,
             &map_data,
             "ahash",
             hasher.clone(),
         );
-        // bench::<BTreeMapBenchMap<u64, u64, CommonHasher>, CommonHasher>(&mut group, &map_data, "btreemap"); // doesn't allow setting hasher
-        // bench::<ConcreadBenchMap<u64, u64, CommonHasher>, CommonHasher>(&mut group, &map_data, "concread"); // doesn't allow setting hasher
-        bench::<DashMapBenchMap<u64, u64, CommonHasher>, CommonHasher>(
+        // bench::<BTreeMapBenchMap<u64, u64, CommonHasher>>(&mut group, &map_data, "btreemap"); // doesn't allow setting hasher
+        // bench::<ConcreadBenchMap<u64, u64, CommonHasher>>(&mut group, &map_data, "concread"); // doesn't allow setting hasher
+        bench::<DashMapBenchMap<u64, u64, CommonHasher>>(
             &mut group,
             &map_data,
             "dashmap",
             hasher.clone(),
         );
-        bench::<HashbrownBenchMap<u64, u64, CommonHasher>, CommonHasher>(
+        bench::<HashbrownBenchMap<u64, u64, CommonHasher>>(
             &mut group,
             &map_data,
             "hashbrown",
             hasher.clone(),
         );
-        bench::<HordeBenchMap<u64, u64, CommonHasher>, CommonHasher>(
+        bench::<HordeBenchMap<u64, u64, CommonHasher>>(
             &mut group,
             &map_data,
             "horde",
             hasher.clone(),
         );
-        // bench::<ImmutableChunkMapBenchMap<u64, u64, CommonHasher>, CommonHasher>(&mut group, &map_data, "immutable-chunkmap"); // doesn't allow setting hasher
-        bench::<IndexMapBenchMap<u64, u64, CommonHasher>, CommonHasher>(
+        // bench::<ImmutableChunkMapBenchMap<u64, u64, CommonHasher>>(&mut group, &map_data, "immutable-chunkmap"); // doesn't allow setting hasher
+        bench::<IndexMapBenchMap<u64, u64, CommonHasher>>(
             &mut group,
             &map_data,
             "indexmap",
             hasher.clone(),
         );
-        // bench::<RustCHashBenchMap<u64, u64, CommonHasher>, CommonHasher>(&mut group, &map_data, "rustc-hash"); // doesn't allow setting hasher
-        bench::<StarshardBenchMap<u64, u64, CommonHasher>, CommonHasher>(
+        // bench::<RustCHashBenchMap<u64, u64, CommonHasher>>(&mut group, &map_data, "rustc-hash"); // doesn't allow setting hasher
+        bench::<StarshardBenchMap<u64, u64, CommonHasher>>(
             &mut group,
             &map_data,
             "starshard",
             hasher.clone(),
         );
-        bench::<StdBenchMap<u64, u64, CommonHasher>, CommonHasher>(
-            &mut group,
-            &map_data,
-            "std",
-            hasher.clone(),
-        );
-        bench::<TxMapBenchMap<u64, u64, CommonHasher>, CommonHasher>(
+        bench::<StdBenchMap<u64, u64, CommonHasher>>(&mut group, &map_data, "std", hasher.clone());
+        bench::<TxMapBenchMap<u64, u64, CommonHasher>>(
             &mut group,
             &map_data,
             "txmap",

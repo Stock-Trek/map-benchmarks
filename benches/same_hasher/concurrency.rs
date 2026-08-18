@@ -42,15 +42,15 @@ where
     }
 }
 
-fn bench<Map, H>(
+fn bench<Map>(
     group: &mut BenchmarkGroup<WallTime>,
     map_data: &MapData<u64, u64>,
     thread_count: usize,
     workloads: &[ThreadWorkload],
     name: &str,
-    hasher: H,
+    hasher: CommonHasher,
 ) where
-    Map: BenchMapNewWithHasher<u64, u64, H>
+    Map: BenchMapNewWithHasher<u64, u64, CommonHasher>
         + BenchMapMutInsert<u64, u64>
         + BenchMapGetCloned<u64, u64>
         + BenchMapInsert<u64, u64>
@@ -58,12 +58,12 @@ fn bench<Map, H>(
         + Send
         + Sync
         + 'static,
-    H: std::hash::BuildHasher + Clone,
 {
     group.bench_function(name, move |b| {
         b.iter_batched(
             || {
-                let map = Arc::new(map_data.create_map_with_hasher::<Map, H>(hasher.clone()));
+                let map =
+                    Arc::new(map_data.create_map_with_hasher::<Map, CommonHasher>(hasher.clone()));
                 let workloads = workloads
                     .iter()
                     .take(thread_count)
@@ -130,10 +130,10 @@ fn concurrency(c: &mut Criterion) {
 
         let hasher = CommonHasher::new();
 
-        // bench::<AhashBenchMap<u64, u64, CommonHasher>, CommonHasher>(&mut group, &map_data, thread_count, &workloads, "ahash"); // not concurrent
-        // bench::<BTreeMapBenchMap<u64, u64, CommonHasher>, CommonHasher>(&mut group, &map_data, thread_count, &workloads, "btreemap"); // not concurrent
-        // bench::<ConcreadBenchMap<u64, u64, CommonHasher>, CommonHasher>(&mut group, &map_data, thread_count, &workloads, "concread"); // too slow
-        bench::<DashMapBenchMap<u64, u64, CommonHasher>, CommonHasher>(
+        // bench::<AhashBenchMap<u64, u64, CommonHasher>>(&mut group, &map_data, thread_count, &workloads, "ahash"); // not concurrent
+        // bench::<BTreeMapBenchMap<u64, u64, CommonHasher>>(&mut group, &map_data, thread_count, &workloads, "btreemap"); // not concurrent
+        // bench::<ConcreadBenchMap<u64, u64, CommonHasher>>(&mut group, &map_data, thread_count, &workloads, "concread"); // too slow
+        bench::<DashMapBenchMap<u64, u64, CommonHasher>>(
             &mut group,
             &map_data,
             thread_count,
@@ -141,12 +141,12 @@ fn concurrency(c: &mut Criterion) {
             "dashmap",
             hasher.clone(),
         );
-        // bench::<HashbrownBenchMap<u64, u64, CommonHasher>, CommonHasher>(&mut group, &map_data, thread_count, &workloads, "hashbrown"); // not concurrent
-        // bench::<HordeBenchMap<u64, u64, CommonHasher>, CommonHasher>(&mut group, &map_data, thread_count, &workloads, "horde"); // mutation requires &mut, cannot mutate through a shared reference
-        // bench::<ImmutableChunkMapBenchMap<u64, u64, CommonHasher>, CommonHasher>(&mut group, &map_data, thread_count, &workloads, "immutable-chunkmap"); // mutation returns a new map; requires &mut or storing the result, cannot mutate through a shared reference
-        // bench::<IndexMapBenchMap<u64, u64, CommonHasher>, CommonHasher>(&mut group, &map_data, thread_count, &workloads, "indexmap"); // not concurrent
-        // bench::<RustCHashBenchMap<u64, u64, CommonHasher>, CommonHasher>(&mut group, &map_data, thread_count, &workloads, "rustc-hash"); // not concurrent
-        bench::<StarshardBenchMap<u64, u64, CommonHasher>, CommonHasher>(
+        // bench::<HashbrownBenchMap<u64, u64, CommonHasher>>(&mut group, &map_data, thread_count, &workloads, "hashbrown"); // not concurrent
+        // bench::<HordeBenchMap<u64, u64, CommonHasher>>(&mut group, &map_data, thread_count, &workloads, "horde"); // mutation requires &mut, cannot mutate through a shared reference
+        // bench::<ImmutableChunkMapBenchMap<u64, u64, CommonHasher>>(&mut group, &map_data, thread_count, &workloads, "immutable-chunkmap"); // mutation returns a new map; requires &mut or storing the result, cannot mutate through a shared reference
+        // bench::<IndexMapBenchMap<u64, u64, CommonHasher>>(&mut group, &map_data, thread_count, &workloads, "indexmap"); // not concurrent
+        // bench::<RustCHashBenchMap<u64, u64, CommonHasher>>(&mut group, &map_data, thread_count, &workloads, "rustc-hash"); // not concurrent
+        bench::<StarshardBenchMap<u64, u64, CommonHasher>>(
             &mut group,
             &map_data,
             thread_count,
@@ -154,8 +154,8 @@ fn concurrency(c: &mut Criterion) {
             "starshard",
             hasher.clone(),
         );
-        // bench::<StdBenchMap<u64, u64, CommonHasher>, CommonHasher>(&mut group, &map_data, thread_count, &workloads, "std"); // not concurrent
-        bench::<TxMapBenchMap<u64, u64, CommonHasher>, CommonHasher>(
+        // bench::<StdBenchMap<u64, u64, CommonHasher>>(&mut group, &map_data, thread_count, &workloads, "std"); // not concurrent
+        bench::<TxMapBenchMap<u64, u64, CommonHasher>>(
             &mut group,
             &map_data,
             thread_count,

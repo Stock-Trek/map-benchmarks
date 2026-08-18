@@ -15,7 +15,7 @@ use criterion::{
     BatchSize, BenchmarkGroup, Criterion, Throughput, criterion_group, criterion_main,
     measurement::WallTime,
 };
-use std::{hash::BuildHasher, hint::black_box};
+use std::hint::black_box;
 
 type CommonHasher = ahash::RandomState;
 
@@ -43,22 +43,21 @@ where
     }
 }
 
-fn bench<Map, H>(
+fn bench<Map>(
     group: &mut BenchmarkGroup<WallTime>,
     map_data: &MapData<u64, u64>,
     workload: &ThreadWorkload,
     name: &str,
-    hasher: H,
+    hasher: CommonHasher,
 ) where
-    Map: BenchMapNewWithHasher<u64, u64, H>
+    Map: BenchMapNewWithHasher<u64, u64, CommonHasher>
         + BenchMapMutInsert<u64, u64>
         + BenchMapMutRemove<u64, u64>
         + BenchMapGetCloned<u64, u64>,
-    H: BuildHasher + Clone,
 {
     group.bench_function(name, move |b| {
         b.iter_batched(
-            || map_data.create_map_with_hasher::<Map, H>(hasher.clone()),
+            || map_data.create_map_with_hasher::<Map, CommonHasher>(hasher.clone()),
             |mut map| {
                 run_workload(workload, &mut map);
             },
@@ -119,60 +118,60 @@ fn mixed_read_write(c: &mut Criterion) {
 
             let hasher = CommonHasher::new();
 
-            bench::<AhashBenchMap<u64, u64, CommonHasher>, CommonHasher>(
+            bench::<AhashBenchMap<u64, u64, CommonHasher>>(
                 &mut group,
                 &map_data,
                 &workload,
                 "ahash",
                 hasher.clone(),
             );
-            // bench::<BTreeMapBenchMap<u64, u64, CommonHasher>, CommonHasher>(&mut group, &map_data, &workload, "btreemap"); // doesn't allow setting hasher
-            // bench::<ConcreadBenchMap<u64, u64, CommonHasher>, CommonHasher>(&mut group, &map_data, &workload, "concread"); // doesn't allow setting hasher
-            bench::<DashMapBenchMap<u64, u64, CommonHasher>, CommonHasher>(
+            // bench::<BTreeMapBenchMap<u64, u64, CommonHasher>>(&mut group, &map_data, &workload, "btreemap"); // doesn't allow setting hasher
+            // bench::<ConcreadBenchMap<u64, u64, CommonHasher>>(&mut group, &map_data, &workload, "concread"); // doesn't allow setting hasher
+            bench::<DashMapBenchMap<u64, u64, CommonHasher>>(
                 &mut group,
                 &map_data,
                 &workload,
                 "dashmap",
                 hasher.clone(),
             );
-            bench::<HashbrownBenchMap<u64, u64, CommonHasher>, CommonHasher>(
+            bench::<HashbrownBenchMap<u64, u64, CommonHasher>>(
                 &mut group,
                 &map_data,
                 &workload,
                 "hashbrown",
                 hasher.clone(),
             );
-            bench::<HordeBenchMap<u64, u64, CommonHasher>, CommonHasher>(
+            bench::<HordeBenchMap<u64, u64, CommonHasher>>(
                 &mut group,
                 &map_data,
                 &workload,
                 "horde",
                 hasher.clone(),
             );
-            // bench::<ImmutableChunkMapBenchMap<u64, u64, CommonHasher>, CommonHasher>(&mut group, &map_data, &workload, "immutable-chunkmap"); // doesn't allow setting hasher
-            bench::<IndexMapBenchMap<u64, u64, CommonHasher>, CommonHasher>(
+            // bench::<ImmutableChunkMapBenchMap<u64, u64, CommonHasher>>(&mut group, &map_data, &workload, "immutable-chunkmap"); // doesn't allow setting hasher
+            bench::<IndexMapBenchMap<u64, u64, CommonHasher>>(
                 &mut group,
                 &map_data,
                 &workload,
                 "indexmap",
                 hasher.clone(),
             );
-            // bench::<RustCHashBenchMap<u64, u64, CommonHasher>, CommonHasher>(&mut group, &map_data, &workload, "rustc-hash"); // doesn't allow setting hasher
-            bench::<StarshardBenchMap<u64, u64, CommonHasher>, CommonHasher>(
+            // bench::<RustCHashBenchMap<u64, u64, CommonHasher>>(&mut group, &map_data, &workload, "rustc-hash"); // doesn't allow setting hasher
+            bench::<StarshardBenchMap<u64, u64, CommonHasher>>(
                 &mut group,
                 &map_data,
                 &workload,
                 "starshard",
                 hasher.clone(),
             );
-            bench::<StdBenchMap<u64, u64, CommonHasher>, CommonHasher>(
+            bench::<StdBenchMap<u64, u64, CommonHasher>>(
                 &mut group,
                 &map_data,
                 &workload,
                 "std",
                 hasher.clone(),
             );
-            bench::<TxMapBenchMap<u64, u64, CommonHasher>, CommonHasher>(
+            bench::<TxMapBenchMap<u64, u64, CommonHasher>>(
                 &mut group,
                 &map_data,
                 &workload,
