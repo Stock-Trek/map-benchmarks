@@ -58,11 +58,14 @@ where
 /// contains only the parallel workload execution plus nanosecond-scale
 /// start/done signalling - not thread spawn/join or CPU-pinning overhead.
 struct ConcurrentWorkers<M> {
-    shared: Arc<Shared<M>>,
+    state: Arc<WorkerPoolState<M>>,
     handles: Vec<std::thread::JoinHandle<()>>,
 }
 
-struct Shared<M> {
+/// State shared between the benchmark thread and the worker pool: the
+/// start/done signalling, panic propagation, per-worker map slots, and
+/// immutable per-worker workloads.
+struct WorkerPoolState<M> {
     /// Raised by the timed region to release the workers; cleared once all
     /// workers have reported done for the current iteration.
     start: AtomicBool,
@@ -106,7 +109,7 @@ impl<M> ConcurrentWorkers<M> {
             .cloned()
             .collect::<Vec<_>>();
         let slots = (0..thread_count).map(|_| Mutex::new(None)).collect();
-        let shared = Arc::new(Shared {
+        let state = Arc::new(WorkerPoolState {
             start: AtomicBool::new(false),
             done: Mutex::new(0),
             done_cond: Condvar::new(),
@@ -119,19 +122,19 @@ impl<M> ConcurrentWorkers<M> {
 
         let handles = (0..thread_count)
             .map(|thread_id| {
-                let shared = shared.clone();
+                let state = state.clone();
                 std::thread::spawn(move || {
                     // Swallow panics just long enough to record them so the
                     // main thread's done-counter wait cannot hang; the panic
                     // is re-raised on the main thread from `run`.
                     let result = std::panic::catch_unwind(std::panic::AssertUnwindSafe(|| {
                         PinThread::try_pin(thread_id).expect("failed to pin thread to CPU");
-                        let workload = &shared.workloads[thread_id];
+                        let workload = &state.workloads[thread_id];
                         loop {
                             // Wait for the timed region to release us (or for
                             // the pool to shut down).
-                            while !shared.start.load(Ordering::Acquire) {
-                                if shared.shutdown.load(Ordering::Acquire) {
+                            while !state.start.load(Ordering::Acquire) {
+                                if state.shutdown.load(Ordering::Acquire) {
                                     return;
                                 }
                                 std::hint::spin_loop();
@@ -141,63 +144,63 @@ impl<M> ConcurrentWorkers<M> {
                             // populated already; spin briefly in case the flag
                             // races ahead of the publish.
                             let map = loop {
-                                let mut slot = shared.slots[thread_id].lock().unwrap();
+                                let mut slot = state.slots[thread_id].lock().unwrap();
                                 if let Some(map) = slot.take() {
                                     break map;
                                 }
                                 drop(slot);
-                                if shared.shutdown.load(Ordering::Acquire) {
+                                if state.shutdown.load(Ordering::Acquire) {
                                     return;
                                 }
                                 std::hint::spin_loop();
                             };
                             run_workload(workload, &*map);
-                            *shared.done.lock().unwrap() += 1;
-                            shared.done_cond.notify_one();
+                            *state.done.lock().unwrap() += 1;
+                            state.done_cond.notify_one();
                         }
                     }));
                     if let Err(payload) = result {
-                        let mut guard = shared.panic.lock().unwrap();
+                        let mut guard = state.panic.lock().unwrap();
                         if guard.is_none() {
                             *guard = Some(payload);
                         }
                         drop(guard);
-                        shared.panicked.store(true, Ordering::SeqCst);
+                        state.panicked.store(true, Ordering::SeqCst);
                         // Account for this worker so the main thread's wait
                         // terminates even if the panic happened before the
                         // per-iteration `done` increment.
-                        *shared.done.lock().unwrap() += 1;
-                        shared.done_cond.notify_one();
+                        *state.done.lock().unwrap() += 1;
+                        state.done_cond.notify_one();
                     }
                 })
             })
             .collect::<Vec<_>>();
 
-        Self { shared, handles }
+        Self { state, handles }
     }
 
     /// Releases the workers and waits until all of them have finished their
     /// current work item. `target` is the cumulative number of completed work
     /// items expected after this iteration (iteration_index * thread_count).
     fn run(&self, target: usize) {
-        self.shared.start.store(true, Ordering::Release);
-        let mut done = self.shared.done.lock().unwrap();
+        self.state.start.store(true, Ordering::Release);
+        let mut done = self.state.done.lock().unwrap();
         while *done < target {
-            if self.shared.panicked.load(Ordering::SeqCst) {
+            if self.state.panicked.load(Ordering::SeqCst) {
                 drop(done);
                 self.resume_worker_panic();
             }
-            done = self.shared.done_cond.wait(done).unwrap();
+            done = self.state.done_cond.wait(done).unwrap();
         }
         drop(done);
-        if self.shared.panicked.load(Ordering::SeqCst) {
+        if self.state.panicked.load(Ordering::SeqCst) {
             self.resume_worker_panic();
         }
-        self.shared.start.store(false, Ordering::SeqCst);
+        self.state.start.store(false, Ordering::SeqCst);
     }
 
     fn resume_worker_panic(&self) -> ! {
-        let payload = self.shared.panic.lock().unwrap().take();
+        let payload = self.state.panic.lock().unwrap().take();
         if let Some(payload) = payload {
             std::panic::resume_unwind(payload);
         } else {
@@ -208,7 +211,7 @@ impl<M> ConcurrentWorkers<M> {
 
 impl<M> Drop for ConcurrentWorkers<M> {
     fn drop(&mut self) {
-        self.shared.shutdown.store(true, Ordering::SeqCst);
+        self.state.shutdown.store(true, Ordering::SeqCst);
         for handle in self.handles.drain(..) {
             handle.join().unwrap();
         }
@@ -243,7 +246,7 @@ fn bench<Map>(
             || {
                 // Untimed setup: publish a fresh map for this iteration.
                 let map = Arc::new(map_data.create_map::<Map>());
-                for slot in &workers.shared.slots {
+                for slot in &workers.state.slots {
                     *slot.lock().unwrap() = Some(map.clone());
                 }
                 iteration.set(iteration.get() + 1);
