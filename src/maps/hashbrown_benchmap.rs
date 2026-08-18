@@ -10,8 +10,6 @@ pub struct HashbrownBenchMap<K, V, H = hashbrown::DefaultHashBuilder> {
 
 impl<K, V, H> BenchMapNew<K, V> for HashbrownBenchMap<K, V, H>
 where
-    K: Hash + Eq,
-    V: Clone,
     H: BuildHasher + Default,
 {
     fn new() -> Self {
@@ -23,8 +21,6 @@ where
 
 impl<K, V, H> BenchMapNewWithHasher<K, V, H> for HashbrownBenchMap<K, V, H>
 where
-    K: Hash + Eq,
-    V: Clone,
     H: BuildHasher,
 {
     fn new_with_hasher(hasher: H) -> Self {
@@ -36,7 +32,7 @@ where
 
 impl<K, V, H> BenchMapClone<K, V> for HashbrownBenchMap<K, V, H>
 where
-    K: Hash + Eq + Clone,
+    K: Clone,
     V: Clone,
     H: BuildHasher + Clone,
 {
@@ -61,7 +57,6 @@ where
 impl<K, V, H> BenchMapMutInsert<K, V> for HashbrownBenchMap<K, V, H>
 where
     K: Hash + Eq,
-    V: Clone,
     H: BuildHasher,
 {
     fn insert(&mut self, key: K, value: V) {
@@ -71,8 +66,6 @@ where
 
 impl<K, V, H> BenchMapIter<K, V> for HashbrownBenchMap<K, V, H>
 where
-    K: Hash + Eq,
-    V: Clone,
     H: BuildHasher,
 {
     fn for_each(&self, mut f: impl FnMut(&K, &V)) {
@@ -85,7 +78,6 @@ where
 impl<K, V, H> BenchMapMutRemove<K, V> for HashbrownBenchMap<K, V, H>
 where
     K: Hash + Eq,
-    V: Clone,
     H: BuildHasher,
 {
     fn remove(&mut self, key: &K) -> Option<V> {

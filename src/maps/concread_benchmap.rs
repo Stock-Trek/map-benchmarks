@@ -42,8 +42,6 @@ where
     fn insert(&self, key: K, value: V) {
         let mut write = self.map.write();
         write.insert(key, value);
-        // Uncommitted write transactions are discarded on drop, which would
-        // silently elide all inserts; commit so reads observe the change.
         write.commit();
     }
 }

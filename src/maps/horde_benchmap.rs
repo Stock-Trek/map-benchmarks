@@ -10,8 +10,6 @@ pub struct HordeBenchMap<K, V, H = horde::sync_table::DefaultHashBuilder> {
 
 impl<K, V, H> BenchMapNew<K, V> for HordeBenchMap<K, V, H>
 where
-    K: Clone + Hash + Eq,
-    V: Clone,
     H: BuildHasher + Default,
 {
     fn new() -> Self {
@@ -23,8 +21,6 @@ where
 
 impl<K, V, H> BenchMapNewWithHasher<K, V, H> for HordeBenchMap<K, V, H>
 where
-    K: Clone + Hash + Eq,
-    V: Clone,
     H: BuildHasher,
 {
     fn new_with_hasher(hasher: H) -> Self {
@@ -36,7 +32,7 @@ where
 
 impl<K, V, H> BenchMapClone<K, V> for HordeBenchMap<K, V, H>
 where
-    K: Clone + Hash + Eq,
+    K: Clone + Hash,
     V: Clone,
     H: BuildHasher + Clone,
 {
@@ -49,7 +45,7 @@ where
 
 impl<K, V, H> BenchMapGetCloned<K, V> for HordeBenchMap<K, V, H>
 where
-    K: Clone + Hash + Eq,
+    K: Hash + Eq,
     V: Clone,
     H: BuildHasher,
 {
@@ -76,8 +72,6 @@ where
 
 impl<K, V, H> BenchMapIter<K, V> for HordeBenchMap<K, V, H>
 where
-    K: Clone + Hash + Eq,
-    V: Clone,
     H: BuildHasher,
 {
     fn for_each(&self, mut f: impl FnMut(&K, &V)) {
@@ -92,7 +86,7 @@ where
 
 impl<K, V, H> BenchMapMutRemove<K, V> for HordeBenchMap<K, V, H>
 where
-    K: Clone + Hash + Eq,
+    K: Hash + Eq,
     V: Clone,
     H: BuildHasher,
 {

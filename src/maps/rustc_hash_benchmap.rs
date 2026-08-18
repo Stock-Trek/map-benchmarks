@@ -8,11 +8,7 @@ pub struct RustCHashBenchMap<K, V> {
     map: rustc_hash::FxHashMap<K, V>,
 }
 
-impl<K, V> BenchMapNew<K, V> for RustCHashBenchMap<K, V>
-where
-    K: Hash + Eq,
-    V: Clone,
-{
+impl<K, V> BenchMapNew<K, V> for RustCHashBenchMap<K, V> {
     fn new() -> Self {
         Self {
             map: rustc_hash::FxHashMap::default(),
@@ -22,7 +18,7 @@ where
 
 impl<K, V> BenchMapClone<K, V> for RustCHashBenchMap<K, V>
 where
-    K: Hash + Eq + Clone,
+    K: Clone,
     V: Clone,
 {
     fn clone_map(&self) -> Self {
@@ -45,18 +41,13 @@ where
 impl<K, V> BenchMapMutInsert<K, V> for RustCHashBenchMap<K, V>
 where
     K: Hash + Eq,
-    V: Clone,
 {
     fn insert(&mut self, key: K, value: V) {
         self.map.insert(key, value);
     }
 }
 
-impl<K, V> BenchMapIter<K, V> for RustCHashBenchMap<K, V>
-where
-    K: Hash + Eq,
-    V: Clone,
-{
+impl<K, V> BenchMapIter<K, V> for RustCHashBenchMap<K, V> {
     fn for_each(&self, mut f: impl FnMut(&K, &V)) {
         for (key, value) in self.map.iter() {
             f(key, value);
@@ -67,7 +58,6 @@ where
 impl<K, V> BenchMapMutRemove<K, V> for RustCHashBenchMap<K, V>
 where
     K: Hash + Eq,
-    V: Clone,
 {
     fn remove(&mut self, key: &K) -> Option<V> {
         self.map.remove(key)

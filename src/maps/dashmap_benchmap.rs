@@ -14,7 +14,6 @@ pub struct DashMapBenchMap<K, V, H = RandomState> {
 impl<K, V, H> BenchMapNew<K, V> for DashMapBenchMap<K, V, H>
 where
     K: Hash + Eq,
-    V: Clone,
     H: BuildHasher + Clone + Default,
 {
     fn new() -> Self {
@@ -27,7 +26,6 @@ where
 impl<K, V, H> BenchMapNewWithHasher<K, V, H> for DashMapBenchMap<K, V, H>
 where
     K: Hash + Eq,
-    V: Clone,
     H: BuildHasher + Clone,
 {
     fn new_with_hasher(hasher: H) -> Self {
@@ -64,7 +62,6 @@ where
 impl<K, V, H> BenchMapInsert<K, V> for DashMapBenchMap<K, V, H>
 where
     K: Hash + Eq,
-    V: Clone,
     H: BuildHasher + Clone,
 {
     fn insert(&self, key: K, value: V) {
@@ -75,7 +72,6 @@ where
 impl<K, V, H> BenchMapMutInsert<K, V> for DashMapBenchMap<K, V, H>
 where
     K: Hash + Eq,
-    V: Clone,
     H: BuildHasher + Clone,
 {
     fn insert(&mut self, key: K, value: V) {
@@ -86,7 +82,6 @@ where
 impl<K, V, H> BenchMapIter<K, V> for DashMapBenchMap<K, V, H>
 where
     K: Hash + Eq,
-    V: Clone,
     H: BuildHasher + Clone,
 {
     fn for_each(&self, mut f: impl FnMut(&K, &V)) {
@@ -99,7 +94,6 @@ where
 impl<K, V, H> BenchMapRemove<K, V> for DashMapBenchMap<K, V, H>
 where
     K: Hash + Eq,
-    V: Clone,
     H: BuildHasher + Clone,
 {
     fn remove(&self, key: &K) -> Option<V> {
@@ -110,7 +104,6 @@ where
 impl<K, V, H> BenchMapMutRemove<K, V> for DashMapBenchMap<K, V, H>
 where
     K: Hash + Eq,
-    V: Clone,
     H: BuildHasher + Clone,
 {
     fn remove(&mut self, key: &K) -> Option<V> {
