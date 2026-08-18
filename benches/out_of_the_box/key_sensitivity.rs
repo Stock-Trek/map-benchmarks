@@ -1,5 +1,6 @@
 use bench_map::{
     config::*,
+    constants::OUT_OF_THE_BOX_GROUP_NAME,
     data::{
         byte_array::ByteArrayDataGen, string::StringDataGen, u64_dense::U64DenseDataGen,
         u64_sparse::U64SparseDataGen, u64_zipfian::U64ZipfianDataGen, uuid_v4::UuidV4DataGen,
@@ -52,7 +53,8 @@ fn key_sensitivity(c: &mut Criterion) {
             missing_key_count as usize,
             sort_keys,
         );
-        let mut group = c.benchmark_group("out-of-the-box/key-sensitivity/u64");
+        let mut group =
+            c.benchmark_group(format!("{OUT_OF_THE_BOX_GROUP_NAME}/key-sensitivity/u64"));
         group.warm_up_time(WARM_UP_TIME);
         group.measurement_time(MEASUREMENT_TIME);
         group.throughput(Throughput::Elements(existing_key_count));
@@ -83,7 +85,8 @@ fn key_sensitivity(c: &mut Criterion) {
             missing_key_count as usize,
             sort_keys,
         ));
-        let mut group = c.benchmark_group("out-of-the-box/key-sensitivity/UUID");
+        let mut group =
+            c.benchmark_group(format!("{OUT_OF_THE_BOX_GROUP_NAME}/key-sensitivity/UUID"));
         group.warm_up_time(WARM_UP_TIME);
         group.measurement_time(MEASUREMENT_TIME);
         group.throughput(Throughput::Elements(existing_key_count));
@@ -114,7 +117,9 @@ fn key_sensitivity(c: &mut Criterion) {
             missing_key_count as usize,
             sort_keys,
         ));
-        let mut group = c.benchmark_group("out-of-the-box/key-sensitivity/Byte<32>");
+        let mut group = c.benchmark_group(format!(
+            "{OUT_OF_THE_BOX_GROUP_NAME}/key-sensitivity/Byte<32>"
+        ));
         group.warm_up_time(WARM_UP_TIME);
         group.measurement_time(MEASUREMENT_TIME);
         group.throughput(Throughput::Elements(existing_key_count));
@@ -156,7 +161,9 @@ fn key_sensitivity(c: &mut Criterion) {
             missing_key_count as usize,
             sort_keys,
         ));
-        let mut group = c.benchmark_group("out-of-the-box/key-sensitivity/String<16>");
+        let mut group = c.benchmark_group(format!(
+            "{OUT_OF_THE_BOX_GROUP_NAME}/key-sensitivity/String<16>"
+        ));
         group.warm_up_time(WARM_UP_TIME);
         group.measurement_time(MEASUREMENT_TIME);
         group.throughput(Throughput::Elements(existing_key_count));
@@ -186,7 +193,9 @@ fn key_sensitivity(c: &mut Criterion) {
             missing_key_count as usize,
             sort_keys,
         ));
-        let mut group = c.benchmark_group("out-of-the-box/key-sensitivity/String<128>");
+        let mut group = c.benchmark_group(format!(
+            "{OUT_OF_THE_BOX_GROUP_NAME}/key-sensitivity/String<128>"
+        ));
         group.warm_up_time(WARM_UP_TIME);
         group.measurement_time(MEASUREMENT_TIME);
         group.throughput(Throughput::Elements(existing_key_count));
@@ -217,7 +226,9 @@ fn key_sensitivity(c: &mut Criterion) {
             missing_key_count as usize,
             sort_keys,
         ));
-        let mut group = c.benchmark_group("out-of-the-box/key-sensitivity/u64-dense");
+        let mut group = c.benchmark_group(format!(
+            "{OUT_OF_THE_BOX_GROUP_NAME}/key-sensitivity/u64-dense"
+        ));
         group.warm_up_time(WARM_UP_TIME);
         group.measurement_time(MEASUREMENT_TIME);
         group.throughput(Throughput::Elements(existing_key_count));
@@ -251,7 +262,9 @@ fn key_sensitivity(c: &mut Criterion) {
             missing_key_count as usize,
             sort_keys,
         ));
-        let mut group = c.benchmark_group("out-of-the-box/key-sensitivity/u64-zipfian");
+        let mut group = c.benchmark_group(format!(
+            "{OUT_OF_THE_BOX_GROUP_NAME}/key-sensitivity/u64-zipfian"
+        ));
         group.warm_up_time(WARM_UP_TIME);
         group.measurement_time(MEASUREMENT_TIME);
         group.throughput(Throughput::Elements(existing_key_count));
