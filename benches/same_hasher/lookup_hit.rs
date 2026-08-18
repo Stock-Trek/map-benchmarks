@@ -45,7 +45,7 @@ fn lookup_hit(c: &mut Criterion) {
             sort_keys,
         );
         let mut group = c.benchmark_group(format!(
-            "out-of-the-box/lookup-hit/map-size-{}",
+            "same-hasher/lookup-hit/map-size-{}",
             format_n(*entry_count)
         ));
         group.warm_up_time(WARM_UP_TIME);

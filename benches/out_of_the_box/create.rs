@@ -44,7 +44,7 @@ where
 }
 
 fn structure_new(c: &mut Criterion) {
-    let mut group = c.benchmark_group("same-hasher/create");
+    let mut group = c.benchmark_group("out-of-the-box/create");
     group.warm_up_time(WARM_UP_TIME);
     group.measurement_time(MEASUREMENT_TIME);
     group.throughput(Throughput::Elements(SAME_HASHER_MAP_COUNT as u64));
