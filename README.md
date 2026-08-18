@@ -31,7 +31,7 @@ There are 3 groups of tests, `out-of-the-box` which uses each map's default impl
 - **Clone**: Clones maps containing 100/10K/1M entries
 - **Bulk clear**: Uses maps containing 100/10K/1M entries. Clears all entries in a single `clear` operation
 - **Mixed read/write**: Uses a map with 100/10K/1M entries. Use cases: [write-heavy, high-churn, balanced, read-heavy]
-- **Concurrency**: Uses a map with 1M entries and tests the balanced workload. Thread counts: [1, 2, 4]. Threads are pinned to reduce any effects from OS scheduling.
+- **Concurrency**: Uses a map with 1M entries and tests the workloads: [write-heavy, high-churn, balanced, read-heavy]. Thread counts: [1, 2, 4]. Threads are pinned to reduce any effects from OS scheduling.
 
 ### Same hasher
 
