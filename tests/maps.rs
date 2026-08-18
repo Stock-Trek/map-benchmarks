@@ -69,7 +69,6 @@ fn immutable_chunkmap() {
     assert_create_map_populates_existing_keys::<ImmutableChunkMapBenchMap<u64, u64>>();
     assert_iterate::<ImmutableChunkMapBenchMap<u64, u64>>();
     assert_mut_insert_remove::<ImmutableChunkMapBenchMap<u64, u64>>();
-    assert_clear::<ImmutableChunkMapBenchMap<u64, u64>>();
     // assert_shared_insert_remove::<ImmutableChunkMapBenchMap<u64, u64>>();
 }
 

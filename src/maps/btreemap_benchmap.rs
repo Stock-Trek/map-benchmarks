@@ -1,7 +1,6 @@
 use crate::maps::benchmap::{
-    BenchMapClone, BenchMapGetCloned, BenchMapIter,
-    BenchMapMutClear, BenchMapMutInsert, BenchMapMutRemove,
-    BenchMapNew,
+    BenchMapClone, BenchMapGetCloned, BenchMapIter, BenchMapMutClear, BenchMapMutInsert,
+    BenchMapMutRemove, BenchMapNew,
 };
 use std::collections::btree_map;
 
@@ -75,11 +74,7 @@ where
     }
 }
 
-impl<K, V> BenchMapMutClear<K, V> for BTreeMapBenchMap<K, V>
-where
-    K: Ord,
-    V: Clone,
-{
+impl<K, V> BenchMapMutClear<K, V> for BTreeMapBenchMap<K, V> {
     fn clear(&mut self) {
         self.map.clear();
     }

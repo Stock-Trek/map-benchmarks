@@ -1,7 +1,6 @@
 use crate::maps::benchmap::{
-    BenchMapClone, BenchMapGetCloned, BenchMapIter,
-    BenchMapMutClear, BenchMapMutInsert, BenchMapMutRemove,
-    BenchMapNew,
+    BenchMapClone, BenchMapGetCloned, BenchMapIter, BenchMapMutClear, BenchMapMutInsert,
+    BenchMapMutRemove, BenchMapNew,
 };
 use std::hash::Hash;
 
@@ -75,11 +74,7 @@ where
     }
 }
 
-impl<K, V> BenchMapMutClear<K, V> for RustCHashBenchMap<K, V>
-where
-    K: Hash + Eq,
-    V: Clone,
-{
+impl<K, V> BenchMapMutClear<K, V> for RustCHashBenchMap<K, V> {
     fn clear(&mut self) {
         self.map.clear();
     }

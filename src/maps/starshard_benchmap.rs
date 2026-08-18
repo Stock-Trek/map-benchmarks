@@ -1,7 +1,6 @@
 use crate::maps::benchmap::{
-    BenchMapClone, BenchMapGetCloned, BenchMapInsert,
-    BenchMapIter, BenchMapMutClear, BenchMapMutInsert,
-    BenchMapMutRemove, BenchMapNew, BenchMapNewWithHasher, BenchMapRemove,
+    BenchMapClone, BenchMapGetCloned, BenchMapInsert, BenchMapIter, BenchMapMutClear,
+    BenchMapMutInsert, BenchMapMutRemove, BenchMapNew, BenchMapNewWithHasher, BenchMapRemove,
 };
 use std::hash::{BuildHasher, Hash};
 

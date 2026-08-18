@@ -1,7 +1,6 @@
 use crate::maps::benchmap::{
-    BenchMapClone, BenchMapGetCloned, BenchMapIter,
-    BenchMapMutClear, BenchMapMutInsert, BenchMapMutRemove,
-    BenchMapNew, BenchMapNewWithHasher,
+    BenchMapClone, BenchMapGetCloned, BenchMapIter, BenchMapMutClear, BenchMapMutInsert,
+    BenchMapMutRemove, BenchMapNew, BenchMapNewWithHasher,
 };
 use std::hash::{BuildHasher, Hash};
 
@@ -94,12 +93,7 @@ where
     }
 }
 
-impl<K, V, H> BenchMapMutClear<K, V> for AhashBenchMap<K, V, H>
-where
-    K: Hash + Eq,
-    V: Clone,
-    H: BuildHasher,
-{
+impl<K, V, H> BenchMapMutClear<K, V> for AhashBenchMap<K, V, H> {
     fn clear(&mut self) {
         self.map.clear();
     }

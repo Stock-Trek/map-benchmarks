@@ -1,6 +1,5 @@
 use crate::maps::benchmap::{
-    BenchMapClone, BenchMapGetCloned, BenchMapIter,
-    BenchMapMutClear, BenchMapMutInsert, BenchMapMutRemove,
+    BenchMapClone, BenchMapGetCloned, BenchMapIter, BenchMapMutInsert, BenchMapMutRemove,
     BenchMapNew,
 };
 
@@ -78,16 +77,5 @@ where
 {
     fn remove(&mut self, key: &K) -> Option<V> {
         self.map.remove_cow(key)
-    }
-}
-
-impl<K, V> BenchMapMutClear<K, V> for ImmutableChunkMapBenchMap<K, V>
-where
-    K: Clone + Ord,
-    V: Clone,
-{
-    fn clear(&mut self) {
-        // Immutable maps have no `clear`; drop the current map and start fresh.
-        self.map = immutable_chunkmap::map::MapM::new();
     }
 }

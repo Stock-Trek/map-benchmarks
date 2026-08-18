@@ -107,8 +107,6 @@ where
     fn clear(&mut self) {
         let mut write = self.map.write();
         write.clear();
-        // Uncommitted write transactions are discarded on drop, which would
-        // silently elide the clear; commit so the change takes effect.
         write.commit();
     }
 }
