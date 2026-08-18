@@ -30,20 +30,8 @@ jobs:
           project-slug: "agents"
           env-slug: "dev"
 
-      - name: Generate GitHub App token
-        id: app-token
-        uses: actions/create-github-app-token@v3
-        env:
-          GITHUB_APP_AGENT_HELPER_CLIENT_ID: ${{ env.GITHUB_APP_AGENT_HELPER_CLIENT_ID }}
-          GITHUB_APP_AGENT_HELPER_PRIVATE_KEY: ${{ env.GITHUB_APP_AGENT_HELPER_PRIVATE_KEY }}
-        with:
-          client-id: ${{ env.GITHUB_APP_AGENT_HELPER_CLIENT_ID }}
-          private-key: ${{ env.GITHUB_APP_AGENT_HELPER_PRIVATE_KEY }}
-
       - name: Checkout repository
         uses: actions/checkout@v5
-        with:
-          token: ${{ steps.app-token.outputs.token }}
 
       - name: Update dependencies
         run: cargo update
@@ -97,6 +85,16 @@ jobs:
           git config --global user.name "Stock-Trek Agent"
           git add SUMMARY.md
           git commit -m "Added AI generated summary"
+
+      - name: Generate GitHub App token
+        id: app-token
+        uses: actions/create-github-app-token@v3
+        env:
+          GITHUB_APP_AGENT_HELPER_CLIENT_ID: ${{ env.GITHUB_APP_AGENT_HELPER_CLIENT_ID }}
+          GITHUB_APP_AGENT_HELPER_PRIVATE_KEY: ${{ env.GITHUB_APP_AGENT_HELPER_PRIVATE_KEY }}
+        with:
+          client-id: ${{ env.GITHUB_APP_AGENT_HELPER_CLIENT_ID }}
+          private-key: ${{ env.GITHUB_APP_AGENT_HELPER_PRIVATE_KEY }}
 
       - name: Create Pull Request
         uses: peter-evans/create-pull-request@v8
