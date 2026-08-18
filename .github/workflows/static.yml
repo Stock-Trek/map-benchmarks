@@ -80,8 +80,8 @@ jobs:
             echo "prompt-base64=$(base64 -w 0 < .github/prompts/request-summary.txt)"
           } >> "$GITHUB_OUTPUT"
 
-      - name: Request summary
-        id: create-summary
+      - name: Generate summary
+        id: generate-summary
         uses: ./.github/actions/invoke-pi
         with:
           context-base64: ""
@@ -94,7 +94,7 @@ jobs:
             echo "# AI generated summary: $(date)"
             echo "\n"
             echo "\n"
-            echo "${{ steps.create-summary.outputs.response-base64 }}"
+            echo "${{ steps.generate-summary.outputs.response-base64 }}"
           }  > SUMMARY.md
           git config --global user.email "agent@stock-trek.com"
           git config --global user.name "Stock-Trek Agent"
@@ -104,8 +104,9 @@ jobs:
       - name: Create Pull Request
         uses: peter-evans/create-pull-request@v8
         with:
-          commit-message: "Create executive summary"
-          title: "Update executive summary"
+          commit-message: "Generate summary"
+          title: "Update summary"
           body: "This PR was automatically created by a GitHub Action"
           branch: summary-${{ github.run_id }}
           base: master
+          token: ${{ steps.app-token.outputs.token }}
