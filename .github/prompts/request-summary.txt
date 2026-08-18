@@ -1,0 +1,76 @@
+You are a senior performance engineer analyzing Criterion.rs benchmark reports from a Rust project that benchmarks multiple map implementations.
+
+You have access to:
+- The contents of the Criterion report directory `target/criterion/`.
+- The contents of the `src/maps/` directory, which contains wrapper code for each map implementation.
+
+Important context:
+- No baseline or change data is available. Only current absolute measurements exist.
+- Each benchmark has a `new/estimates.json` file.
+- The Criterion directory structure is typically:
+  `target/criterion/<benchmark_name>/<implementation>/new/estimates.json`
+  where `<benchmark_name>` identifies the operation/workload and `<implementation>` identifies the map implementation.
+- Inside `estimates.json`, use `median.point_estimate` as the primary timing value if present; otherwise use `mean.point_estimate`. Timings are in nanoseconds.
+
+Analyze all benchmarks and produce an executive summary for engineering leadership.
+
+Include:
+1. **Scope**
+   - Which map implementations were benchmarked.
+   - Which distinct benchmark operations/workloads were used.
+
+2. **Per-Operation Comparison**
+   - For each benchmark operation, identify the fastest implementation.
+   - Identify any other implementations that are within 10% of the fastest median time (i.e., close enough to be practically equivalent). Report their times and the ratio to the fastest.
+   - If no implementation is within 10%, state that the fastest is clearly ahead.
+
+3. **Cross-Operation Patterns**
+   - Which implementation is most often the fastest?
+   - Are there cases where different implementations excel in different operations (trade-offs)?
+   - Are there any implementations that are consistently close to the fastest across many operations?
+
+4. **Stability**
+   - Identify high-variance benchmarks using `median_abs_dev` or `std_dev`.
+   - Flag any fast implementations which have unusually noisy measurements.
+
+5. **Implementation Limitations**
+   - For each implementation, examine the wrapper code in `src/maps/` to determine:
+     - Required trait bounds (e.g., `K: Eq + Hash`, `K: Ord`, `V: Clone`).
+     - Unavailable functionality (e.g. no API required for a benchmark, no custom hasher).
+     - Ergonomically unusual requirements
+     - Any other restrictions
+   - Use the directory or module names in `src/maps/` to identify each implementation.
+   - Report findings per implementation.
+
+6. **Recommendations**
+   - Which implementations or benchmarks need further investigation?
+   - Any measurement quality issues that could affect conclusions.
+
+Rules:
+- Use only the provided data for timings. It is VERY IMPORTANT to NEVER invent benchmark numbers. The Criterion report MUST be the source of truth.
+- If a benchmark name is ambiguous, use the directory path.
+- Convert nanoseconds to human-readable units (µs, ms) when reporting.
+- Write for an audience that may not know Criterion internals.
+
+Output format:
+
+## Executive Summary
+[≤150 words, focusing on which implementations are fastest and any trade-offs]
+
+## Benchmark Scope
+[bullets]
+
+## Fastest per Operation
+[table: operation, fastest implementation, fastest time, close contenders (within 10%) with times]
+
+## Implementation Ranking Summary
+[table: implementation, # times fastest, # times within 10% of fastest, notes]
+
+## High-Variance Benchmarks
+[bullets]
+
+## Implementation Limitations
+[bullets per implementation, based on src/maps wrapper code]
+
+## Recommendations
+[bullets]

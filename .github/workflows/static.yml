@@ -8,7 +8,7 @@ on:
   workflow_dispatch:
 
 permissions:
-  contents: read
+  contents: write
   pages: write
   id-token: write
 
@@ -23,8 +23,28 @@ jobs:
       url: ${{ steps.deployment.outputs.page_url }}
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout
-        uses: actions/checkout@v4
+      - name: Infisical
+        uses: Infisical/secrets-action@v1.0.16
+        with:
+          method: "oidc"
+          identity-id: "c603d49b-292c-42ae-b838-52e03e3c3a84"
+          project-slug: "agents"
+          env-slug: "dev"
+
+      - name: Generate GitHub App token
+        id: app-token
+        uses: actions/create-github-app-token@v3
+        env:
+          GITHUB_APP_AGENT_HELPER_CLIENT_ID: ${{ env.GITHUB_APP_AGENT_HELPER_CLIENT_ID }}
+          GITHUB_APP_AGENT_HELPER_PRIVATE_KEY: ${{ env.GITHUB_APP_AGENT_HELPER_PRIVATE_KEY }}
+        with:
+          client-id: ${{ env.GITHUB_APP_AGENT_HELPER_CLIENT_ID }}
+          private-key: ${{ env.GITHUB_APP_AGENT_HELPER_PRIVATE_KEY }}
+
+      - name: Checkout repository
+        uses: actions/checkout@v5
+        with:
+          token: ${{ steps.app-token.outputs.token }}
 
       - name: Update dependencies
         run: cargo update
@@ -46,3 +66,41 @@ jobs:
       - name: Deploy to GitHub Pages
         id: deployment
         uses: actions/deploy-pages@v5
+
+      - name: Set up DeepSeek via pi
+        uses: ./.github/actions/set-up-deepseek-via-pi
+        env:
+          DEEPSEEK_API_KEY: ${{ env.DEEPSEEK_API_KEY }}
+
+      - name: Save base64 prompt
+        id: prompt
+        run: |
+          {
+            echo "prompt-base64=$(base64 -w 0 < .github/prompts/request-summary.txt)"
+          } >> "$GITHUB_OUTPUT"
+
+      - name: Request summary
+        id: create-summary
+        uses: ./.github/actions/invoke-pi
+        with:
+          context-base64: ""
+          prompt-base64: ${{ steps.prompt.outputs.prompt-base64 }}
+
+      - name: Save summary
+        id: save-summary
+        run: |
+          {
+            echo $(date)
+            echo "\n"
+            echo "\n"
+            echo "${{ steps.create-summary.outputs.response-base64 }}"
+          }  > SUMMARY.md
+
+      - name: Create Pull Request
+        uses: peter-evans/create-pull-request@v8
+        with:
+          commit-message: "Create executive summary"
+          title: "Update executive summary"
+          body: "This PR was automatically created by a GitHub Action"
+          branch: summary-${{ github.run_id }}
+          base: master

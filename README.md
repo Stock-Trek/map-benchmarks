@@ -31,7 +31,7 @@ There are 3 groups of tests, `out-of-the-box` which uses each map's default impl
 
 ### Out of the box
 
-- **Create**: Creates 1M new, empty maps
+- **Create**: Creates 10K new, empty maps
 - **Clone**: Clones maps containing 100/10K/1M entries
 - **Bulk clear**: Uses maps containing 100/10K/1M entries. Clears all entries in a single `clear` operation
 - **Mixed read/write**: Uses a map with 100/10K/1M entries. Use cases: [write-heavy, high-churn, balanced, read-heavy]
@@ -39,7 +39,7 @@ There are 3 groups of tests, `out-of-the-box` which uses each map's default impl
 
 ### Same hasher
 
-- **Key sensitivity**: Uses a map containing 100K entries. Keys tested: [u64, 32 byte array, UUID, Strings of length 16 and 128]
+- **Key sensitivity**: Uses a map containing 10K entries. Keys tested: [u64, 32 byte array, UUID, Strings of length 16 and 128]
 - **Lookup hit**: Uses maps containing 100/10K/1M entries. Finds 100 extant values, found values are cloned to ensure all maps are treated consistently
 - **Lookup miss**: Uses maps containing 100/10K/1M entries. Finds 100 non-existent values
 - **Remove**: Uses maps containing 100/10K/1M entries. Removes 100 entries
