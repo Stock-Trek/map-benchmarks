@@ -1,6 +1,6 @@
 use bench_map::{
     config::*,
-    constants::OUT_OF_THE_BOX_GROUP_NAME,
+    constants::*,
     maps::{
         AhashBenchMap, BTreeMapBenchMap, BenchMapNew, ConcreadBenchMap, DashMapBenchMap,
         HashbrownBenchMap, HordeBenchMap, ImmutableChunkMapBenchMap, IndexMapBenchMap,

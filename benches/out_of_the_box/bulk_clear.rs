@@ -1,5 +1,6 @@
 use bench_map::{
     config::*,
+    constants::*,
     data::u64_sparse::U64SparseDataGen,
     map_data::MapData,
     map_gen::MapGen,
@@ -46,7 +47,7 @@ fn data_bulk_clear(c: &mut Criterion) {
             sort_keys,
         );
         let mut group = c.benchmark_group(format!(
-            "out-of-the-box/bulk-clear/map-size-{}",
+            "{OUT_OF_THE_BOX_GROUP_NAME}/bulk-clear/map-size-{}",
             format_n(*entry_count)
         ));
         group.warm_up_time(WARM_UP_TIME);

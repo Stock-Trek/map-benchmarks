@@ -1,6 +1,6 @@
 use bench_map::{
     config::*,
-    constants::OUT_OF_THE_BOX_GROUP_NAME,
+    constants::*,
     data::{
         byte_array::ByteArrayDataGen, string::StringDataGen, u64_dense::U64DenseDataGen,
         u64_sparse::U64SparseDataGen, u64_zipfian::U64ZipfianDataGen, uuid_v4::UuidV4DataGen,
