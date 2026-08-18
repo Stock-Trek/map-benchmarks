@@ -7,7 +7,6 @@ use std::hash::{BuildHasher, Hash};
 pub struct TxMapBenchMap<K, V, H = txmap::DefaultBuildHasher>
 where
     K: Clone + Hash + Eq,
-    V: Clone,
     H: BuildHasher,
 {
     map: txmap::TxMap<K, V, txmap::MutexPolicy, H>,
@@ -16,7 +15,6 @@ where
 impl<K, V, H> BenchMapNew<K, V> for TxMapBenchMap<K, V, H>
 where
     K: Clone + Hash + Eq,
-    V: Clone,
     H: BuildHasher + Default,
 {
     fn new() -> Self {
@@ -31,7 +29,6 @@ where
 impl<K, V, H> BenchMapNewWithHasher<K, V, H> for TxMapBenchMap<K, V, H>
 where
     K: Clone + Hash + Eq,
-    V: Clone,
     H: BuildHasher,
 {
     fn new_with_hasher(hasher: H) -> Self {
@@ -68,7 +65,6 @@ where
 impl<K, V, H> BenchMapInsert<K, V> for TxMapBenchMap<K, V, H>
 where
     K: Clone + Hash + Eq,
-    V: Clone,
     H: BuildHasher,
 {
     fn insert(&self, key: K, value: V) {
@@ -79,7 +75,6 @@ where
 impl<K, V, H> BenchMapMutInsert<K, V> for TxMapBenchMap<K, V, H>
 where
     K: Clone + Hash + Eq,
-    V: Clone,
     H: BuildHasher,
 {
     fn insert(&mut self, key: K, value: V) {
@@ -90,7 +85,6 @@ where
 impl<K, V, H> BenchMapIter<K, V> for TxMapBenchMap<K, V, H>
 where
     K: Clone + Hash + Eq,
-    V: Clone,
     H: BuildHasher,
 {
     fn for_each(&self, mut f: impl FnMut(&K, &V)) {
@@ -103,7 +97,6 @@ where
 impl<K, V, H> BenchMapRemove<K, V> for TxMapBenchMap<K, V, H>
 where
     K: Clone + Hash + Eq,
-    V: Clone,
     H: BuildHasher,
 {
     fn remove(&self, key: &K) -> Option<V> {
@@ -114,7 +107,6 @@ where
 impl<K, V, H> BenchMapMutRemove<K, V> for TxMapBenchMap<K, V, H>
 where
     K: Clone + Hash + Eq,
-    V: Clone,
     H: BuildHasher,
 {
     fn remove(&mut self, key: &K) -> Option<V> {
@@ -125,7 +117,6 @@ where
 impl<K, V, H> BenchMapMutClear<K, V> for TxMapBenchMap<K, V, H>
 where
     K: Clone + Hash + Eq,
-    V: Clone,
     H: BuildHasher,
 {
     fn clear(&mut self) {
