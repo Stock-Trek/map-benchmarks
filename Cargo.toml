@@ -7,17 +7,18 @@ edition = "2024"
 criterion = { version = "0.8.2", features = ["async_futures", "html_reports"] }
 rand = "0.10.2"
 uuid = { version = "1.24.0", features = ["v4"] }
+# map dependencies
 ahash = "0"
 concread = "0"
 dashmap = "6"
-flurry = "0.5"
+flurry = "0"
 hashbrown = "0"
 horde = "0"
 immutable-chunkmap = "2"
 indexmap = "2"
-leapfrog = { version = "0.3", features = ["stable_alloc"] }
+leapfrog = { version = "0", features = ["stable_alloc"] }
 libc = "0"
-papaya = "0.2"
+papaya = "0"
 rustc-hash = "2"
 scc = "3"
 starshard = "2"
