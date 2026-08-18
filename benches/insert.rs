@@ -6,8 +6,9 @@ use bench_map::{
     map_gen::MapGen,
     maps::{
         AhashBenchMap, BenchMapMutInsert, BenchMapNew, BenchMapNewWithHasher, DashMapBenchMap,
-        HashbrownBenchMap, ImmutableChunkMapBenchMap, IndexMapBenchMap, RustCHashBenchMap,
-        StarshardBenchMap, StdBenchMap, TxMapBenchMap, horde_benchmap::HordeBenchMap,
+        FlurryBenchMap, HashbrownBenchMap, ImmutableChunkMapBenchMap, IndexMapBenchMap,
+        LeapfrogBenchMap, PapayaBenchMap, RustCHashBenchMap, SccBenchMap, StarshardBenchMap,
+        StdBenchMap, TxMapBenchMap, horde_benchmap::HordeBenchMap,
     },
     number_formatter::format_n,
 };
@@ -103,6 +104,7 @@ fn insert(c: &mut Criterion) {
             // bench_out_of_the_box::<BTreeMapBenchMap<u64, u64>>(&mut group, &map_data, "btreemap"); // too slow
             // bench_out_of_the_box::<ConcreadBenchMap<u64, u64>>(&mut group, &map_data, "concread"); // too slow
             bench_out_of_the_box::<DashMapBenchMap<u64, u64>>(&mut group, &map_data, "dashmap");
+            bench_out_of_the_box::<FlurryBenchMap<u64, u64>>(&mut group, &map_data, "flurry");
             bench_out_of_the_box::<HashbrownBenchMap<u64, u64>>(&mut group, &map_data, "hashbrown");
             bench_out_of_the_box::<HordeBenchMap<u64, u64>>(&mut group, &map_data, "horde");
             bench_out_of_the_box::<ImmutableChunkMapBenchMap<u64, u64>>(
@@ -111,11 +113,14 @@ fn insert(c: &mut Criterion) {
                 "immutable-chunkmap",
             );
             bench_out_of_the_box::<IndexMapBenchMap<u64, u64>>(&mut group, &map_data, "indexmap");
+            bench_out_of_the_box::<LeapfrogBenchMap<u64, u64>>(&mut group, &map_data, "leapfrog");
+            bench_out_of_the_box::<PapayaBenchMap<u64, u64>>(&mut group, &map_data, "papaya");
             bench_out_of_the_box::<RustCHashBenchMap<u64, u64>>(
                 &mut group,
                 &map_data,
                 "rustc-hash",
             );
+            bench_out_of_the_box::<SccBenchMap<u64, u64>>(&mut group, &map_data, "scc");
             bench_out_of_the_box::<StarshardBenchMap<u64, u64>>(&mut group, &map_data, "starshard");
             bench_out_of_the_box::<StdBenchMap<u64, u64>>(&mut group, &map_data, "std");
             bench_out_of_the_box::<TxMapBenchMap<u64, u64>>(&mut group, &map_data, "txmap");
@@ -146,6 +151,12 @@ fn insert(c: &mut Criterion) {
                 "dashmap",
                 hasher.clone(),
             );
+            bench_same_hasher::<FlurryBenchMap<u64, u64, CommonHasher>>(
+                &mut group,
+                &map_data,
+                "flurry",
+                hasher.clone(),
+            );
             bench_same_hasher::<HashbrownBenchMap<u64, u64, CommonHasher>>(
                 &mut group,
                 &map_data,
@@ -165,7 +176,25 @@ fn insert(c: &mut Criterion) {
                 "indexmap",
                 hasher.clone(),
             );
+            bench_same_hasher::<LeapfrogBenchMap<u64, u64, CommonHasher>>(
+                &mut group,
+                &map_data,
+                "leapfrog",
+                hasher.clone(),
+            );
+            bench_same_hasher::<PapayaBenchMap<u64, u64, CommonHasher>>(
+                &mut group,
+                &map_data,
+                "papaya",
+                hasher.clone(),
+            );
             // bench_same_hasher::<RustCHashBenchMap<u64, u64, CommonHasher>>(&mut group, &map_data, "rustc-hash"); // doesn't allow setting hasher
+            bench_same_hasher::<SccBenchMap<u64, u64, CommonHasher>>(
+                &mut group,
+                &map_data,
+                "scc",
+                hasher.clone(),
+            );
             bench_same_hasher::<StarshardBenchMap<u64, u64, CommonHasher>>(
                 &mut group,
                 &map_data,

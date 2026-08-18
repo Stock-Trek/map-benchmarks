@@ -9,8 +9,9 @@ use bench_map::{
     map_gen::MapGen,
     maps::{
         AhashBenchMap, BenchMapGetCloned, BenchMapMutInsert, BenchMapNewWithHasher,
-        DashMapBenchMap, HashbrownBenchMap, IndexMapBenchMap, StarshardBenchMap, StdBenchMap,
-        TxMapBenchMap, horde_benchmap::HordeBenchMap,
+        DashMapBenchMap, FlurryBenchMap, HashbrownBenchMap, IndexMapBenchMap, LeapfrogBenchMap,
+        PapayaBenchMap, SccBenchMap, StarshardBenchMap, StdBenchMap, TxMapBenchMap,
+        horde_benchmap::HordeBenchMap,
     },
 };
 use criterion::{
@@ -83,6 +84,12 @@ fn key_sensitivity(c: &mut Criterion) {
             "dashmap",
             hasher.clone(),
         );
+        bench::<FlurryBenchMap<u64, u64, CommonHasher>, u64, u64>(
+            &mut group,
+            &map_data,
+            "flurry",
+            hasher.clone(),
+        );
         bench::<HashbrownBenchMap<u64, u64, CommonHasher>, u64, u64>(
             &mut group,
             &map_data,
@@ -102,7 +109,25 @@ fn key_sensitivity(c: &mut Criterion) {
             "indexmap",
             hasher.clone(),
         );
+        bench::<LeapfrogBenchMap<u64, u64, CommonHasher>, u64, u64>(
+            &mut group,
+            &map_data,
+            "leapfrog",
+            hasher.clone(),
+        );
+        bench::<PapayaBenchMap<u64, u64, CommonHasher>, u64, u64>(
+            &mut group,
+            &map_data,
+            "papaya",
+            hasher.clone(),
+        );
         // bench::<RustCHashBenchMap<u64, u64, CommonHasher>, u64, u64>(&mut group, &map_data, "rustc-hash"); // doesn't allow setting hasher
+        bench::<SccBenchMap<u64, u64, CommonHasher>, u64, u64>(
+            &mut group,
+            &map_data,
+            "scc",
+            hasher.clone(),
+        );
         bench::<StarshardBenchMap<u64, u64, CommonHasher>, u64, u64>(
             &mut group,
             &map_data,
@@ -154,6 +179,12 @@ fn key_sensitivity(c: &mut Criterion) {
             "dashmap",
             hasher.clone(),
         );
+        bench::<FlurryBenchMap<Uuid, u64, CommonHasher>, Uuid, u64>(
+            &mut group,
+            &map_data,
+            "flurry",
+            hasher.clone(),
+        );
         bench::<HashbrownBenchMap<Uuid, u64, CommonHasher>, Uuid, u64>(
             &mut group,
             &map_data,
@@ -173,7 +204,25 @@ fn key_sensitivity(c: &mut Criterion) {
             "indexmap",
             hasher.clone(),
         );
+        bench::<LeapfrogBenchMap<Uuid, u64, CommonHasher>, Uuid, u64>(
+            &mut group,
+            &map_data,
+            "leapfrog",
+            hasher.clone(),
+        );
+        bench::<PapayaBenchMap<Uuid, u64, CommonHasher>, Uuid, u64>(
+            &mut group,
+            &map_data,
+            "papaya",
+            hasher.clone(),
+        );
         // bench::<RustCHashBenchMap<Uuid, u64, CommonHasher>, Uuid, u64>(&mut group, &map_data, "rustc-hash"); // doesn't allow setting hasher
+        bench::<SccBenchMap<Uuid, u64, CommonHasher>, Uuid, u64>(
+            &mut group,
+            &map_data,
+            "scc",
+            hasher.clone(),
+        );
         bench::<StarshardBenchMap<Uuid, u64, CommonHasher>, Uuid, u64>(
             &mut group,
             &map_data,
@@ -225,6 +274,12 @@ fn key_sensitivity(c: &mut Criterion) {
             "dashmap",
             hasher.clone(),
         );
+        bench::<FlurryBenchMap<[u8; 32], u64, CommonHasher>, [u8; 32], u64>(
+            &mut group,
+            &map_data,
+            "flurry",
+            hasher.clone(),
+        );
         bench::<HashbrownBenchMap<[u8; 32], u64, CommonHasher>, [u8; 32], u64>(
             &mut group,
             &map_data,
@@ -244,7 +299,25 @@ fn key_sensitivity(c: &mut Criterion) {
             "indexmap",
             hasher.clone(),
         );
+        bench::<LeapfrogBenchMap<[u8; 32], u64, CommonHasher>, [u8; 32], u64>(
+            &mut group,
+            &map_data,
+            "leapfrog",
+            hasher.clone(),
+        );
+        bench::<PapayaBenchMap<[u8; 32], u64, CommonHasher>, [u8; 32], u64>(
+            &mut group,
+            &map_data,
+            "papaya",
+            hasher.clone(),
+        );
         // bench::<RustCHashBenchMap<[u8; 32], u64, CommonHasher>, [u8; 32], u64>(&mut group, &map_data, "rustc-hash"); // doesn't allow setting hasher
+        bench::<SccBenchMap<[u8; 32], u64, CommonHasher>, [u8; 32], u64>(
+            &mut group,
+            &map_data,
+            "scc",
+            hasher.clone(),
+        );
         bench::<StarshardBenchMap<[u8; 32], u64, CommonHasher>, [u8; 32], u64>(
             &mut group,
             &map_data,
@@ -296,6 +369,12 @@ fn key_sensitivity(c: &mut Criterion) {
             "dashmap",
             hasher.clone(),
         );
+        bench::<FlurryBenchMap<String, u64, CommonHasher>, String, u64>(
+            &mut group,
+            &map_data,
+            "flurry",
+            hasher.clone(),
+        );
         bench::<HashbrownBenchMap<String, u64, CommonHasher>, String, u64>(
             &mut group,
             &map_data,
@@ -309,13 +388,26 @@ fn key_sensitivity(c: &mut Criterion) {
             hasher.clone(),
         );
         // bench::<ImmutableChunkMapBenchMap<String, u64, CommonHasher>, String, u64>(&mut group, &map_data, "immutable-chunkmap"); // doesn't allow setting hasher
+        // bench::<LeapfrogBenchMap<String, u64, CommonHasher>, String, u64>(&mut group, &map_data, "leapfrog", hasher.clone()); // keys must be Copy
         bench::<IndexMapBenchMap<String, u64, CommonHasher>, String, u64>(
             &mut group,
             &map_data,
             "indexmap",
             hasher.clone(),
         );
+        bench::<PapayaBenchMap<String, u64, CommonHasher>, String, u64>(
+            &mut group,
+            &map_data,
+            "papaya",
+            hasher.clone(),
+        );
         // bench::<RustCHashBenchMap<String, u64, CommonHasher>, String, u64>(&mut group, &map_data, "rustc-hash"); // doesn't allow setting hasher
+        bench::<SccBenchMap<String, u64, CommonHasher>, String, u64>(
+            &mut group,
+            &map_data,
+            "scc",
+            hasher.clone(),
+        );
         bench::<StarshardBenchMap<String, u64, CommonHasher>, String, u64>(
             &mut group,
             &map_data,
@@ -367,6 +459,12 @@ fn key_sensitivity(c: &mut Criterion) {
             "dashmap",
             hasher.clone(),
         );
+        bench::<FlurryBenchMap<String, u64, CommonHasher>, String, u64>(
+            &mut group,
+            &map_data,
+            "flurry",
+            hasher.clone(),
+        );
         bench::<HashbrownBenchMap<String, u64, CommonHasher>, String, u64>(
             &mut group,
             &map_data,
@@ -386,7 +484,20 @@ fn key_sensitivity(c: &mut Criterion) {
             "indexmap",
             hasher.clone(),
         );
+        // bench::<LeapfrogBenchMap<String, u64, CommonHasher>, String, u64>(&mut group, &map_data, "leapfrog", hasher.clone()); // keys must be Copy
+        bench::<PapayaBenchMap<String, u64, CommonHasher>, String, u64>(
+            &mut group,
+            &map_data,
+            "papaya",
+            hasher.clone(),
+        );
         // bench::<RustCHashBenchMap<String, u64, CommonHasher>, String, u64>(&mut group, &map_data, "rustc-hash"); // doesn't allow setting hasher
+        bench::<SccBenchMap<String, u64, CommonHasher>, String, u64>(
+            &mut group,
+            &map_data,
+            "scc",
+            hasher.clone(),
+        );
         bench::<StarshardBenchMap<String, u64, CommonHasher>, String, u64>(
             &mut group,
             &map_data,
@@ -438,6 +549,12 @@ fn key_sensitivity(c: &mut Criterion) {
             "dashmap",
             hasher.clone(),
         );
+        bench::<FlurryBenchMap<u64, u64, CommonHasher>, u64, u64>(
+            &mut group,
+            &map_data,
+            "flurry",
+            hasher.clone(),
+        );
         bench::<HashbrownBenchMap<u64, u64, CommonHasher>, u64, u64>(
             &mut group,
             &map_data,
@@ -457,7 +574,25 @@ fn key_sensitivity(c: &mut Criterion) {
             "indexmap",
             hasher.clone(),
         );
+        bench::<LeapfrogBenchMap<u64, u64, CommonHasher>, u64, u64>(
+            &mut group,
+            &map_data,
+            "leapfrog",
+            hasher.clone(),
+        );
+        bench::<PapayaBenchMap<u64, u64, CommonHasher>, u64, u64>(
+            &mut group,
+            &map_data,
+            "papaya",
+            hasher.clone(),
+        );
         // bench::<RustCHashBenchMap<u64, u64, CommonHasher>, u64, u64>(&mut group, &map_data, "rustc-hash"); // doesn't allow setting hasher
+        bench::<SccBenchMap<u64, u64, CommonHasher>, u64, u64>(
+            &mut group,
+            &map_data,
+            "scc",
+            hasher.clone(),
+        );
         bench::<StarshardBenchMap<u64, u64, CommonHasher>, u64, u64>(
             &mut group,
             &map_data,
@@ -512,6 +647,12 @@ fn key_sensitivity(c: &mut Criterion) {
             "dashmap",
             hasher.clone(),
         );
+        bench::<FlurryBenchMap<u64, u64, CommonHasher>, u64, u64>(
+            &mut group,
+            &map_data,
+            "flurry",
+            hasher.clone(),
+        );
         bench::<HashbrownBenchMap<u64, u64, CommonHasher>, u64, u64>(
             &mut group,
             &map_data,
@@ -531,7 +672,25 @@ fn key_sensitivity(c: &mut Criterion) {
             "indexmap",
             hasher.clone(),
         );
+        bench::<LeapfrogBenchMap<u64, u64, CommonHasher>, u64, u64>(
+            &mut group,
+            &map_data,
+            "leapfrog",
+            hasher.clone(),
+        );
+        bench::<PapayaBenchMap<u64, u64, CommonHasher>, u64, u64>(
+            &mut group,
+            &map_data,
+            "papaya",
+            hasher.clone(),
+        );
         // bench::<RustCHashBenchMap<u64, u64, CommonHasher>, u64, u64>(&mut group, &map_data, "rustc-hash"); // doesn't allow setting hasher
+        bench::<SccBenchMap<u64, u64, CommonHasher>, u64, u64>(
+            &mut group,
+            &map_data,
+            "scc",
+            hasher.clone(),
+        );
         bench::<StarshardBenchMap<u64, u64, CommonHasher>, u64, u64>(
             &mut group,
             &map_data,

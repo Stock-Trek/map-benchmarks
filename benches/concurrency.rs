@@ -6,7 +6,8 @@ use bench_map::{
     map_gen::MapGen,
     maps::{
         BenchMapGetCloned, BenchMapInsert, BenchMapMutInsert, BenchMapNew, BenchMapRemove,
-        DashMapBenchMap, StarshardBenchMap, TxMapBenchMap,
+        DashMapBenchMap, FlurryBenchMap, LeapfrogBenchMap, PapayaBenchMap, SccBenchMap,
+        StarshardBenchMap, TxMapBenchMap,
     },
     pin_thread::PinThread,
     workload::{design::WorkloadDesign, op::WorkloadOp, thread_workload::ThreadWorkload},
@@ -153,11 +154,33 @@ fn concurrency(c: &mut Criterion) {
                 &workloads,
                 "dashmap",
             );
+            bench::<FlurryBenchMap<u64, u64>>(
+                &mut group,
+                &map_data,
+                thread_count,
+                &workloads,
+                "flurry",
+            );
             // bench::<HashbrownBenchMap<u64, u64>>(&mut group, &map_data, thread_count, &workloads, "hashbrown"); // not concurrent
             // bench::<HordeBenchMap<u64, u64>>(&mut group, &map_data, thread_count, &workloads, "horde"); // mutation requires &mut, cannot mutate through a shared reference
             // bench::<ImmutableChunkMapBenchMap<u64, u64>>(&mut group, &map_data, thread_count, &workloads, "immutable-chunkmap"); // mutation returns a new map; requires &mut or storing the result, cannot mutate through a shared reference
             // bench::<IndexMapBenchMap<u64, u64>>(&mut group, &map_data, thread_count, &workloads, "indexmap"); // not concurrent
+            bench::<LeapfrogBenchMap<u64, u64>>(
+                &mut group,
+                &map_data,
+                thread_count,
+                &workloads,
+                "leapfrog",
+            );
+            bench::<PapayaBenchMap<u64, u64>>(
+                &mut group,
+                &map_data,
+                thread_count,
+                &workloads,
+                "papaya",
+            );
             // bench::<RustCHashBenchMap<u64, u64>>(&mut group, &map_data, thread_count, &workloads, "rustc-hash"); // not concurrent
+            bench::<SccBenchMap<u64, u64>>(&mut group, &map_data, thread_count, &workloads, "scc");
             bench::<StarshardBenchMap<u64, u64>>(
                 &mut group,
                 &map_data,

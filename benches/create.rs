@@ -4,7 +4,8 @@ use bench_map::{
     maps::{
         AhashBenchMap, BTreeMapBenchMap, BenchMapNew, ConcreadBenchMap, DashMapBenchMap,
         HashbrownBenchMap, HordeBenchMap, ImmutableChunkMapBenchMap, IndexMapBenchMap,
-        RustCHashBenchMap, StarshardBenchMap, StdBenchMap, TxMapBenchMap,
+        LeapfrogBenchMap, PapayaBenchMap, RustCHashBenchMap, SccBenchMap, StarshardBenchMap,
+        StdBenchMap, TxMapBenchMap,
     },
 };
 use criterion::{
@@ -35,11 +36,15 @@ fn create(c: &mut Criterion) {
     bench::<BTreeMapBenchMap<u64, u64>>(&mut group, "btreemap");
     bench::<ConcreadBenchMap<u64, u64>>(&mut group, "concread");
     bench::<DashMapBenchMap<u64, u64>>(&mut group, "dashmap");
+    // bench::<FlurryBenchMap<u64, u64>>(&mut group, "flurry"); // too slow (creates a seize::Collector per map)
     bench::<HashbrownBenchMap<u64, u64>>(&mut group, "hashbrown");
     bench::<HordeBenchMap<u64, u64>>(&mut group, "horde");
     bench::<ImmutableChunkMapBenchMap<u64, u64>>(&mut group, "immutable-chunkmap");
     bench::<IndexMapBenchMap<u64, u64>>(&mut group, "indexmap");
+    bench::<LeapfrogBenchMap<u64, u64>>(&mut group, "leapfrog");
+    bench::<PapayaBenchMap<u64, u64>>(&mut group, "papaya");
     bench::<RustCHashBenchMap<u64, u64>>(&mut group, "rustc-hash");
+    bench::<SccBenchMap<u64, u64>>(&mut group, "scc");
     bench::<StarshardBenchMap<u64, u64>>(&mut group, "starshard");
     bench::<StdBenchMap<u64, u64>>(&mut group, "std");
     bench::<TxMapBenchMap<u64, u64>>(&mut group, "txmap");

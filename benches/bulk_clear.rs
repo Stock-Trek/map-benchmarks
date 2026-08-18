@@ -6,8 +6,9 @@ use bench_map::{
     map_gen::MapGen,
     maps::{
         AhashBenchMap, BTreeMapBenchMap, BenchMapMutClear, BenchMapMutInsert, BenchMapNew,
-        ConcreadBenchMap, DashMapBenchMap, HashbrownBenchMap, HordeBenchMap, IndexMapBenchMap,
-        RustCHashBenchMap, StarshardBenchMap, StdBenchMap, TxMapBenchMap,
+        ConcreadBenchMap, DashMapBenchMap, FlurryBenchMap, HashbrownBenchMap, HordeBenchMap,
+        IndexMapBenchMap, PapayaBenchMap, RustCHashBenchMap, SccBenchMap, StarshardBenchMap,
+        StdBenchMap, TxMapBenchMap,
     },
     number_formatter::format_n,
 };
@@ -58,10 +59,14 @@ fn bulk_clear(c: &mut Criterion) {
         bench::<BTreeMapBenchMap<u64, u64>>(&mut group, &map_data, "btreemap");
         bench::<ConcreadBenchMap<u64, u64>>(&mut group, &map_data, "concread");
         bench::<DashMapBenchMap<u64, u64>>(&mut group, &map_data, "dashmap");
+        bench::<FlurryBenchMap<u64, u64>>(&mut group, &map_data, "flurry");
         bench::<HashbrownBenchMap<u64, u64>>(&mut group, &map_data, "hashbrown");
         bench::<HordeBenchMap<u64, u64>>(&mut group, &map_data, "horde");
         bench::<IndexMapBenchMap<u64, u64>>(&mut group, &map_data, "indexmap");
+        // bench::<LeapfrogBenchMap<u64, u64>>(&mut group, &map_data, "leapfrog"); // no clear method
+        bench::<PapayaBenchMap<u64, u64>>(&mut group, &map_data, "papaya");
         bench::<RustCHashBenchMap<u64, u64>>(&mut group, &map_data, "rustc-hash");
+        bench::<SccBenchMap<u64, u64>>(&mut group, &map_data, "scc");
         bench::<StarshardBenchMap<u64, u64>>(&mut group, &map_data, "starshard");
         bench::<StdBenchMap<u64, u64>>(&mut group, &map_data, "std");
         bench::<TxMapBenchMap<u64, u64>>(&mut group, &map_data, "txmap");
