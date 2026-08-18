@@ -33,6 +33,7 @@ Include:
 
 3. **Cross-Operation Patterns**
    - Which implementation is most often the fastest?
+   - Which implementation(s) is/are recommended for each use case?
    - Are there cases where different implementations excel in different operations (trade-offs)?
    - Are there any implementations that are consistently close to the fastest across many operations?
 
@@ -66,6 +67,9 @@ Output format:
 
 ## Implementation Ranking Summary
 [table: implementation, # times fastest, # times within 10% of fastest, notes]
+
+## Use case recommendations
+[table: use case, recommended implementation(s)]
 
 ## High-Variance Benchmarks
 [bullets]
