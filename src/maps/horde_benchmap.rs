@@ -1,6 +1,6 @@
 use crate::maps::benchmap::{
-    BenchMapClone, BenchMapGetCloned, BenchMapIter, BenchMapMutInsert, BenchMapMutRemove,
-    BenchMapNew, BenchMapNewWithHasher,
+    BenchMapClone, BenchMapGetCloned, BenchMapIter, BenchMapMutClear, BenchMapMutInsert,
+    BenchMapMutRemove, BenchMapNew, BenchMapNewWithHasher,
 };
 use std::hash::{BuildHasher, Hash};
 
@@ -101,5 +101,15 @@ where
             .write()
             .remove(key, None)
             .map(|tuple| tuple.1.clone())
+    }
+}
+
+impl<K, V, H> BenchMapMutClear<K, V> for HordeBenchMap<K, V, H>
+where
+    K: Hash,
+    H: BuildHasher,
+{
+    fn clear(&mut self) {
+        self.map.write().replace(std::iter::empty(), 0);
     }
 }

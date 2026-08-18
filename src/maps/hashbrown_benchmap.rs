@@ -1,6 +1,6 @@
 use crate::maps::benchmap::{
-    BenchMapClone, BenchMapGetCloned, BenchMapIter, BenchMapMutInsert, BenchMapMutRemove,
-    BenchMapNew, BenchMapNewWithHasher,
+    BenchMapClone, BenchMapGetCloned, BenchMapIter, BenchMapMutClear, BenchMapMutInsert,
+    BenchMapMutRemove, BenchMapNew, BenchMapNewWithHasher,
 };
 use std::hash::{BuildHasher, Hash};
 
@@ -90,5 +90,11 @@ where
 {
     fn remove(&mut self, key: &K) -> Option<V> {
         self.map.remove(key)
+    }
+}
+
+impl<K, V, H> BenchMapMutClear<K, V> for HashbrownBenchMap<K, V, H> {
+    fn clear(&mut self) {
+        self.map.clear();
     }
 }

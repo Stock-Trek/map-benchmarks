@@ -1,6 +1,6 @@
 use crate::maps::benchmap::{
-    BenchMapGetCloned, BenchMapInsert, BenchMapIter, BenchMapMutInsert, BenchMapMutRemove,
-    BenchMapNew, BenchMapRemove,
+    BenchMapGetCloned, BenchMapInsert, BenchMapIter, BenchMapMutClear, BenchMapMutInsert,
+    BenchMapMutRemove, BenchMapNew, BenchMapRemove,
 };
 use std::{fmt::Debug, hash::Hash};
 
@@ -96,5 +96,17 @@ where
         let removed = write.remove(key);
         write.commit();
         removed
+    }
+}
+
+impl<K, V> BenchMapMutClear<K, V> for ConcreadBenchMap<K, V>
+where
+    K: Clone + Debug + Hash + Eq + Send + Sync + 'static,
+    V: Clone + Send + Sync + 'static,
+{
+    fn clear(&mut self) {
+        let mut write = self.map.write();
+        write.clear();
+        write.commit();
     }
 }

@@ -30,6 +30,7 @@ There are 3 groups of tests, `out-of-the-box` which uses each map's default impl
 - **Key sensitivity**: Uses a map containing 100K entries. Keys tested: [u64, 32 byte array, UUID, Strings of length 16 and 128]
 - **Create**: Creates 1M new, empty maps
 - **Clone**: Clones maps containing 100/10K/1M entries
+- **Bulk clear**: Uses maps containing 100/10K/1M entries. Clears all entries in a single `clear` operation
 
 ### Same hasher
 

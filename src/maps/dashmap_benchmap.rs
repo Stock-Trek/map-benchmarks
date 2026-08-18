@@ -1,6 +1,6 @@
 use crate::maps::benchmap::{
-    BenchMapClone, BenchMapGetCloned, BenchMapInsert, BenchMapIter, BenchMapMutInsert,
-    BenchMapMutRemove, BenchMapNew, BenchMapNewWithHasher, BenchMapRemove,
+    BenchMapClone, BenchMapGetCloned, BenchMapInsert, BenchMapIter, BenchMapMutClear,
+    BenchMapMutInsert, BenchMapMutRemove, BenchMapNew, BenchMapNewWithHasher, BenchMapRemove,
 };
 use std::{
     collections::hash_map::RandomState,
@@ -115,5 +115,15 @@ where
 {
     fn remove(&mut self, key: &K) -> Option<V> {
         self.map.remove(key).map(|entry| entry.1)
+    }
+}
+
+impl<K, V, H> BenchMapMutClear<K, V> for DashMapBenchMap<K, V, H>
+where
+    K: Hash + Eq,
+    H: BuildHasher + Clone,
+{
+    fn clear(&mut self) {
+        self.map.clear();
     }
 }
