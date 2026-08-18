@@ -1,5 +1,6 @@
 use bench_map::{
     config::*,
+    contents::SAME_HASHER_GROUP_NAME,
     data::u64_sparse::U64SparseDataGen,
     map_data::MapData,
     map_gen::MapGen,
@@ -121,7 +122,7 @@ fn concurrency(c: &mut Criterion) {
             .collect::<Vec<_>>();
 
         let mut group = c.benchmark_group(format!(
-            "same-hasher/concurrency/balanced-workload/{}_threads",
+            "{SAME_HASHER_GROUP_NAME}/concurrency/balanced-workload/{}_threads",
             thread_count
         ));
         group.warm_up_time(WARM_UP_TIME);

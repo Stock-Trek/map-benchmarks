@@ -1,5 +1,6 @@
 use bench_map::{
     config::*,
+    contents::SAME_HASHER_GROUP_NAME,
     data::u64_sparse::U64SparseDataGen,
     map_data::MapData,
     map_gen::MapGen,
@@ -53,7 +54,7 @@ fn structure_iterate(c: &mut Criterion) {
             sort_keys,
         );
         let mut group = c.benchmark_group(format!(
-            "same-hasher/iterate/map-size-{}",
+            "{SAME_HASHER_GROUP_NAME}/iterate/map-size-{}",
             format_n(*entry_count)
         ));
         group.warm_up_time(WARM_UP_TIME);

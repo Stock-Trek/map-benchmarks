@@ -1,5 +1,6 @@
 use bench_map::{
     config::*,
+    contents::SAME_HASHER_GROUP_NAME,
     data::u64_sparse::U64SparseDataGen,
     map_data::MapData,
     map_gen::MapGen,
@@ -108,7 +109,7 @@ fn mixed_read_write(c: &mut Criterion) {
             );
 
             let mut group = c.benchmark_group(format!(
-                "same-hasher/mixed-read-write/{}-workload/map-size-{}",
+                "{SAME_HASHER_GROUP_NAME}/mixed-read-write/{}-workload/map-size-{}",
                 name,
                 format_n(entry_count),
             ));

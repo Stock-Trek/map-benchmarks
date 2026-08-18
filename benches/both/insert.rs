@@ -1,5 +1,6 @@
 use bench_map::{
     config::*,
+    contents::{OUT_OF_THE_BOX_GROUP_NAME, SAME_HASHER_GROUP_NAME},
     data::u64_sparse::U64SparseDataGen,
     map_data::MapData,
     map_gen::MapGen,
@@ -91,7 +92,7 @@ fn insert(c: &mut Criterion) {
         // Each map uses its default hasher
         {
             let mut group = c.benchmark_group(format!(
-                "out-of-the-box/insert/map-size-{}",
+                "{OUT_OF_THE_BOX_GROUP_NAME}/insert/map-size-{}",
                 format_n(*missing_key_count)
             ));
             group.warm_up_time(WARM_UP_TIME);
@@ -123,7 +124,7 @@ fn insert(c: &mut Criterion) {
         // Every map that supports a custom hasher uses the same CommonHasher
         let hasher = CommonHasher::new();
         let mut group = c.benchmark_group(format!(
-            "same-hasher/insert/map-size-{}",
+            "{SAME_HASHER_GROUP_NAME}/insert/map-size-{}",
             format_n(*missing_key_count)
         ));
         group.warm_up_time(WARM_UP_TIME);
