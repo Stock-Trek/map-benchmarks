@@ -78,7 +78,6 @@ where
 
 impl<K, V, H> BenchMapIter<K, V> for FlurryBenchMap<K, V, H>
 where
-    K: Hash + Ord,
     H: BuildHasher,
 {
     fn for_each(&self, mut f: impl FnMut(&K, &V)) {

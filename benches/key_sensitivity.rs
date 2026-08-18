@@ -388,6 +388,7 @@ fn key_sensitivity(c: &mut Criterion) {
             hasher.clone(),
         );
         // bench::<ImmutableChunkMapBenchMap<String, u64, CommonHasher>, String, u64>(&mut group, &map_data, "immutable-chunkmap"); // doesn't allow setting hasher
+        // bench::<LeapfrogBenchMap<String, u64, CommonHasher>, String, u64>(&mut group, &map_data, "leapfrog", hasher.clone()); // keys must be Copy
         bench::<IndexMapBenchMap<String, u64, CommonHasher>, String, u64>(
             &mut group,
             &map_data,
@@ -483,6 +484,7 @@ fn key_sensitivity(c: &mut Criterion) {
             "indexmap",
             hasher.clone(),
         );
+        // bench::<LeapfrogBenchMap<String, u64, CommonHasher>, String, u64>(&mut group, &map_data, "leapfrog", hasher.clone()); // keys must be Copy
         bench::<PapayaBenchMap<String, u64, CommonHasher>, String, u64>(
             &mut group,
             &map_data,
