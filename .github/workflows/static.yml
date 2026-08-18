@@ -96,6 +96,8 @@ jobs:
             echo "\n"
             echo "${{ steps.create-summary.outputs.response-base64 }}"
           }  > SUMMARY.md
+          git config --global user.email "agent@stock-trek.com"
+          git config --global user.name "Stock-Trek Agent"
           git add SUMMARY.md
           git commit -m "Added AI generated summary"
 
