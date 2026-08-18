@@ -16,9 +16,6 @@ use criterion::{
 };
 use std::hint::black_box;
 
-/// The hasher shared by every map implementation that supports a custom hasher,
-/// so map implementations are compared against each other on a level playing
-/// field rather than each using its own default hasher.
 type CommonHasher = ahash::RandomState;
 
 fn bench<Map, H>(

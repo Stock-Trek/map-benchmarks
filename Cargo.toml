@@ -21,7 +21,7 @@ txmap = "3"
 
 [[bench]]
 name = "insert"
-path = "benches/out_of_the_box/insert.rs"
+path = "benches/both/insert.rs"
 harness = false
 
 [[bench]]
@@ -31,22 +31,22 @@ harness = false
 
 [[bench]]
 name = "lookup_hit"
-path = "benches/out_of_the_box/lookup_hit.rs"
+path = "benches/same_hasher/lookup_hit.rs"
 harness = false
 
 [[bench]]
 name = "lookup_miss"
-path = "benches/out_of_the_box/lookup_miss.rs"
+path = "benches/same_hasher/lookup_miss.rs"
 harness = false
 
 [[bench]]
 name = "mixed_read_write"
-path = "benches/out_of_the_box/mixed_read_write.rs"
+path = "benches/same_hasher/mixed_read_write.rs"
 harness = false
 
 [[bench]]
 name = "remove"
-path = "benches/out_of_the_box/remove.rs"
+path = "benches/same_hasher/remove.rs"
 harness = false
 
 [[bench]]
@@ -61,5 +61,5 @@ harness = false
 
 [[bench]]
 name = "create"
-path = "benches/same_hasher/create.rs"
+path = "benches/out_of_the_box/create.rs"
 harness = false

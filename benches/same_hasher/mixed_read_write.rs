@@ -109,7 +109,7 @@ fn mixed_read_write(c: &mut Criterion) {
             );
 
             let mut group = c.benchmark_group(format!(
-                "out-of-the-box/mixed-read-write/{}-workload/map-size-{}",
+                "same-hasher/mixed-read-write/{}-workload/map-size-{}",
                 name,
                 format_n(entry_count),
             ));
