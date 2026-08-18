@@ -38,7 +38,7 @@ fn bulk_clear(c: &mut Criterion) {
     let existing_key_count = 0;
     let missing_key_count = 0;
     let sort_keys = false;
-    for entry_count in OUT_OF_THE_BOX_ENTRY_COUNT {
+    for entry_count in BULK_CLEAR_ENTRY_COUNT {
         let map_data = MapGen::generate(
             U64SparseDataGen,
             U64SparseDataGen,

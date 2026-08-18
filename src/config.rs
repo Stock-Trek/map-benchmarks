@@ -10,6 +10,8 @@ pub const SAME_HASHER_MAP_COUNT: usize = 10_000;
 pub const CONCURRENCY_OPS_PER_THREAD: usize = 10_000;
 pub const CONCURRENCY_THREAD_COUNTS: &[usize] = &[1, 2, 4];
 
+pub const BULK_CLEAR_ENTRY_COUNT: &[usize] = &[100, 10_000];
+
 pub const KEY_SENSITIVITY_ENTRY_COUNT: usize = 10_000;
 
 pub const MIXED_ENTRY_COUNT: &[usize] = &[100, 10_000, 1_000_000];
