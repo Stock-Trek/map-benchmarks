@@ -50,7 +50,7 @@ jobs:
       - name: Update dependencies
         run: cargo update
 
-      - name: Run normal tests
+      - name: Sanity check tests
         run: cargo test
 
       - name: Run benchmarks
