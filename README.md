@@ -1,6 +1,6 @@
 # Map benchmarks
 
-Benchmarks 12 map implementations
+Benchmarks 16 map implementations
 
 [Criterion report can be found here](https://stock-trek.github.io/map-benchmarks)
 
@@ -8,17 +8,21 @@ Benchmarks 12 map implementations
 
 All benchmarks use blackbox to avoid any overly aggressive compiler optimisations.
 
-12 map implementations are benchmarked:
+16 map implementations are benchmarked:
 
 - [ahash::AHashMap](https://crates.io/crates/ahash)
 - [std::collections::btreemap](https://doc.rust-lang.org/std/collections/struct.BTreeMap.html)
 - [concread::hashmap::HashMap](https://crates.io/crates/concread)
 - [dashmap::DashMap](https://crates.io/crates/dashmap)
+- [flurry::HashMap](https://crates.io/crates/flurry)
 - [hashbrown::HashMap](https://crates.io/crates/hashbrown)
 - [horde::SyncTable](https://crates.io/crates/horde)
 - [immutable_chunkmap::map::MapM](https://crates.io/crates/immutable-chunkmap)
 - [indexmap::IndexMap](https://crates.io/crates/indexmap)
+- [leapfrog::LeapMap](https://crates.io/crates/leapfrog)
+- [papaya::HashMap](https://crates.io/crates/papaya)
 - [rustc_hash::FxHashMap](https://crates.io/crates/rustc-hash)
+- [scc::HashMap](https://crates.io/crates/scc)
 - [starshard::ShardedHashMap](https://crates.io/crates/starshard)
 - [std::collections::HashMap](https://doc.rust-lang.org/std/collections/struct.HashMap.html)
 - [txmap::TxMap](https://crates.io/crates/txmap)

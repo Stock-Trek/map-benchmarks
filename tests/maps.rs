@@ -4,9 +4,10 @@ use bench_map::{
     maps::{
         AhashBenchMap, BTreeMapBenchMap, BenchMapGetCloned, BenchMapInsert, BenchMapIter,
         BenchMapMutClear, BenchMapMutInsert, BenchMapMutRemove, BenchMapNew, BenchMapNewWithHasher,
-        BenchMapRemove, ConcreadBenchMap, DashMapBenchMap, HashbrownBenchMap, HordeBenchMap,
-        ImmutableChunkMapBenchMap, IndexMapBenchMap, RustCHashBenchMap, StarshardBenchMap,
-        StdBenchMap, TxMapBenchMap,
+        BenchMapRemove, ConcreadBenchMap, DashMapBenchMap, FlurryBenchMap, HashbrownBenchMap,
+        HordeBenchMap, ImmutableChunkMapBenchMap, IndexMapBenchMap, LeapfrogBenchMap,
+        PapayaBenchMap, RustCHashBenchMap, SccBenchMap, StarshardBenchMap, StdBenchMap,
+        TxMapBenchMap,
     },
 };
 use std::{collections::hash_map::RandomState, hash::BuildHasher, rc::Rc};
@@ -45,6 +46,15 @@ fn dashmap() {
     assert_mut_insert_remove::<DashMapBenchMap<u64, u64>>();
     assert_clear::<DashMapBenchMap<u64, u64>>();
     assert_shared_insert_remove::<DashMapBenchMap<u64, u64>>();
+}
+
+#[test]
+fn flurry() {
+    assert_create_map_populates_existing_keys::<FlurryBenchMap<u64, u64>>();
+    assert_iterate::<FlurryBenchMap<u64, u64>>();
+    assert_mut_insert_remove::<FlurryBenchMap<u64, u64>>();
+    assert_clear::<FlurryBenchMap<u64, u64>>();
+    assert_shared_insert_remove::<FlurryBenchMap<u64, u64>>();
 }
 
 #[test]
@@ -88,6 +98,33 @@ fn rustc_hash() {
     assert_mut_insert_remove::<RustCHashBenchMap<u64, u64>>();
     assert_clear::<RustCHashBenchMap<u64, u64>>();
     // assert_shared_insert_remove::<RustCHashBenchMap<u64, u64>>();
+}
+
+#[test]
+fn leapfrog() {
+    assert_create_map_populates_existing_keys::<LeapfrogBenchMap<u64, u64>>();
+    assert_iterate::<LeapfrogBenchMap<u64, u64>>();
+    assert_mut_insert_remove::<LeapfrogBenchMap<u64, u64>>();
+    assert_shared_insert_remove::<LeapfrogBenchMap<u64, u64>>();
+    // assert_clear::<LeapfrogBenchMap<u64, u64>>(); // leapfrog::LeapMap has no clear method
+}
+
+#[test]
+fn papaya() {
+    assert_create_map_populates_existing_keys::<PapayaBenchMap<u64, u64>>();
+    assert_iterate::<PapayaBenchMap<u64, u64>>();
+    assert_mut_insert_remove::<PapayaBenchMap<u64, u64>>();
+    assert_clear::<PapayaBenchMap<u64, u64>>();
+    assert_shared_insert_remove::<PapayaBenchMap<u64, u64>>();
+}
+
+#[test]
+fn scc() {
+    assert_create_map_populates_existing_keys::<SccBenchMap<u64, u64>>();
+    assert_iterate::<SccBenchMap<u64, u64>>();
+    assert_mut_insert_remove::<SccBenchMap<u64, u64>>();
+    assert_clear::<SccBenchMap<u64, u64>>();
+    assert_shared_insert_remove::<SccBenchMap<u64, u64>>();
 }
 
 #[test]
@@ -207,11 +244,43 @@ fn horde_with_hasher() {
 }
 
 #[test]
+fn flurry_with_hasher() {
+    assert_new_with_hasher::<FlurryBenchMap<u64, u64, ahash::RandomState>, _>(
+        ahash::RandomState::new(),
+    );
+    assert_new_with_hasher::<FlurryBenchMap<u64, u64, RandomState>, _>(RandomState::new());
+}
+
+#[test]
 fn indexmap_with_hasher() {
     assert_new_with_hasher::<IndexMapBenchMap<u64, u64, ahash::RandomState>, _>(
         ahash::RandomState::new(),
     );
     assert_new_with_hasher::<IndexMapBenchMap<u64, u64, RandomState>, _>(RandomState::new());
+}
+
+#[test]
+fn leapfrog_with_hasher() {
+    assert_new_with_hasher::<LeapfrogBenchMap<u64, u64, ahash::RandomState>, _>(
+        ahash::RandomState::new(),
+    );
+    assert_new_with_hasher::<LeapfrogBenchMap<u64, u64, RandomState>, _>(RandomState::new());
+}
+
+#[test]
+fn papaya_with_hasher() {
+    assert_new_with_hasher::<PapayaBenchMap<u64, u64, ahash::RandomState>, _>(
+        ahash::RandomState::new(),
+    );
+    assert_new_with_hasher::<PapayaBenchMap<u64, u64, RandomState>, _>(RandomState::new());
+}
+
+#[test]
+fn scc_with_hasher() {
+    assert_new_with_hasher::<SccBenchMap<u64, u64, ahash::RandomState>, _>(
+        ahash::RandomState::new(),
+    );
+    assert_new_with_hasher::<SccBenchMap<u64, u64, RandomState>, _>(RandomState::new());
 }
 
 #[test]

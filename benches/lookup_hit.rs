@@ -6,8 +6,9 @@ use bench_map::{
     map_gen::MapGen,
     maps::{
         AhashBenchMap, BenchMapGetCloned, BenchMapMutInsert, BenchMapNewWithHasher,
-        DashMapBenchMap, HashbrownBenchMap, IndexMapBenchMap, StarshardBenchMap, StdBenchMap,
-        TxMapBenchMap, horde_benchmap::HordeBenchMap,
+        DashMapBenchMap, FlurryBenchMap, HashbrownBenchMap, IndexMapBenchMap, LeapfrogBenchMap,
+        PapayaBenchMap, SccBenchMap, StarshardBenchMap, StdBenchMap, TxMapBenchMap,
+        horde_benchmap::HordeBenchMap,
     },
     number_formatter::format_n,
 };
@@ -77,6 +78,12 @@ fn lookup_hit(c: &mut Criterion) {
             "dashmap",
             hasher.clone(),
         );
+        bench::<FlurryBenchMap<u64, u64, CommonHasher>>(
+            &mut group,
+            &map_data,
+            "flurry",
+            hasher.clone(),
+        );
         bench::<HashbrownBenchMap<u64, u64, CommonHasher>>(
             &mut group,
             &map_data,
@@ -96,7 +103,20 @@ fn lookup_hit(c: &mut Criterion) {
             "indexmap",
             hasher.clone(),
         );
+        bench::<LeapfrogBenchMap<u64, u64, CommonHasher>>(
+            &mut group,
+            &map_data,
+            "leapfrog",
+            hasher.clone(),
+        );
+        bench::<PapayaBenchMap<u64, u64, CommonHasher>>(
+            &mut group,
+            &map_data,
+            "papaya",
+            hasher.clone(),
+        );
         // bench::<RustCHashBenchMap<u64, u64, CommonHasher>>(&mut group, &map_data, "rustc-hash"); // doesn't allow setting hasher
+        bench::<SccBenchMap<u64, u64, CommonHasher>>(&mut group, &map_data, "scc", hasher.clone());
         bench::<StarshardBenchMap<u64, u64, CommonHasher>>(
             &mut group,
             &map_data,
