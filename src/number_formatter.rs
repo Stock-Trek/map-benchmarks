@@ -1,4 +1,4 @@
-const MAX_DIGITS: usize = 7; // increase to 8 if 10M entries are used
+const MAX_DIGITS: usize = 6; // increase to 8 if 10M entries are used
 
 pub fn format_n(n: usize) -> String {
     let s = n.to_string();

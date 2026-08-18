@@ -65,7 +65,7 @@ fn bench<Map>(
     });
 }
 
-fn mixed_read_write(c: &mut Criterion) {
+fn workload_serial(c: &mut Criterion) {
     let missing_key_count = MIXED_MISSING_KEY_COUNT;
     let sort_keys = false;
 
@@ -87,10 +87,6 @@ fn mixed_read_write(c: &mut Criterion) {
                 "write-heavy",
                 WorkloadDesign::write_heavy(MIXED_OPS_PER_DESIGN),
             ),
-            (
-                "high-churn",
-                WorkloadDesign::high_churn(MIXED_OPS_PER_DESIGN),
-            ),
             ("balanced", WorkloadDesign::balanced(MIXED_OPS_PER_DESIGN)),
             (
                 "read-heavy",
@@ -107,7 +103,7 @@ fn mixed_read_write(c: &mut Criterion) {
             );
 
             let mut group = c.benchmark_group(format!(
-                "mixed-read-write/{OUT_OF_THE_BOX_GROUP_NAME}/{}/map-size-{}",
+                "workload/{OUT_OF_THE_BOX_GROUP_NAME}/{}/map-size-{}/threads-1",
                 name,
                 format_n(entry_count),
             ));
@@ -140,5 +136,5 @@ fn mixed_read_write(c: &mut Criterion) {
     }
 }
 
-criterion_group!(group, mixed_read_write);
+criterion_group!(group, workload_serial);
 criterion_main!(group);

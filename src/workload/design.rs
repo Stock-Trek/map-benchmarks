@@ -14,11 +14,8 @@ impl WorkloadDesign {
     pub fn write_heavy(total_ops: usize) -> Self {
         Self::from_ratios(total_ops, 0.20, 0.0, 0.80, 0.0, 0.0)
     }
-    pub fn high_churn(total_ops: usize) -> Self {
-        Self::from_ratios(total_ops, 0.40, 0.10, 0.10, 0.30, 0.10)
-    }
     pub fn balanced(total_ops: usize) -> Self {
-        Self::from_ratios(total_ops, 0.75, 0.05, 0.05, 0.10, 0.05)
+        Self::from_ratios(total_ops, 0.70, 0.05, 0.10, 0.10, 0.05)
     }
     pub fn read_heavy(total_ops: usize) -> Self {
         Self::from_ratios(total_ops, 0.90, 0.05, 0.05, 0.0, 0.0)

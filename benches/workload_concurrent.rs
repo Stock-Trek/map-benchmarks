@@ -87,7 +87,7 @@ fn bench<Map>(
     });
 }
 
-fn concurrency(c: &mut Criterion) {
+fn workload_concurrent(c: &mut Criterion) {
     let max_threads = CONCURRENCY_THREAD_COUNTS.last().unwrap();
     for entry_count in MIXED_ENTRY_COUNT {
         let existing_key_count = *entry_count;
@@ -106,10 +106,6 @@ fn concurrency(c: &mut Criterion) {
             (
                 "write-heavy",
                 WorkloadDesign::write_heavy(CONCURRENCY_OPS_PER_THREAD),
-            ),
-            (
-                "high-churn",
-                WorkloadDesign::high_churn(CONCURRENCY_OPS_PER_THREAD),
             ),
             (
                 "balanced",
@@ -137,7 +133,7 @@ fn concurrency(c: &mut Criterion) {
                     .collect::<Vec<_>>();
 
                 let mut group = c.benchmark_group(format!(
-                    "concurrency/{OUT_OF_THE_BOX_GROUP_NAME}/{}/map-size-{}/{}_threads",
+                    "workload/{OUT_OF_THE_BOX_GROUP_NAME}/{}/map-size-{}/threads-{}",
                     name,
                     format_n(*entry_count),
                     thread_count
@@ -197,5 +193,5 @@ fn concurrency(c: &mut Criterion) {
     }
 }
 
-criterion_group!(group, concurrency);
+criterion_group!(group, workload_concurrent);
 criterion_main!(group);

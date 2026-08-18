@@ -33,20 +33,17 @@ There are 3 groups of tests, `out-of-the-box` which uses each map's default impl
 
 ### Out of the box
 
-- **Create**: Creates 10K new, empty maps
-- **Clone**: Clones maps containing 100/10K/1M entries
-- **Bulk clear**: Uses maps containing 100/10K entries. Clears all entries in a single `clear` operation
-- **Mixed read/write**: Uses a map with 100/10K/1M entries. Use cases: [write-heavy, high-churn, balanced, read-heavy]
-- **Concurrency**: Uses a map with 1M entries and tests the workloads: [write-heavy, high-churn, balanced, read-heavy]. Thread counts: [1, 2, 4]. Threads are pinned to reduce any effects from OS scheduling.
+- **Clone**: Clones maps containing 1K/10K/100K entries
+- **Workload**: Uses a map with 1K/10K/100K entries. Use cases: [write-heavy, balanced, read-heavy]. Thread counts: [1, 2, 4]. Threads for concurrent tests are pinned to reduce any effects from OS scheduling.
 
 ### Same hasher
 
-- **Key sensitivity**: Uses a map containing 10K entries. Keys tested: [u64, 32 byte array, UUID, Strings of length 16 and 128]
-- **Lookup hit**: Uses maps containing 100/10K/1M entries. Finds 100 extant values, found values are cloned to ensure all maps are treated consistently
-- **Lookup miss**: Uses maps containing 100/10K/1M entries. Finds 100 non-existent values
-- **Remove**: Uses maps containing 100/10K/1M entries. Removes 100 entries
+- **Key sensitivity**: Uses a map containing 10K entries. Keys tested: [u64, Strings of length 16 and 128]
+- **Lookup hit**: Uses maps containing 1K/10K/100K entries. Finds 100 extant values, found values are cloned to ensure all maps are treated consistently
+- **Lookup miss**: Uses maps containing 1K/10K/100K entries. Finds 100 non-existent values
+- **Remove**: Uses maps containing 1K/10K/100K entries. Removes 100 entries
 
 ### Both
 
-- **Insert**: Inserts 100/10K/1M entries into an empty map
-- **Iterate**: Uses maps containing 100/10K/1M entries. Iterates through each entry
+- **Insert**: Inserts 1K/10K/100K entries into an empty map
+- **Iterate**: Uses maps containing 1K/10K/100K entries. Iterates through each entry

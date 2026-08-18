@@ -25,19 +25,7 @@ starshard = "2"
 txmap = "3"
 
 [[bench]]
-name = "bulk_clear"
-harness = false
-
-[[bench]]
 name = "clone"
-harness = false
-
-[[bench]]
-name = "concurrency"
-harness = false
-
-[[bench]]
-name = "create"
 harness = false
 
 [[bench]]
@@ -61,9 +49,13 @@ name = "lookup_miss"
 harness = false
 
 [[bench]]
-name = "mixed_read_write"
+name = "remove"
 harness = false
 
 [[bench]]
-name = "remove"
+name = "workload_concurrent"
+harness = false
+
+[[bench]]
+name = "workload_serial"
 harness = false
