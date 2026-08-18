@@ -92,8 +92,8 @@ jobs:
         run: |
           {
             echo "# AI generated summary: $(date)"
-            echo "\n"
-            echo "\n"
+            echo
+            echo
             echo "${{ steps.generate-summary.outputs.response-base64 }}" | base64 -d
           }  > SUMMARY.md
           git config --global user.email "agent@stock-trek.com"
