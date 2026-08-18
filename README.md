@@ -41,4 +41,4 @@ There are 3 groups of tests, `out-of-the-box` which uses each map's default impl
 
 ### Both
 
-- **Insert**: Inserts 10K/100K/1M entries into an empty map, run once with each map's default implementation and once with a shared hasher
+- **Insert**: Inserts 10K/100K/1M entries into an empty map
