@@ -90,11 +90,13 @@ jobs:
         id: save-summary
         run: |
           {
-            echo $(date)
+            echo "AI summary generated at $(date)"
             echo "\n"
             echo "\n"
             echo "${{ steps.create-summary.outputs.response-base64 }}"
           }  > SUMMARY.md
+          git add SUMMARY.md
+          git commit -m "Added AI generated summary"
 
       - name: Create Pull Request
         uses: peter-evans/create-pull-request@v8
