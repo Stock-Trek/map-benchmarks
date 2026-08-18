@@ -101,54 +101,79 @@ fn concurrency(c: &mut Criterion) {
         sort_keys,
     );
 
-    let design = WorkloadDesign::balanced(CONCURRENCY_OPS_PER_THREAD);
-    let mut rng = rand::rng();
+    let designs: &[(&str, WorkloadDesign)] = &[
+        (
+            "write-heavy",
+            WorkloadDesign::write_heavy(CONCURRENCY_OPS_PER_THREAD),
+        ),
+        (
+            "high-churn",
+            WorkloadDesign::high_churn(CONCURRENCY_OPS_PER_THREAD),
+        ),
+        (
+            "balanced",
+            WorkloadDesign::balanced(CONCURRENCY_OPS_PER_THREAD),
+        ),
+        (
+            "read-heavy",
+            WorkloadDesign::read_heavy(CONCURRENCY_OPS_PER_THREAD),
+        ),
+    ];
 
-    for &thread_count in CONCURRENCY_THREAD_COUNTS {
-        let total_ops = thread_count * CONCURRENCY_OPS_PER_THREAD;
-        let workloads = (0..thread_count)
-            .map(|_| {
-                ThreadWorkload::new(
-                    &design,
-                    map_data.existing_keys(),
-                    map_data.missing_keys(),
-                    &mut rng,
-                )
-            })
-            .collect::<Vec<_>>();
+    for &(name, design) in designs {
+        let mut rng = rand::rng();
+        for &thread_count in CONCURRENCY_THREAD_COUNTS {
+            let total_ops = thread_count * CONCURRENCY_OPS_PER_THREAD;
+            let workloads = (0..thread_count)
+                .map(|_| {
+                    ThreadWorkload::new(
+                        &design,
+                        map_data.existing_keys(),
+                        map_data.missing_keys(),
+                        &mut rng,
+                    )
+                })
+                .collect::<Vec<_>>();
 
-        let mut group = c.benchmark_group(format!(
-            "concurrency/{OUT_OF_THE_BOX_GROUP_NAME}/balanced-workload/{}_threads",
-            thread_count
-        ));
-        group.warm_up_time(WARM_UP_TIME);
-        group.measurement_time(MEASUREMENT_TIME);
-        group.throughput(Throughput::Elements(total_ops as u64));
+            let mut group = c.benchmark_group(format!(
+                "concurrency/{OUT_OF_THE_BOX_GROUP_NAME}/{}-workload/{}_threads",
+                name, thread_count
+            ));
+            group.warm_up_time(WARM_UP_TIME);
+            group.measurement_time(MEASUREMENT_TIME);
+            group.throughput(Throughput::Elements(total_ops as u64));
 
-        // bench::<AhashBenchMap<u64, u64>>(&mut group, &map_data, thread_count, &workloads, "ahash"); // not concurrent
-        // bench::<BTreeMapBenchMap<u64, u64>>(&mut group, &map_data, thread_count, &workloads, "btreemap"); // not concurrent
-        // bench::<ConcreadBenchMap<u64, u64>>(&mut group, &map_data, thread_count, &workloads, "concread"); // too slow
-        bench::<DashMapBenchMap<u64, u64>>(
-            &mut group,
-            &map_data,
-            thread_count,
-            &workloads,
-            "dashmap",
-        );
-        // bench::<HashbrownBenchMap<u64, u64>>(&mut group, &map_data, thread_count, &workloads, "hashbrown"); // not concurrent
-        // bench::<HordeBenchMap<u64, u64>>(&mut group, &map_data, thread_count, &workloads, "horde"); // mutation requires &mut, cannot mutate through a shared reference
-        // bench::<ImmutableChunkMapBenchMap<u64, u64>>(&mut group, &map_data, thread_count, &workloads, "immutable-chunkmap"); // mutation returns a new map; requires &mut or storing the result, cannot mutate through a shared reference
-        // bench::<IndexMapBenchMap<u64, u64>>(&mut group, &map_data, thread_count, &workloads, "indexmap"); // not concurrent
-        // bench::<RustCHashBenchMap<u64, u64>>(&mut group, &map_data, thread_count, &workloads, "rustc-hash"); // not concurrent
-        bench::<StarshardBenchMap<u64, u64>>(
-            &mut group,
-            &map_data,
-            thread_count,
-            &workloads,
-            "starshard",
-        );
-        // bench::<StdBenchMap<u64, u64>>(&mut group, &map_data, thread_count, &workloads, "std"); // not concurrent
-        bench::<TxMapBenchMap<u64, u64>>(&mut group, &map_data, thread_count, &workloads, "txmap");
+            // bench::<AhashBenchMap<u64, u64>>(&mut group, &map_data, thread_count, &workloads, "ahash"); // not concurrent
+            // bench::<BTreeMapBenchMap<u64, u64>>(&mut group, &map_data, thread_count, &workloads, "btreemap"); // not concurrent
+            // bench::<ConcreadBenchMap<u64, u64>>(&mut group, &map_data, thread_count, &workloads, "concread"); // too slow
+            bench::<DashMapBenchMap<u64, u64>>(
+                &mut group,
+                &map_data,
+                thread_count,
+                &workloads,
+                "dashmap",
+            );
+            // bench::<HashbrownBenchMap<u64, u64>>(&mut group, &map_data, thread_count, &workloads, "hashbrown"); // not concurrent
+            // bench::<HordeBenchMap<u64, u64>>(&mut group, &map_data, thread_count, &workloads, "horde"); // mutation requires &mut, cannot mutate through a shared reference
+            // bench::<ImmutableChunkMapBenchMap<u64, u64>>(&mut group, &map_data, thread_count, &workloads, "immutable-chunkmap"); // mutation returns a new map; requires &mut or storing the result, cannot mutate through a shared reference
+            // bench::<IndexMapBenchMap<u64, u64>>(&mut group, &map_data, thread_count, &workloads, "indexmap"); // not concurrent
+            // bench::<RustCHashBenchMap<u64, u64>>(&mut group, &map_data, thread_count, &workloads, "rustc-hash"); // not concurrent
+            bench::<StarshardBenchMap<u64, u64>>(
+                &mut group,
+                &map_data,
+                thread_count,
+                &workloads,
+                "starshard",
+            );
+            // bench::<StdBenchMap<u64, u64>>(&mut group, &map_data, thread_count, &workloads, "std"); // not concurrent
+            bench::<TxMapBenchMap<u64, u64>>(
+                &mut group,
+                &map_data,
+                thread_count,
+                &workloads,
+                "txmap",
+            );
+        }
     }
 }
 
