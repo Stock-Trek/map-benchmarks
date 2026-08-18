@@ -28,42 +28,42 @@ txmap = "3"
 name = "bulk_clear"
 harness = false
 
-[[bench]]
-name = "clone"
-harness = false
+#[[bench]]
+#name = "clone"
+#harness = false
 
-[[bench]]
-name = "concurrency"
-harness = false
+#[[bench]]
+#name = "concurrency"
+#harness = false
 
-[[bench]]
-name = "create"
-harness = false
+#[[bench]]
+#name = "create"
+#harness = false
 
-[[bench]]
-name = "insert"
-harness = false
+#[[bench]]
+#name = "insert"
+#harness = false
 
-[[bench]]
-name = "iterate"
-harness = false
+#[[bench]]
+#name = "iterate"
+#harness = false
 
-[[bench]]
-name = "key_sensitivity"
-harness = false
+#[[bench]]
+#name = "key_sensitivity"
+#harness = false
 
-[[bench]]
-name = "lookup_hit"
-harness = false
+#[[bench]]
+#name = "lookup_hit"
+#harness = false
 
-[[bench]]
-name = "lookup_miss"
-harness = false
+#[[bench]]
+#name = "lookup_miss"
+#harness = false
 
-[[bench]]
-name = "mixed_read_write"
-harness = false
+#[[bench]]
+#name = "mixed_read_write"
+#harness = false
 
-[[bench]]
-name = "remove"
-harness = false
+#[[bench]]
+#name = "remove"
+#harness = false
