@@ -107,3 +107,4 @@ jobs:
           branch: summary-${{ github.run_id }}
           base: master
           token: ${{ steps.app-token.outputs.token }}
+          branch-token: ${{ steps.app-token.outputs.token }}
