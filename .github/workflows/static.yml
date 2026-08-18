@@ -91,7 +91,7 @@ jobs:
         id: save-summary
         run: |
           {
-            echo "AI summary generated at $(date)"
+            echo "# AI generated summary: $(date)"
             echo "\n"
             echo "\n"
             echo "${{ steps.create-summary.outputs.response-base64 }}"
