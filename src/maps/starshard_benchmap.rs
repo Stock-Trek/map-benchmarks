@@ -1,6 +1,6 @@
 use crate::maps::benchmap::{
-    BenchMapGetCloned, BenchMapInsert, BenchMapIter, BenchMapMutInsert, BenchMapMutRemove,
-    BenchMapNew, BenchMapNewWithHasher, BenchMapRemove,
+    BenchMapClone, BenchMapGetCloned, BenchMapInsert, BenchMapIter, BenchMapMutInsert,
+    BenchMapMutRemove, BenchMapNew, BenchMapNewWithHasher, BenchMapRemove,
 };
 use std::hash::{BuildHasher, Hash};
 
@@ -35,6 +35,19 @@ where
     fn new_with_hasher(hasher: H) -> Self {
         Self {
             map: starshard::ShardedHashMap::with_shards_and_hasher(8, hasher),
+        }
+    }
+}
+
+impl<K, V, H> BenchMapClone<K, V> for StarshardBenchMap<K, V, H>
+where
+    K: Clone + Hash + Eq + Send + Sync,
+    V: Clone + Send + Sync,
+    H: BuildHasher + Clone + Send + Sync,
+{
+    fn clone_map(&self) -> Self {
+        Self {
+            map: self.map.clone(),
         }
     }
 }

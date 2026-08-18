@@ -60,6 +60,11 @@ path = "benches/same_hasher/iterate.rs"
 harness = false
 
 [[bench]]
+name = "clone"
+path = "benches/out_of_the_box/clone.rs"
+harness = false
+
+[[bench]]
 name = "create"
 path = "benches/out_of_the_box/create.rs"
 harness = false

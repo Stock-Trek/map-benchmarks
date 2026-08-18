@@ -1,5 +1,6 @@
 use crate::maps::benchmap::{
-    BenchMapGetCloned, BenchMapIter, BenchMapMutInsert, BenchMapMutRemove, BenchMapNew,
+    BenchMapClone, BenchMapGetCloned, BenchMapIter, BenchMapMutInsert, BenchMapMutRemove,
+    BenchMapNew,
 };
 
 pub struct ImmutableChunkMapBenchMap<K, V>
@@ -18,6 +19,18 @@ where
     fn new() -> Self {
         Self {
             map: immutable_chunkmap::map::MapM::new(),
+        }
+    }
+}
+
+impl<K, V> BenchMapClone<K, V> for ImmutableChunkMapBenchMap<K, V>
+where
+    K: Clone + Ord,
+    V: Clone,
+{
+    fn clone_map(&self) -> Self {
+        Self {
+            map: self.map.clone(),
         }
     }
 }
