@@ -122,67 +122,69 @@ fn insert(c: &mut Criterion) {
         }
 
         // Every map that supports a custom hasher uses the same CommonHasher
-        let hasher = CommonHasher::new();
-        let mut group = c.benchmark_group(format!(
-            "{SAME_HASHER_GROUP_NAME}/insert/map-size-{}",
-            format_n(*missing_key_count)
-        ));
-        group.warm_up_time(WARM_UP_TIME);
-        group.measurement_time(MEASUREMENT_TIME);
-        group.throughput(Throughput::Elements(*missing_key_count as u64));
+        {
+            let hasher = CommonHasher::new();
+            let mut group = c.benchmark_group(format!(
+                "{SAME_HASHER_GROUP_NAME}/insert/map-size-{}",
+                format_n(*missing_key_count)
+            ));
+            group.warm_up_time(WARM_UP_TIME);
+            group.measurement_time(MEASUREMENT_TIME);
+            group.throughput(Throughput::Elements(*missing_key_count as u64));
 
-        bench_same_hasher::<AhashBenchMap<u64, u64, CommonHasher>>(
-            &mut group,
-            &map_data,
-            "ahash",
-            hasher.clone(),
-        );
-        // bench_same_hasher::<BTreeMapBenchMap<u64, u64, CommonHasher>>(&mut group, &map_data, "btreemap"); // doesn't allow setting hasher
-        // bench_same_hasher::<ConcreadBenchMap<u64, u64, CommonHasher>>(&mut group, &map_data, "concread"); // doesn't allow setting hasher
-        bench_same_hasher::<DashMapBenchMap<u64, u64, CommonHasher>>(
-            &mut group,
-            &map_data,
-            "dashmap",
-            hasher.clone(),
-        );
-        bench_same_hasher::<HashbrownBenchMap<u64, u64, CommonHasher>>(
-            &mut group,
-            &map_data,
-            "hashbrown",
-            hasher.clone(),
-        );
-        bench_same_hasher::<HordeBenchMap<u64, u64, CommonHasher>>(
-            &mut group,
-            &map_data,
-            "horde",
-            hasher.clone(),
-        );
-        // bench_same_hasher::<ImmutableChunkMapBenchMap<u64, u64, CommonHasher>>(&mut group, &map_data, "immutable-chunkmap"); // doesn't allow setting hasher
-        bench_same_hasher::<IndexMapBenchMap<u64, u64, CommonHasher>>(
-            &mut group,
-            &map_data,
-            "indexmap",
-            hasher.clone(),
-        );
-        // bench_same_hasher::<RustCHashBenchMap<u64, u64, CommonHasher>>(&mut group, &map_data, "rustc-hash"); // doesn't allow setting hasher
-        bench_same_hasher::<StarshardBenchMap<u64, u64, CommonHasher>>(
-            &mut group,
-            &map_data,
-            "starshard",
-            hasher.clone(),
-        );
-        bench_same_hasher::<StdBenchMap<u64, u64, CommonHasher>>(
-            &mut group,
-            &map_data,
-            "std",
-            hasher.clone(),
-        );
-        bench_same_hasher::<TxMapBenchMap<u64, u64, CommonHasher>>(
-            &mut group,
-            &map_data,
-            "txmap",
-            hasher.clone(),
-        );
+            bench_same_hasher::<AhashBenchMap<u64, u64, CommonHasher>>(
+                &mut group,
+                &map_data,
+                "ahash",
+                hasher.clone(),
+            );
+            // bench_same_hasher::<BTreeMapBenchMap<u64, u64, CommonHasher>>(&mut group, &map_data, "btreemap"); // doesn't allow setting hasher
+            // bench_same_hasher::<ConcreadBenchMap<u64, u64, CommonHasher>>(&mut group, &map_data, "concread"); // doesn't allow setting hasher
+            bench_same_hasher::<DashMapBenchMap<u64, u64, CommonHasher>>(
+                &mut group,
+                &map_data,
+                "dashmap",
+                hasher.clone(),
+            );
+            bench_same_hasher::<HashbrownBenchMap<u64, u64, CommonHasher>>(
+                &mut group,
+                &map_data,
+                "hashbrown",
+                hasher.clone(),
+            );
+            bench_same_hasher::<HordeBenchMap<u64, u64, CommonHasher>>(
+                &mut group,
+                &map_data,
+                "horde",
+                hasher.clone(),
+            );
+            // bench_same_hasher::<ImmutableChunkMapBenchMap<u64, u64, CommonHasher>>(&mut group, &map_data, "immutable-chunkmap"); // doesn't allow setting hasher
+            bench_same_hasher::<IndexMapBenchMap<u64, u64, CommonHasher>>(
+                &mut group,
+                &map_data,
+                "indexmap",
+                hasher.clone(),
+            );
+            // bench_same_hasher::<RustCHashBenchMap<u64, u64, CommonHasher>>(&mut group, &map_data, "rustc-hash"); // doesn't allow setting hasher
+            bench_same_hasher::<StarshardBenchMap<u64, u64, CommonHasher>>(
+                &mut group,
+                &map_data,
+                "starshard",
+                hasher.clone(),
+            );
+            bench_same_hasher::<StdBenchMap<u64, u64, CommonHasher>>(
+                &mut group,
+                &map_data,
+                "std",
+                hasher.clone(),
+            );
+            bench_same_hasher::<TxMapBenchMap<u64, u64, CommonHasher>>(
+                &mut group,
+                &map_data,
+                "txmap",
+                hasher.clone(),
+            );
+        }
     }
 }
 

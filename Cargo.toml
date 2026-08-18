@@ -20,56 +20,45 @@ starshard = "2"
 txmap = "3"
 
 [[bench]]
-name = "insert"
-path = "benches/both/insert.rs"
-harness = false
-
-[[bench]]
-name = "key_sensitivity"
-path = "benches/out_of_the_box/key_sensitivity.rs"
-harness = false
-
-[[bench]]
-name = "lookup_hit"
-path = "benches/same_hasher/lookup_hit.rs"
-harness = false
-
-[[bench]]
-name = "lookup_miss"
-path = "benches/same_hasher/lookup_miss.rs"
-harness = false
-
-[[bench]]
-name = "mixed_read_write"
-path = "benches/same_hasher/mixed_read_write.rs"
-harness = false
-
-[[bench]]
-name = "remove"
-path = "benches/same_hasher/remove.rs"
-harness = false
-
-[[bench]]
-name = "concurrency"
-path = "benches/same_hasher/concurrency.rs"
-harness = false
-
-[[bench]]
-name = "iterate"
-path = "benches/same_hasher/iterate.rs"
+name = "bulk_clear"
 harness = false
 
 [[bench]]
 name = "clone"
-path = "benches/out_of_the_box/clone.rs"
+harness = false
+
+[[bench]]
+name = "concurrency"
 harness = false
 
 [[bench]]
 name = "create"
-path = "benches/out_of_the_box/create.rs"
 harness = false
 
 [[bench]]
-name = "bulk_clear"
-path = "benches/out_of_the_box/bulk_clear.rs"
+name = "insert"
+harness = false
+
+[[bench]]
+name = "iterate"
+harness = false
+
+[[bench]]
+name = "key_sensitivity"
+harness = false
+
+[[bench]]
+name = "lookup_hit"
+harness = false
+
+[[bench]]
+name = "lookup_miss"
+harness = false
+
+[[bench]]
+name = "mixed_read_write"
+harness = false
+
+[[bench]]
+name = "remove"
 harness = false
