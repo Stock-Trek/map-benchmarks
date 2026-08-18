@@ -17,7 +17,14 @@ use criterion::{
     BatchSize, BenchmarkGroup, Criterion, Throughput, criterion_group, criterion_main,
     measurement::WallTime,
 };
-use std::{hint::black_box, sync::Arc};
+use std::{
+    cell::Cell,
+    hint::black_box,
+    sync::{
+        Arc, Condvar, Mutex,
+        atomic::{AtomicBool, Ordering},
+    },
+};
 
 fn run_workload<M>(workload: &ThreadWorkload, map: &M)
 where
@@ -43,6 +50,171 @@ where
     }
 }
 
+/// A pool of pinned worker threads reused across all timed iterations of one
+/// benchmark sample.
+///
+/// The threads are spawned and pinned to dedicated CPUs once per sample,
+/// outside the timed region, so the per-iteration time measured by Criterion
+/// contains only the parallel workload execution plus nanosecond-scale
+/// start/done signalling - not thread spawn/join or CPU-pinning overhead.
+struct ConcurrentWorkers<M> {
+    shared: Arc<Shared<M>>,
+    handles: Vec<std::thread::JoinHandle<()>>,
+}
+
+struct Shared<M> {
+    /// Raised by the timed region to release the workers; cleared once all
+    /// workers have reported done for the current iteration.
+    start: AtomicBool,
+    /// Cumulative number of completed work items (monotonic across
+    /// iterations, so no per-iteration reset is needed). Each worker adds one
+    /// per iteration, so after the Nth iteration the counter equals
+    /// N * thread_count. Guarded by `done_cond` so the main thread can block
+    /// instead of busy-waiting (a busy-wait on the main thread would steal
+    /// cycles from the pinned workers on machines where every core is
+    /// occupied).
+    done: Mutex<usize>,
+    /// Signalled whenever a worker completes a work item or panics.
+    done_cond: Condvar,
+    /// Set when a worker thread panics so the main thread aborts the
+    /// benchmark instead of spinning forever waiting for a dead worker.
+    panicked: AtomicBool,
+    /// The first worker panic payload, re-raised on the main thread.
+    panic: Mutex<Option<Box<dyn std::any::Any + Send>>>,
+    /// Set when the pool is dropped so idle workers exit and can be joined.
+    shutdown: AtomicBool,
+    /// Per-worker slot holding the current iteration's map. The (untimed)
+    /// setup closure publishes a fresh map here before raising `start`.
+    slots: Vec<Mutex<Option<Arc<M>>>>,
+    /// Immutable per-worker workloads.
+    workloads: Vec<ThreadWorkload>,
+}
+
+impl<M> ConcurrentWorkers<M> {
+    fn new(thread_count: usize, workloads: &[ThreadWorkload]) -> Self
+    where
+        M: BenchMapGetCloned<u64, u64>
+            + BenchMapInsert<u64, u64>
+            + BenchMapRemove<u64, u64>
+            + Send
+            + Sync
+            + 'static,
+    {
+        let workloads = workloads
+            .iter()
+            .take(thread_count)
+            .cloned()
+            .collect::<Vec<_>>();
+        let slots = (0..thread_count).map(|_| Mutex::new(None)).collect();
+        let shared = Arc::new(Shared {
+            start: AtomicBool::new(false),
+            done: Mutex::new(0),
+            done_cond: Condvar::new(),
+            panicked: AtomicBool::new(false),
+            panic: Mutex::new(None),
+            shutdown: AtomicBool::new(false),
+            slots,
+            workloads,
+        });
+
+        let handles = (0..thread_count)
+            .map(|thread_id| {
+                let shared = shared.clone();
+                std::thread::spawn(move || {
+                    // Swallow panics just long enough to record them so the
+                    // main thread's done-counter wait cannot hang; the panic
+                    // is re-raised on the main thread from `run`.
+                    let result = std::panic::catch_unwind(std::panic::AssertUnwindSafe(|| {
+                        PinThread::try_pin(thread_id).expect("failed to pin thread to CPU");
+                        let workload = &shared.workloads[thread_id];
+                        loop {
+                            // Wait for the timed region to release us (or for
+                            // the pool to shut down).
+                            while !shared.start.load(Ordering::Acquire) {
+                                if shared.shutdown.load(Ordering::Acquire) {
+                                    return;
+                                }
+                                std::hint::spin_loop();
+                            }
+                            // The setup closure publishes the current map
+                            // before raising `start`, so the slot is normally
+                            // populated already; spin briefly in case the flag
+                            // races ahead of the publish.
+                            let map = loop {
+                                let mut slot = shared.slots[thread_id].lock().unwrap();
+                                if let Some(map) = slot.take() {
+                                    break map;
+                                }
+                                drop(slot);
+                                if shared.shutdown.load(Ordering::Acquire) {
+                                    return;
+                                }
+                                std::hint::spin_loop();
+                            };
+                            run_workload(workload, &*map);
+                            *shared.done.lock().unwrap() += 1;
+                            shared.done_cond.notify_one();
+                        }
+                    }));
+                    if let Err(payload) = result {
+                        let mut guard = shared.panic.lock().unwrap();
+                        if guard.is_none() {
+                            *guard = Some(payload);
+                        }
+                        drop(guard);
+                        shared.panicked.store(true, Ordering::SeqCst);
+                        // Account for this worker so the main thread's wait
+                        // terminates even if the panic happened before the
+                        // per-iteration `done` increment.
+                        *shared.done.lock().unwrap() += 1;
+                        shared.done_cond.notify_one();
+                    }
+                })
+            })
+            .collect::<Vec<_>>();
+
+        Self { shared, handles }
+    }
+
+    /// Releases the workers and waits until all of them have finished their
+    /// current work item. `target` is the cumulative number of completed work
+    /// items expected after this iteration (iteration_index * thread_count).
+    fn run(&self, target: usize) {
+        self.shared.start.store(true, Ordering::Release);
+        let mut done = self.shared.done.lock().unwrap();
+        while *done < target {
+            if self.shared.panicked.load(Ordering::SeqCst) {
+                drop(done);
+                self.resume_worker_panic();
+            }
+            done = self.shared.done_cond.wait(done).unwrap();
+        }
+        drop(done);
+        if self.shared.panicked.load(Ordering::SeqCst) {
+            self.resume_worker_panic();
+        }
+        self.shared.start.store(false, Ordering::SeqCst);
+    }
+
+    fn resume_worker_panic(&self) -> ! {
+        let payload = self.shared.panic.lock().unwrap().take();
+        if let Some(payload) = payload {
+            std::panic::resume_unwind(payload);
+        } else {
+            std::panic::panic_any("a worker thread panicked");
+        }
+    }
+}
+
+impl<M> Drop for ConcurrentWorkers<M> {
+    fn drop(&mut self) {
+        self.shared.shutdown.store(true, Ordering::SeqCst);
+        for handle in self.handles.drain(..) {
+            handle.join().unwrap();
+        }
+    }
+}
+
 fn bench<Map>(
     group: &mut BenchmarkGroup<WallTime>,
     map_data: &MapData<u64, u64>,
@@ -60,31 +232,34 @@ fn bench<Map>(
         + 'static,
 {
     group.bench_function(name, move |b| {
+        // Spawn and pin the worker threads once per sample, outside the timed
+        // region, so thread spawn/join and CPU-pinning costs are amortized
+        // instead of being measured on every iteration.
+        let workers = ConcurrentWorkers::<Map>::new(thread_count, workloads);
+        // 1-based index of the iteration about to be timed; used to derive the
+        // cumulative `done` target for the worker pool.
+        let iteration = Cell::new(0usize);
         b.iter_batched(
             || {
+                // Untimed setup: publish a fresh map for this iteration.
                 let map = Arc::new(map_data.create_map::<Map>());
-                let workloads = workloads
-                    .iter()
-                    .take(thread_count)
-                    .cloned()
-                    .collect::<Vec<_>>();
-                (map, workloads)
+                for slot in &workers.shared.slots {
+                    *slot.lock().unwrap() = Some(map.clone());
+                }
+                iteration.set(iteration.get() + 1);
+                map
             },
-            |(map, workloads)| {
-                let mut handles = Vec::with_capacity(thread_count);
-                for (thread_id, workload) in workloads.into_iter().enumerate() {
-                    let map = map.clone();
-                    handles.push(std::thread::spawn(move || {
-                        PinThread::try_pin(thread_id).expect("failed to pin thread to CPU");
-                        run_workload(&workload, &*map);
-                    }));
-                }
-                for handle in handles {
-                    handle.join().unwrap();
-                }
+            |map| {
+                // Timed region: release the workers and wait for all of them
+                // to finish their workload.
+                let target = iteration.get() * thread_count;
+                workers.run(target);
+                map
             },
             BatchSize::PerIteration,
         );
+        // The worker pool is shut down and joined here, outside the timed
+        // region (its `Drop` implementation).
     });
 }
 
