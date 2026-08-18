@@ -130,7 +130,7 @@ fn insert(c: &mut Criterion) {
         {
             let hasher = CommonHasher::new();
             let mut group = c.benchmark_group(format!(
-                "{SAME_HASHER_GROUP_NAME}/insert/map-size-{}",
+                "insert/{SAME_HASHER_GROUP_NAME}/map-size-{}",
                 format_n(*missing_key_count)
             ));
             group.warm_up_time(WARM_UP_TIME);
