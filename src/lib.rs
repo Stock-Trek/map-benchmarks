@@ -1,5 +1,5 @@
 pub mod config;
-pub mod contents;
+pub mod constants;
 pub mod data;
 pub mod map_data;
 pub mod map_gen;

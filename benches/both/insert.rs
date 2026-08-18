@@ -1,6 +1,6 @@
 use bench_map::{
     config::*,
-    contents::{OUT_OF_THE_BOX_GROUP_NAME, SAME_HASHER_GROUP_NAME},
+    constants::{OUT_OF_THE_BOX_GROUP_NAME, SAME_HASHER_GROUP_NAME},
     data::u64_sparse::U64SparseDataGen,
     map_data::MapData,
     map_gen::MapGen,
