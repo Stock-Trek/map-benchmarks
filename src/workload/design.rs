@@ -11,6 +11,18 @@ impl WorkloadDesign {
     pub fn total_ops(&self) -> usize {
         self.lookup_hits + self.lookup_misses + self.inserts + self.updates + self.removes
     }
+    pub fn write_heavy(total_ops: usize) -> Self {
+        Self::from_ratios(total_ops, 0.20, 0.0, 0.80, 0.0, 0.0)
+    }
+    pub fn high_churn(total_ops: usize) -> Self {
+        Self::from_ratios(total_ops, 0.40, 0.10, 0.10, 0.30, 0.10)
+    }
+    pub fn balanced(total_ops: usize) -> Self {
+        Self::from_ratios(total_ops, 0.75, 0.05, 0.05, 0.10, 0.05)
+    }
+    pub fn read_heavy(total_ops: usize) -> Self {
+        Self::from_ratios(total_ops, 0.90, 0.05, 0.05, 0.0, 0.0)
+    }
     fn from_ratios(
         total_ops: usize,
         lookup_hits: f64,
@@ -26,17 +38,5 @@ impl WorkloadDesign {
             updates: (total_ops as f64 * updates) as usize,
             removes: (total_ops as f64 * removes) as usize,
         }
-    }
-    pub fn write_heavy(total_ops: usize) -> Self {
-        Self::from_ratios(total_ops, 0.20, 0.0, 0.80, 0.0, 0.0)
-    }
-    pub fn high_churn(total_ops: usize) -> Self {
-        Self::from_ratios(total_ops, 0.40, 0.10, 0.10, 0.30, 0.10)
-    }
-    pub fn balanced(total_ops: usize) -> Self {
-        Self::from_ratios(total_ops, 0.75, 0.05, 0.05, 0.10, 0.05)
-    }
-    pub fn read_heavy(total_ops: usize) -> Self {
-        Self::from_ratios(total_ops, 0.90, 0.05, 0.05, 0.0, 0.0)
     }
 }
