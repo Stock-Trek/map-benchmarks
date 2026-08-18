@@ -4,6 +4,8 @@ Benchmarks 16 map implementations
 
 [Criterion report can be found here](https://stock-trek.github.io/map-benchmarks)
 
+[AI generated summary can be found here](./SUMMARY.md)
+
 ## Methodology
 
 All benchmarks use blackbox to avoid any overly aggressive compiler optimisations.

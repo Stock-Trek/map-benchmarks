@@ -54,7 +54,7 @@ Include:
    - Which implementations or benchmarks need further investigation?
    - Any measurement quality issues that could affect conclusions.
 
-Output format:
+Output format (markdown file):
 
 ## Executive Summary
 [≤150 words, focusing on which implementations are fastest and any trade-offs]
