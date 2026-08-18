@@ -1,6 +1,9 @@
 pub trait BenchMapNew<K, V>: Sized {
     fn new() -> Self;
 }
+pub trait BenchMapNewWithHasher<K, V, H>: Sized {
+    fn new_with_hasher(hasher: H) -> Self;
+}
 pub trait BenchMapGetCloned<K, V> {
     fn get_cloned(&self, key: &K) -> Option<V>;
 }

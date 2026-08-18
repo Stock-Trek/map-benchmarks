@@ -1,63 +1,82 @@
 use crate::maps::benchmap::{
     BenchMapGetCloned, BenchMapInsert, BenchMapIter, BenchMapMutInsert, BenchMapMutRemove,
-    BenchMapNew, BenchMapRemove,
+    BenchMapNew, BenchMapNewWithHasher, BenchMapRemove,
 };
-use std::hash::Hash;
+use std::hash::{BuildHasher, Hash};
 
-pub struct StarshardBenchMap<K, V>
+pub struct StarshardBenchMap<K, V, H = rustc_hash::FxBuildHasher>
 where
     K: Clone + Hash + Eq + Send + Sync,
     V: Clone + Send + Sync,
+    H: BuildHasher + Clone + Send + Sync,
 {
-    map: starshard::ShardedHashMap<K, V>,
+    map: starshard::ShardedHashMap<K, V, H>,
 }
 
-impl<K, V> BenchMapNew<K, V> for StarshardBenchMap<K, V>
+impl<K, V, H> BenchMapNew<K, V> for StarshardBenchMap<K, V, H>
 where
     K: Clone + Hash + Eq + Send + Sync,
     V: Clone + Send + Sync,
+    H: BuildHasher + Clone + Default + Send + Sync,
 {
     fn new() -> Self {
         Self {
-            map: starshard::ShardedHashMap::new(8),
+            map: starshard::ShardedHashMap::with_shards_and_hasher(8, H::default()),
         }
     }
 }
 
-impl<K, V> BenchMapGetCloned<K, V> for StarshardBenchMap<K, V>
+impl<K, V, H> BenchMapNewWithHasher<K, V, H> for StarshardBenchMap<K, V, H>
 where
     K: Clone + Hash + Eq + Send + Sync,
     V: Clone + Send + Sync,
+    H: BuildHasher + Clone + Send + Sync,
+{
+    fn new_with_hasher(hasher: H) -> Self {
+        Self {
+            map: starshard::ShardedHashMap::with_shards_and_hasher(8, hasher),
+        }
+    }
+}
+
+impl<K, V, H> BenchMapGetCloned<K, V> for StarshardBenchMap<K, V, H>
+where
+    K: Clone + Hash + Eq + Send + Sync,
+    V: Clone + Send + Sync,
+    H: BuildHasher + Clone + Send + Sync,
 {
     fn get_cloned(&self, key: &K) -> Option<V> {
         self.map.get(key)
     }
 }
 
-impl<K, V> BenchMapInsert<K, V> for StarshardBenchMap<K, V>
+impl<K, V, H> BenchMapInsert<K, V> for StarshardBenchMap<K, V, H>
 where
     K: Clone + Hash + Eq + Send + Sync,
     V: Clone + Send + Sync,
+    H: BuildHasher + Clone + Send + Sync,
 {
     fn insert(&self, key: K, value: V) {
         self.map.insert(key, value);
     }
 }
 
-impl<K, V> BenchMapMutInsert<K, V> for StarshardBenchMap<K, V>
+impl<K, V, H> BenchMapMutInsert<K, V> for StarshardBenchMap<K, V, H>
 where
     K: Clone + Hash + Eq + Send + Sync,
     V: Clone + Send + Sync,
+    H: BuildHasher + Clone + Send + Sync,
 {
     fn insert(&mut self, key: K, value: V) {
         self.map.insert(key, value);
     }
 }
 
-impl<K, V> BenchMapIter<K, V> for StarshardBenchMap<K, V>
+impl<K, V, H> BenchMapIter<K, V> for StarshardBenchMap<K, V, H>
 where
     K: Clone + Hash + Eq + Send + Sync,
     V: Clone + Send + Sync,
+    H: BuildHasher + Clone + Send + Sync,
 {
     fn for_each(&self, mut f: impl FnMut(&K, &V)) {
         for (key, value) in self.map.iter() {
@@ -66,20 +85,22 @@ where
     }
 }
 
-impl<K, V> BenchMapRemove<K, V> for StarshardBenchMap<K, V>
+impl<K, V, H> BenchMapRemove<K, V> for StarshardBenchMap<K, V, H>
 where
     K: Clone + Hash + Eq + Send + Sync,
     V: Clone + Send + Sync,
+    H: BuildHasher + Clone + Send + Sync,
 {
     fn remove(&self, key: &K) -> Option<V> {
         self.map.remove(key)
     }
 }
 
-impl<K, V> BenchMapMutRemove<K, V> for StarshardBenchMap<K, V>
+impl<K, V, H> BenchMapMutRemove<K, V> for StarshardBenchMap<K, V, H>
 where
     K: Clone + Hash + Eq + Send + Sync,
     V: Clone + Send + Sync,
+    H: BuildHasher + Clone + Send + Sync,
 {
     fn remove(&mut self, key: &K) -> Option<V> {
         self.map.remove(key)

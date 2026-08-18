@@ -1,48 +1,66 @@
 use crate::maps::benchmap::{
     BenchMapGetCloned, BenchMapIter, BenchMapMutInsert, BenchMapMutRemove, BenchMapNew,
+    BenchMapNewWithHasher,
 };
-use std::hash::Hash;
+use std::hash::{BuildHasher, Hash};
 
-pub struct HashbrownBenchMap<K, V> {
-    map: hashbrown::HashMap<K, V>,
+pub struct HashbrownBenchMap<K, V, H = hashbrown::DefaultHashBuilder> {
+    map: hashbrown::HashMap<K, V, H>,
 }
 
-impl<K, V> BenchMapNew<K, V> for HashbrownBenchMap<K, V>
+impl<K, V, H> BenchMapNew<K, V> for HashbrownBenchMap<K, V, H>
 where
     K: Hash + Eq,
     V: Clone,
+    H: BuildHasher + Default,
 {
     fn new() -> Self {
         Self {
-            map: hashbrown::HashMap::new(),
+            map: hashbrown::HashMap::with_hasher(H::default()),
         }
     }
 }
 
-impl<K, V> BenchMapGetCloned<K, V> for HashbrownBenchMap<K, V>
+impl<K, V, H> BenchMapNewWithHasher<K, V, H> for HashbrownBenchMap<K, V, H>
 where
     K: Hash + Eq,
     V: Clone,
+    H: BuildHasher,
+{
+    fn new_with_hasher(hasher: H) -> Self {
+        Self {
+            map: hashbrown::HashMap::with_hasher(hasher),
+        }
+    }
+}
+
+impl<K, V, H> BenchMapGetCloned<K, V> for HashbrownBenchMap<K, V, H>
+where
+    K: Hash + Eq,
+    V: Clone,
+    H: BuildHasher,
 {
     fn get_cloned(&self, key: &K) -> Option<V> {
         self.map.get(key).cloned()
     }
 }
 
-impl<K, V> BenchMapMutInsert<K, V> for HashbrownBenchMap<K, V>
+impl<K, V, H> BenchMapMutInsert<K, V> for HashbrownBenchMap<K, V, H>
 where
     K: Hash + Eq,
     V: Clone,
+    H: BuildHasher,
 {
     fn insert(&mut self, key: K, value: V) {
         self.map.insert(key, value);
     }
 }
 
-impl<K, V> BenchMapIter<K, V> for HashbrownBenchMap<K, V>
+impl<K, V, H> BenchMapIter<K, V> for HashbrownBenchMap<K, V, H>
 where
     K: Hash + Eq,
     V: Clone,
+    H: BuildHasher,
 {
     fn for_each(&self, mut f: impl FnMut(&K, &V)) {
         for (key, value) in self.map.iter() {
@@ -51,10 +69,11 @@ where
     }
 }
 
-impl<K, V> BenchMapMutRemove<K, V> for HashbrownBenchMap<K, V>
+impl<K, V, H> BenchMapMutRemove<K, V> for HashbrownBenchMap<K, V, H>
 where
     K: Hash + Eq,
     V: Clone,
+    H: BuildHasher,
 {
     fn remove(&mut self, key: &K) -> Option<V> {
         self.map.remove(key)

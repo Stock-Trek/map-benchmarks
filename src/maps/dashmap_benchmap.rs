@@ -1,59 +1,80 @@
 use crate::maps::benchmap::{
     BenchMapGetCloned, BenchMapInsert, BenchMapIter, BenchMapMutInsert, BenchMapMutRemove,
-    BenchMapNew, BenchMapRemove,
+    BenchMapNew, BenchMapNewWithHasher, BenchMapRemove,
 };
-use std::hash::Hash;
+use std::{
+    collections::hash_map::RandomState,
+    hash::{BuildHasher, Hash},
+};
 
-pub struct DashMapBenchMap<K, V> {
-    map: dashmap::DashMap<K, V>,
+pub struct DashMapBenchMap<K, V, H = RandomState> {
+    map: dashmap::DashMap<K, V, H>,
 }
 
-impl<K, V> BenchMapNew<K, V> for DashMapBenchMap<K, V>
+impl<K, V, H> BenchMapNew<K, V> for DashMapBenchMap<K, V, H>
 where
     K: Hash + Eq,
     V: Clone,
+    H: BuildHasher + Clone + Default,
 {
     fn new() -> Self {
         Self {
-            map: dashmap::DashMap::new(),
+            map: dashmap::DashMap::with_hasher(H::default()),
         }
     }
 }
 
-impl<K, V> BenchMapGetCloned<K, V> for DashMapBenchMap<K, V>
+impl<K, V, H> BenchMapNewWithHasher<K, V, H> for DashMapBenchMap<K, V, H>
 where
     K: Hash + Eq,
     V: Clone,
+    H: BuildHasher + Clone,
+{
+    fn new_with_hasher(hasher: H) -> Self {
+        Self {
+            map: dashmap::DashMap::with_hasher(hasher),
+        }
+    }
+}
+
+impl<K, V, H> BenchMapGetCloned<K, V> for DashMapBenchMap<K, V, H>
+where
+    K: Hash + Eq,
+    V: Clone,
+    H: BuildHasher + Clone,
 {
     fn get_cloned(&self, key: &K) -> Option<V> {
         self.map.get(key).map(|entry| entry.value().clone())
     }
 }
 
-impl<K, V> BenchMapInsert<K, V> for DashMapBenchMap<K, V>
+impl<K, V, H> BenchMapInsert<K, V> for DashMapBenchMap<K, V, H>
 where
     K: Hash + Eq,
     V: Clone,
+    H: BuildHasher + Clone,
 {
     fn insert(&self, key: K, value: V) {
         self.map.insert(key, value);
     }
 }
 
-impl<K, V> BenchMapMutInsert<K, V> for DashMapBenchMap<K, V>
+impl<K, V, H> BenchMapMutInsert<K, V> for DashMapBenchMap<K, V, H>
 where
     K: Hash + Eq,
     V: Clone,
+    H: BuildHasher + Clone,
 {
     fn insert(&mut self, key: K, value: V) {
         self.map.insert(key, value);
     }
 }
 
-impl<K, V> BenchMapIter<K, V> for DashMapBenchMap<K, V>
+impl<K, V, H> BenchMapIter<K, V> for DashMapBenchMap<K, V, H>
 where
     K: Hash + Eq,
     V: Clone,
+    H: BuildHasher + Clone,
 {
     fn for_each(&self, mut f: impl FnMut(&K, &V)) {
         for entry in self.map.iter() {
@@ -62,20 +83,22 @@ where
     }
 }
 
-impl<K, V> BenchMapRemove<K, V> for DashMapBenchMap<K, V>
+impl<K, V, H> BenchMapRemove<K, V> for DashMapBenchMap<K, V, H>
 where
     K: Hash + Eq,
     V: Clone,
+    H: BuildHasher + Clone,
 {
     fn remove(&self, key: &K) -> Option<V> {
         self.map.remove(key).map(|entry| entry.1)
     }
 }
 
-impl<K, V> BenchMapMutRemove<K, V> for DashMapBenchMap<K, V>
+impl<K, V, H> BenchMapMutRemove<K, V> for DashMapBenchMap<K, V, H>
 where
     K: Hash + Eq,
     V: Clone,
+    H: BuildHasher + Clone,
 {
     fn remove(&mut self, key: &K) -> Option<V> {
         self.map.remove(key).map(|entry| entry.1)

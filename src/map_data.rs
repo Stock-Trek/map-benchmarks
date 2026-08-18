@@ -1,5 +1,5 @@
-use crate::maps::{BenchMapMutInsert, BenchMapNew};
-use std::hash::Hash;
+use crate::maps::{BenchMapMutInsert, BenchMapNew, BenchMapNewWithHasher};
+use std::hash::{BuildHasher, Hash};
 
 pub struct MapData<K, V> {
     entries: Vec<(K, V)>,
@@ -24,6 +24,17 @@ where
         M: BenchMapNew<K, V> + BenchMapMutInsert<K, V>,
     {
         let mut map = M::new();
+        for (key, value) in &self.entries {
+            map.insert(key.clone(), value.clone());
+        }
+        map
+    }
+    pub fn create_map_with_hasher<M, H>(&self, hasher: H) -> M
+    where
+        M: BenchMapNewWithHasher<K, V, H> + BenchMapMutInsert<K, V>,
+        H: BuildHasher,
+    {
+        let mut map = M::new_with_hasher(hasher);
         for (key, value) in &self.entries {
             map.insert(key.clone(), value.clone());
         }

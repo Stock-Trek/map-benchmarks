@@ -1,63 +1,84 @@
 use crate::maps::benchmap::{
     BenchMapGetCloned, BenchMapInsert, BenchMapIter, BenchMapMutInsert, BenchMapMutRemove,
-    BenchMapNew, BenchMapRemove,
+    BenchMapNew, BenchMapNewWithHasher, BenchMapRemove,
 };
-use std::hash::Hash;
+use std::hash::{BuildHasher, Hash};
 
-pub struct TxMapBenchMap<K, V>
+pub struct TxMapBenchMap<K, V, H = txmap::DefaultBuildHasher>
 where
     K: Clone + Hash + Eq,
     V: Clone,
+    H: BuildHasher,
 {
-    map: txmap::prelude::TxMap<K, V>,
+    map: txmap::TxMap<K, V, txmap::MutexPolicy, H>,
 }
 
-impl<K, V> BenchMapNew<K, V> for TxMapBenchMap<K, V>
+impl<K, V, H> BenchMapNew<K, V> for TxMapBenchMap<K, V, H>
 where
     K: Clone + Hash + Eq,
     V: Clone,
+    H: BuildHasher + Default,
 {
     fn new() -> Self {
         Self {
-            map: txmap::prelude::TxMap::new(),
+            map: txmap::TxMapBuilder::default()
+                .with_hasher(H::default())
+                .build(),
         }
     }
 }
 
-impl<K, V> BenchMapGetCloned<K, V> for TxMapBenchMap<K, V>
+impl<K, V, H> BenchMapNewWithHasher<K, V, H> for TxMapBenchMap<K, V, H>
 where
     K: Clone + Hash + Eq,
     V: Clone,
+    H: BuildHasher,
+{
+    fn new_with_hasher(hasher: H) -> Self {
+        Self {
+            map: txmap::TxMapBuilder::default().with_hasher(hasher).build(),
+        }
+    }
+}
+
+impl<K, V, H> BenchMapGetCloned<K, V> for TxMapBenchMap<K, V, H>
+where
+    K: Clone + Hash + Eq,
+    V: Clone,
+    H: BuildHasher,
 {
     fn get_cloned(&self, key: &K) -> Option<V> {
         self.map.get_cloned(key)
     }
 }
 
-impl<K, V> BenchMapInsert<K, V> for TxMapBenchMap<K, V>
+impl<K, V, H> BenchMapInsert<K, V> for TxMapBenchMap<K, V, H>
 where
     K: Clone + Hash + Eq,
     V: Clone,
+    H: BuildHasher,
 {
     fn insert(&self, key: K, value: V) {
         self.map.insert(key, value);
     }
 }
 
-impl<K, V> BenchMapMutInsert<K, V> for TxMapBenchMap<K, V>
+impl<K, V, H> BenchMapMutInsert<K, V> for TxMapBenchMap<K, V, H>
 where
     K: Clone + Hash + Eq,
     V: Clone,
+    H: BuildHasher,
 {
     fn insert(&mut self, key: K, value: V) {
         self.map.insert(key, value);
     }
 }
 
-impl<K, V> BenchMapIter<K, V> for TxMapBenchMap<K, V>
+impl<K, V, H> BenchMapIter<K, V> for TxMapBenchMap<K, V, H>
 where
     K: Clone + Hash + Eq,
     V: Clone,
+    H: BuildHasher,
 {
     fn for_each(&self, mut f: impl FnMut(&K, &V)) {
         for (key, value) in self.map.iter() {
@@ -66,20 +87,22 @@ where
     }
 }
 
-impl<K, V> BenchMapRemove<K, V> for TxMapBenchMap<K, V>
+impl<K, V, H> BenchMapRemove<K, V> for TxMapBenchMap<K, V, H>
 where
     K: Clone + Hash + Eq,
     V: Clone,
+    H: BuildHasher,
 {
     fn remove(&self, key: &K) -> Option<V> {
         self.map.remove(key)
     }
 }
 
-impl<K, V> BenchMapMutRemove<K, V> for TxMapBenchMap<K, V>
+impl<K, V, H> BenchMapMutRemove<K, V> for TxMapBenchMap<K, V, H>
 where
     K: Clone + Hash + Eq,
     V: Clone,
+    H: BuildHasher,
 {
     fn remove(&mut self, key: &K) -> Option<V> {
         self.map.remove(key)
