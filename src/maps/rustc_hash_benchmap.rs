@@ -1,5 +1,6 @@
 use crate::maps::benchmap::{
-    BenchMapClone, BenchMapGetCloned, BenchMapIter, BenchMapMutInsert, BenchMapMutRemove,
+    BenchMapClone, BenchMapGetCloned, BenchMapIter,
+    BenchMapMutClear, BenchMapMutInsert, BenchMapMutRemove,
     BenchMapNew,
 };
 use std::hash::Hash;
@@ -71,5 +72,15 @@ where
 {
     fn remove(&mut self, key: &K) -> Option<V> {
         self.map.remove(key)
+    }
+}
+
+impl<K, V> BenchMapMutClear<K, V> for RustCHashBenchMap<K, V>
+where
+    K: Hash + Eq,
+    V: Clone,
+{
+    fn clear(&mut self) {
+        self.map.clear();
     }
 }

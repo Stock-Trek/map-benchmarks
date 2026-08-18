@@ -1,5 +1,6 @@
 use crate::maps::benchmap::{
-    BenchMapClone, BenchMapGetCloned, BenchMapInsert, BenchMapIter, BenchMapMutInsert,
+    BenchMapClone, BenchMapGetCloned, BenchMapInsert,
+    BenchMapIter, BenchMapMutClear, BenchMapMutInsert,
     BenchMapMutRemove, BenchMapNew, BenchMapNewWithHasher, BenchMapRemove,
 };
 use std::hash::{BuildHasher, Hash};
@@ -117,5 +118,16 @@ where
 {
     fn remove(&mut self, key: &K) -> Option<V> {
         self.map.remove(key)
+    }
+}
+
+impl<K, V, H> BenchMapMutClear<K, V> for StarshardBenchMap<K, V, H>
+where
+    K: Clone + Hash + Eq + Send + Sync,
+    V: Clone + Send + Sync,
+    H: BuildHasher + Clone + Send + Sync,
+{
+    fn clear(&mut self) {
+        self.map.clear();
     }
 }

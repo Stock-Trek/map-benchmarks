@@ -68,3 +68,8 @@ harness = false
 name = "create"
 path = "benches/out_of_the_box/create.rs"
 harness = false
+
+[[bench]]
+name = "bulk_clear"
+path = "benches/out_of_the_box/bulk_clear.rs"
+harness = false

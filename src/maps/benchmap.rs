@@ -26,3 +26,6 @@ pub trait BenchMapMutInsert<K, V> {
 pub trait BenchMapMutRemove<K, V> {
     fn remove(&mut self, key: &K) -> Option<V>;
 }
+pub trait BenchMapMutClear<K, V> {
+    fn clear(&mut self);
+}
