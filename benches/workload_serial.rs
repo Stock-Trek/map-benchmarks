@@ -67,10 +67,10 @@ fn bench<Map>(
 }
 
 fn workload_serial(c: &mut Criterion) {
-    let missing_key_count = MIXED_MISSING_KEY_COUNT;
+    let missing_key_count = WORKLOAD_MISSING_KEY_COUNT;
     let sort_keys = false;
 
-    for &entry_count in MIXED_ENTRY_COUNT {
+    for &entry_count in WORKLOAD_ENTRY_COUNT {
         let existing_key_count = entry_count;
 
         let map_data = MapGen::generate(
@@ -86,13 +86,10 @@ fn workload_serial(c: &mut Criterion) {
         let designs: &[(&str, WorkloadDesign)] = &[
             (
                 "write-heavy",
-                WorkloadDesign::write_heavy(MIXED_OPS_PER_DESIGN),
+                WorkloadDesign::write_heavy(WORKLOAD_OP_COUNT),
             ),
-            ("balanced", WorkloadDesign::balanced(MIXED_OPS_PER_DESIGN)),
-            (
-                "read-heavy",
-                WorkloadDesign::read_heavy(MIXED_OPS_PER_DESIGN),
-            ),
+            ("balanced", WorkloadDesign::balanced(WORKLOAD_OP_COUNT)),
+            ("read-heavy", WorkloadDesign::read_heavy(WORKLOAD_OP_COUNT)),
         ];
 
         for &(name, design) in designs {
@@ -110,7 +107,7 @@ fn workload_serial(c: &mut Criterion) {
             ));
             group.warm_up_time(WARM_UP_TIME);
             group.measurement_time(MEASUREMENT_TIME);
-            group.throughput(Throughput::Elements(MIXED_OPS_PER_DESIGN as u64));
+            group.throughput(Throughput::Elements(WORKLOAD_OP_COUNT as u64));
 
             bench::<AhashBenchMap<u64, u64>>(&mut group, &map_data, &workload, "ahash");
             bench::<BTreeMapBenchMap<u64, u64>>(&mut group, &map_data, &workload, "btreemap");

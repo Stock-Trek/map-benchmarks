@@ -267,15 +267,15 @@ fn bench<Map>(
 }
 
 fn workload_concurrent(c: &mut Criterion) {
-    let max_threads = CONCURRENCY_THREAD_COUNTS.last().unwrap();
-    for entry_count in MIXED_ENTRY_COUNT {
-        let existing_key_count = *entry_count;
-        let missing_key_count = max_threads * CONCURRENCY_OPS_PER_THREAD;
+    let max_threads = WORKLOAD_CONCURRENT_THREAD_COUNTS.last().unwrap();
+    for &entry_count in WORKLOAD_ENTRY_COUNT {
+        let existing_key_count = entry_count;
+        let missing_key_count = max_threads * WORKLOAD_OP_COUNT;
         let sort_keys = false;
         let map_data = MapGen::generate(
             U64SparseDataGen,
             U64SparseDataGen,
-            *entry_count,
+            entry_count,
             existing_key_count,
             missing_key_count,
             sort_keys,
@@ -284,22 +284,16 @@ fn workload_concurrent(c: &mut Criterion) {
         let designs: &[(&str, WorkloadDesign)] = &[
             (
                 "write-heavy",
-                WorkloadDesign::write_heavy(CONCURRENCY_OPS_PER_THREAD),
+                WorkloadDesign::write_heavy(WORKLOAD_OP_COUNT),
             ),
-            (
-                "balanced",
-                WorkloadDesign::balanced(CONCURRENCY_OPS_PER_THREAD),
-            ),
-            (
-                "read-heavy",
-                WorkloadDesign::read_heavy(CONCURRENCY_OPS_PER_THREAD),
-            ),
+            ("balanced", WorkloadDesign::balanced(WORKLOAD_OP_COUNT)),
+            ("read-heavy", WorkloadDesign::read_heavy(WORKLOAD_OP_COUNT)),
         ];
 
         for &(name, design) in designs {
             let mut rng = rand::rng();
-            for &thread_count in CONCURRENCY_THREAD_COUNTS {
-                let total_ops = thread_count * CONCURRENCY_OPS_PER_THREAD;
+            for &thread_count in WORKLOAD_CONCURRENT_THREAD_COUNTS {
+                let total_ops = thread_count * WORKLOAD_OP_COUNT;
                 let workloads = (0..thread_count)
                     .map(|_| {
                         ThreadWorkload::new(
@@ -314,7 +308,7 @@ fn workload_concurrent(c: &mut Criterion) {
                 let mut group = c.benchmark_group(format!(
                     "workload/{OUT_OF_THE_BOX_GROUP_NAME}/{}/map-size-{}/threads-{}",
                     name,
-                    format_n(*entry_count),
+                    format_n(entry_count),
                     thread_count
                 ));
                 group.warm_up_time(WARM_UP_TIME);
