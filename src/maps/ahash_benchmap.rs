@@ -1,6 +1,6 @@
 use crate::maps::benchmap::{
-    BenchMapGetCloned, BenchMapIter, BenchMapMutInsert, BenchMapMutRemove, BenchMapNew,
-    BenchMapNewWithHasher,
+    BenchMapClone, BenchMapGetCloned, BenchMapIter, BenchMapMutInsert, BenchMapMutRemove,
+    BenchMapNew, BenchMapNewWithHasher,
 };
 use std::hash::{BuildHasher, Hash};
 
@@ -30,6 +30,19 @@ where
     fn new_with_hasher(hasher: H) -> Self {
         Self {
             map: ahash::AHashMap::with_hasher(hasher),
+        }
+    }
+}
+
+impl<K, V, H> BenchMapClone<K, V> for AhashBenchMap<K, V, H>
+where
+    K: Hash + Eq + Clone,
+    V: Clone,
+    H: BuildHasher + Clone,
+{
+    fn clone_map(&self) -> Self {
+        Self {
+            map: self.map.clone(),
         }
     }
 }

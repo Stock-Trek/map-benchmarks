@@ -1,5 +1,6 @@
 use crate::maps::benchmap::{
-    BenchMapGetCloned, BenchMapIter, BenchMapMutInsert, BenchMapMutRemove, BenchMapNew,
+    BenchMapClone, BenchMapGetCloned, BenchMapIter, BenchMapMutInsert, BenchMapMutRemove,
+    BenchMapNew,
 };
 use std::hash::Hash;
 
@@ -15,6 +16,18 @@ where
     fn new() -> Self {
         Self {
             map: rustc_hash::FxHashMap::default(),
+        }
+    }
+}
+
+impl<K, V> BenchMapClone<K, V> for RustCHashBenchMap<K, V>
+where
+    K: Hash + Eq + Clone,
+    V: Clone,
+{
+    fn clone_map(&self) -> Self {
+        Self {
+            map: self.map.clone(),
         }
     }
 }

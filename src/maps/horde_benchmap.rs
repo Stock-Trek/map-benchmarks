@@ -1,6 +1,6 @@
 use crate::maps::benchmap::{
-    BenchMapGetCloned, BenchMapIter, BenchMapMutInsert, BenchMapMutRemove, BenchMapNew,
-    BenchMapNewWithHasher,
+    BenchMapClone, BenchMapGetCloned, BenchMapIter, BenchMapMutInsert, BenchMapMutRemove,
+    BenchMapNew, BenchMapNewWithHasher,
 };
 use std::hash::{BuildHasher, Hash};
 
@@ -30,6 +30,19 @@ where
     fn new_with_hasher(hasher: H) -> Self {
         Self {
             map: horde::SyncTable::new_with(hasher, 0),
+        }
+    }
+}
+
+impl<K, V, H> BenchMapClone<K, V> for HordeBenchMap<K, V, H>
+where
+    K: Clone + Hash + Eq,
+    V: Clone,
+    H: BuildHasher + Clone,
+{
+    fn clone_map(&self) -> Self {
+        Self {
+            map: self.map.clone(),
         }
     }
 }

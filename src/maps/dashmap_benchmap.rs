@@ -1,6 +1,6 @@
 use crate::maps::benchmap::{
-    BenchMapGetCloned, BenchMapInsert, BenchMapIter, BenchMapMutInsert, BenchMapMutRemove,
-    BenchMapNew, BenchMapNewWithHasher, BenchMapRemove,
+    BenchMapClone, BenchMapGetCloned, BenchMapInsert, BenchMapIter, BenchMapMutInsert,
+    BenchMapMutRemove, BenchMapNew, BenchMapNewWithHasher, BenchMapRemove,
 };
 use std::{
     collections::hash_map::RandomState,
@@ -33,6 +33,19 @@ where
     fn new_with_hasher(hasher: H) -> Self {
         Self {
             map: dashmap::DashMap::with_hasher(hasher),
+        }
+    }
+}
+
+impl<K, V, H> BenchMapClone<K, V> for DashMapBenchMap<K, V, H>
+where
+    K: Hash + Eq + Clone,
+    V: Clone,
+    H: BuildHasher + Clone,
+{
+    fn clone_map(&self) -> Self {
+        Self {
+            map: self.map.clone(),
         }
     }
 }
