@@ -39,11 +39,12 @@ There are 3 groups of tests, `out-of-the-box` which uses each map's default impl
 ### Same hasher
 
 - **Key sensitivity**: Uses a map containing 10K entries. Keys tested: [u64, Strings of length 16 and 128]
-- **Lookup hit**: Uses maps containing 1K/10K/100K entries. Finds 100 extant values, found values are cloned to ensure all maps are treated consistently
-- **Lookup miss**: Uses maps containing 1K/10K/100K entries. Finds 100 non-existent values
-- **Remove**: Uses maps containing 1K/10K/100K entries. Removes 100 entries
 
 ### Both
 
 - **Insert**: Inserts 1K/10K/100K entries into an empty map
 - **Iterate**: Uses maps containing 1K/10K/100K entries. Iterates through each entry
+- **Lookup hit**: Uses maps containing 1K/10K/100K entries. Finds 100 extant values, found values are cloned to ensure all maps are treated consistently
+- **Lookup miss**: Uses maps containing 1K/10K/100K entries. Finds 100 non-existent values
+- **Remove**: Uses maps containing 1K/10K/100K entries. Removes 100 entries
+
