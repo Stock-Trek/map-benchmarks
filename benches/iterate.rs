@@ -6,10 +6,9 @@ use bench_map::{
     map_gen::MapGen,
     maps::{
         AhashBenchMap, BTreeMapBenchMap, BenchMapIter, BenchMapMutInsert, BenchMapNew,
-        BenchMapNewWithHasher, ConcreadBenchMap, DashMapBenchMap, FlurryBenchMap,
-        HashbrownBenchMap, ImmutableChunkMapBenchMap, IndexMapBenchMap, LeapfrogBenchMap,
-        PapayaBenchMap, RustCHashBenchMap, SccBenchMap, StarshardBenchMap, StdBenchMap,
-        TxMapBenchMap, horde_benchmap::HordeBenchMap,
+        BenchMapNewWithHasher, DashMapBenchMap, HashbrownBenchMap, ImmutableChunkMapBenchMap,
+        IndexMapBenchMap, LeapfrogBenchMap, PapayaBenchMap, RustCHashBenchMap, SccBenchMap,
+        StarshardBenchMap, StdBenchMap, TxMapBenchMap, horde_benchmap::HordeBenchMap,
     },
     number_formatter::format_n,
 };
@@ -87,9 +86,9 @@ fn iterate(c: &mut Criterion) {
 
             bench_out_of_the_box::<AhashBenchMap<u64, u64>>(&mut group, &map_data, "ahash");
             bench_out_of_the_box::<BTreeMapBenchMap<u64, u64>>(&mut group, &map_data, "btreemap");
-            bench_out_of_the_box::<ConcreadBenchMap<u64, u64>>(&mut group, &map_data, "concread");
+            // bench_out_of_the_box::<ConcreadBenchMap<u64, u64>>(&mut group, &map_data, "concread"); // too slow
             bench_out_of_the_box::<DashMapBenchMap<u64, u64>>(&mut group, &map_data, "dashmap");
-            bench_out_of_the_box::<FlurryBenchMap<u64, u64>>(&mut group, &map_data, "flurry");
+            // bench_out_of_the_box::<FlurryBenchMap<u64, u64>>(&mut group, &map_data, "flurry"); // too slow
             bench_out_of_the_box::<HashbrownBenchMap<u64, u64>>(&mut group, &map_data, "hashbrown");
             bench_out_of_the_box::<HordeBenchMap<u64, u64>>(&mut group, &map_data, "horde");
             bench_out_of_the_box::<ImmutableChunkMapBenchMap<u64, u64>>(
@@ -136,12 +135,7 @@ fn iterate(c: &mut Criterion) {
                 "dashmap",
                 hasher.clone(),
             );
-            bench_same_hasher::<FlurryBenchMap<u64, u64, CommonHasher>>(
-                &mut group,
-                &map_data,
-                "flurry",
-                hasher.clone(),
-            );
+            // bench_same_hasher::<FlurryBenchMap<u64, u64, CommonHasher>>(&mut group, &map_data, "flurry", hasher.clone()); // too slow
             bench_same_hasher::<HashbrownBenchMap<u64, u64, CommonHasher>>(
                 &mut group,
                 &map_data,

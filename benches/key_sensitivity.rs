@@ -6,9 +6,8 @@ use bench_map::{
     map_gen::MapGen,
     maps::{
         AhashBenchMap, BenchMapGetCloned, BenchMapMutInsert, BenchMapNewWithHasher,
-        DashMapBenchMap, FlurryBenchMap, HashbrownBenchMap, IndexMapBenchMap, LeapfrogBenchMap,
-        PapayaBenchMap, SccBenchMap, StarshardBenchMap, StdBenchMap, TxMapBenchMap,
-        horde_benchmap::HordeBenchMap,
+        DashMapBenchMap, HashbrownBenchMap, IndexMapBenchMap, LeapfrogBenchMap, PapayaBenchMap,
+        SccBenchMap, StarshardBenchMap, StdBenchMap, TxMapBenchMap, horde_benchmap::HordeBenchMap,
     },
 };
 use criterion::{
@@ -80,12 +79,7 @@ fn key_sensitivity(c: &mut Criterion) {
             "dashmap",
             hasher.clone(),
         );
-        bench::<FlurryBenchMap<u64, u64, CommonHasher>, u64, u64>(
-            &mut group,
-            &map_data,
-            "flurry",
-            hasher.clone(),
-        );
+        // bench::<FlurryBenchMap<u64, u64, CommonHasher>, u64, u64>(&mut group, &map_data, "flurry", hasher.clone()); // too slow
         bench::<HashbrownBenchMap<u64, u64, CommonHasher>, u64, u64>(
             &mut group,
             &map_data,
@@ -175,12 +169,7 @@ fn key_sensitivity(c: &mut Criterion) {
             "dashmap",
             hasher.clone(),
         );
-        bench::<FlurryBenchMap<String, u64, CommonHasher>, String, u64>(
-            &mut group,
-            &map_data,
-            "flurry",
-            hasher.clone(),
-        );
+        // bench::<FlurryBenchMap<String, u64, CommonHasher>, String, u64>(&mut group, &map_data, "flurry", hasher.clone()); // too slow
         bench::<HashbrownBenchMap<String, u64, CommonHasher>, String, u64>(
             &mut group,
             &map_data,
@@ -265,12 +254,7 @@ fn key_sensitivity(c: &mut Criterion) {
             "dashmap",
             hasher.clone(),
         );
-        bench::<FlurryBenchMap<String, u64, CommonHasher>, String, u64>(
-            &mut group,
-            &map_data,
-            "flurry",
-            hasher.clone(),
-        );
+        // bench::<FlurryBenchMap<String, u64, CommonHasher>, String, u64>(&mut group, &map_data, "flurry", hasher.clone()); // too slow
         bench::<HashbrownBenchMap<String, u64, CommonHasher>, String, u64>(
             &mut group,
             &map_data,

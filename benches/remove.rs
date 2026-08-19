@@ -6,9 +6,8 @@ use bench_map::{
     map_gen::MapGen,
     maps::{
         AhashBenchMap, BenchMapMutInsert, BenchMapMutRemove, BenchMapNewWithHasher,
-        DashMapBenchMap, FlurryBenchMap, HashbrownBenchMap, IndexMapBenchMap, LeapfrogBenchMap,
-        PapayaBenchMap, SccBenchMap, StarshardBenchMap, StdBenchMap, TxMapBenchMap,
-        horde_benchmap::HordeBenchMap,
+        DashMapBenchMap, HashbrownBenchMap, IndexMapBenchMap, LeapfrogBenchMap, PapayaBenchMap,
+        SccBenchMap, StarshardBenchMap, StdBenchMap, TxMapBenchMap, horde_benchmap::HordeBenchMap,
     },
     number_formatter::format_n,
 };
@@ -88,12 +87,7 @@ fn remove(c: &mut Criterion) {
             "dashmap",
             hasher.clone(),
         );
-        bench::<FlurryBenchMap<u64, u64, CommonHasher>>(
-            &mut group,
-            &map_data,
-            "flurry",
-            hasher.clone(),
-        );
+        // bench::<FlurryBenchMap<u64, u64, CommonHasher>>(&mut group, &map_data, "flurry", hasher.clone()); // too slow
         bench::<HashbrownBenchMap<u64, u64, CommonHasher>>(
             &mut group,
             &map_data,

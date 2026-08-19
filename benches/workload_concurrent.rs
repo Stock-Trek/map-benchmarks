@@ -6,8 +6,8 @@ use bench_map::{
     map_gen::MapGen,
     maps::{
         BenchMapGetCloned, BenchMapInsert, BenchMapMutInsert, BenchMapNew, BenchMapRemove,
-        ConcreadBenchMap, DashMapBenchMap, FlurryBenchMap, LeapfrogBenchMap, PapayaBenchMap,
-        SccBenchMap, StarshardBenchMap, TxMapBenchMap,
+        DashMapBenchMap, LeapfrogBenchMap, PapayaBenchMap, SccBenchMap, StarshardBenchMap,
+        TxMapBenchMap,
     },
     number_formatter::format_n,
     pin_thread::PinThread,
@@ -317,13 +317,7 @@ fn workload_concurrent(c: &mut Criterion) {
 
                 // bench::<AhashBenchMap<u64, u64>>(&mut group, &map_data, thread_count, &workloads, "ahash"); // not concurrent
                 // bench::<BTreeMapBenchMap<u64, u64>>(&mut group, &map_data, thread_count, &workloads, "btreemap"); // not concurrent
-                bench::<ConcreadBenchMap<u64, u64>>(
-                    &mut group,
-                    &map_data,
-                    thread_count,
-                    &workloads,
-                    "concread",
-                );
+                // bench::<ConcreadBenchMap<u64, u64>>(&mut group, &map_data, thread_count, &workloads, "concread"); // too slow
                 bench::<DashMapBenchMap<u64, u64>>(
                     &mut group,
                     &map_data,
@@ -331,13 +325,7 @@ fn workload_concurrent(c: &mut Criterion) {
                     &workloads,
                     "dashmap",
                 );
-                bench::<FlurryBenchMap<u64, u64>>(
-                    &mut group,
-                    &map_data,
-                    thread_count,
-                    &workloads,
-                    "flurry",
-                );
+                // bench::<FlurryBenchMap<u64, u64>>(&mut group, &map_data, thread_count, &workloads, "flurry"); // too slow
                 // bench::<HashbrownBenchMap<u64, u64>>(&mut group, &map_data, thread_count, &workloads, "hashbrown"); // not concurrent
                 // bench::<HordeBenchMap<u64, u64>>(&mut group, &map_data, thread_count, &workloads, "horde"); // mutation requires &mut, cannot mutate through a shared reference
                 // bench::<ImmutableChunkMapBenchMap<u64, u64>>(&mut group, &map_data, thread_count, &workloads, "immutable-chunkmap"); // mutation returns a new map; requires &mut or storing the result, cannot mutate through a shared reference
