@@ -2,10 +2,10 @@ use bench_map::{
     config::*,
     constants::*,
     maps::{
-        AhashBenchMap, BTreeMapBenchMap, BenchMapNew, ConcreadBenchMap, DashMapBenchMap,
-        HashbrownBenchMap, HordeBenchMap, ImmutableChunkMapBenchMap, IndexMapBenchMap,
-        LeapfrogBenchMap, PapayaBenchMap, RustCHashBenchMap, SccBenchMap, StarshardBenchMap,
-        StdBenchMap, TxMapBenchMap,
+        AhashBenchMap, BTreeMapBenchMap, BenchMapNew, DashMapBenchMap, HashbrownBenchMap,
+        HordeBenchMap, ImmutableChunkMapBenchMap, IndexMapBenchMap, LeapfrogBenchMap,
+        PapayaBenchMap, RustCHashBenchMap, SccBenchMap, StarshardBenchMap, StdBenchMap,
+        TxMapBenchMap,
     },
 };
 use criterion::{
@@ -34,7 +34,7 @@ fn create(c: &mut Criterion) {
 
     bench::<AhashBenchMap<u64, u64>>(&mut group, "ahash");
     bench::<BTreeMapBenchMap<u64, u64>>(&mut group, "btreemap");
-    bench::<ConcreadBenchMap<u64, u64>>(&mut group, "concread");
+    // bench::<ConcreadBenchMap<u64, u64>>(&mut group, "concread"); // too slow
     bench::<DashMapBenchMap<u64, u64>>(&mut group, "dashmap");
     // bench::<FlurryBenchMap<u64, u64>>(&mut group, "flurry"); // too slow (creates a seize::Collector per map)
     bench::<HashbrownBenchMap<u64, u64>>(&mut group, "hashbrown");
