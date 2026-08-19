@@ -31,6 +31,10 @@ starshard = "2"
 txmap = "3"
 
 [[bench]]
+name = "clear_and_reuse"
+harness = false
+
+[[bench]]
 name = "clone"
 harness = false
 
