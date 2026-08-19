@@ -89,11 +89,7 @@ fn lookup_miss(c: &mut Criterion) {
             // bench_out_of_the_box::<ConcreadBenchMap<u64, u64>>(&mut group, &map_data, "concread"); // too slow
             bench_out_of_the_box::<DashMapBenchMap<u64, u64>>(&mut group, &map_data, "dashmap");
             // bench_out_of_the_box::<FlurryBenchMap<u64, u64>>(&mut group, &map_data, "flurry"); // too slow
-            bench_out_of_the_box::<HashbrownBenchMap<u64, u64>>(
-                &mut group,
-                &map_data,
-                "hashbrown",
-            );
+            bench_out_of_the_box::<HashbrownBenchMap<u64, u64>>(&mut group, &map_data, "hashbrown");
             bench_out_of_the_box::<HordeBenchMap<u64, u64>>(&mut group, &map_data, "horde");
             bench_out_of_the_box::<ImmutableChunkMapBenchMap<u64, u64>>(
                 &mut group,
