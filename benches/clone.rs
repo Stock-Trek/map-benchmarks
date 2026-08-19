@@ -6,9 +6,9 @@ use bench_map::{
     map_gen::MapGen,
     maps::{
         AhashBenchMap, BTreeMapBenchMap, BenchMapClone, BenchMapMutInsert, BenchMapNew,
-        DashMapBenchMap, HashbrownBenchMap, HordeBenchMap, ImmutableChunkMapBenchMap,
-        IndexMapBenchMap, PapayaBenchMap, RustCHashBenchMap, SccBenchMap, StarshardBenchMap,
-        StdBenchMap, TxMapBenchMap,
+        DashMapBenchMap, HashbrownBenchMap, HashlinkBenchMap, HordeBenchMap,
+        ImmutableChunkMapBenchMap, IndexMapBenchMap, PapayaBenchMap, RustCHashBenchMap,
+        SccBenchMap, StarshardBenchMap, StdBenchMap, TxMapBenchMap,
     },
     number_formatter::format_n,
 };
@@ -56,6 +56,7 @@ fn clone(c: &mut Criterion) {
         bench::<DashMapBenchMap<u64, u64>>(&mut group, &map_data, "dashmap");
         // bench::<FlurryBenchMap<u64, u64>>(&mut group, &map_data, "flurry"); // too slow
         bench::<HashbrownBenchMap<u64, u64>>(&mut group, &map_data, "hashbrown");
+        bench::<HashlinkBenchMap<u64, u64>>(&mut group, &map_data, "hashlink");
         bench::<HordeBenchMap<u64, u64>>(&mut group, &map_data, "horde");
         bench::<ImmutableChunkMapBenchMap<u64, u64>>(&mut group, &map_data, "immutable-chunkmap");
         bench::<IndexMapBenchMap<u64, u64>>(&mut group, &map_data, "indexmap");

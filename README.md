@@ -1,6 +1,6 @@
 # Map benchmarks
 
-Benchmarks 16 map implementations
+Benchmarks 17 map implementations
 
 [Criterion report can be found here](https://stock-trek.github.io/map-benchmarks)
 
@@ -10,7 +10,7 @@ Benchmarks 16 map implementations
 
 All benchmarks use blackbox to avoid any overly aggressive compiler optimisations.
 
-16 map implementations are benchmarked:
+17 map implementations are benchmarked:
 
 - [ahash::AHashMap](https://crates.io/crates/ahash)
 - [std::collections::btreemap](https://doc.rust-lang.org/std/collections/struct.BTreeMap.html)
@@ -18,6 +18,7 @@ All benchmarks use blackbox to avoid any overly aggressive compiler optimisation
 - [dashmap::DashMap](https://crates.io/crates/dashmap)
 - [flurry::HashMap](https://crates.io/crates/flurry)
 - [hashbrown::HashMap](https://crates.io/crates/hashbrown)
+- [hashlink::LinkedHashMap](https://crates.io/crates/hashlink)
 - [horde::SyncTable](https://crates.io/crates/horde)
 - [immutable_chunkmap::map::MapM](https://crates.io/crates/immutable-chunkmap)
 - [indexmap::IndexMap](https://crates.io/crates/indexmap)

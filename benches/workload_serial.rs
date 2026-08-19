@@ -6,9 +6,10 @@ use bench_map::{
     map_gen::MapGen,
     maps::{
         AhashBenchMap, BTreeMapBenchMap, BenchMapGetCloned, BenchMapMutInsert, BenchMapMutRemove,
-        BenchMapNew, DashMapBenchMap, HashbrownBenchMap, ImmutableChunkMapBenchMap,
-        IndexMapBenchMap, LeapfrogBenchMap, PapayaBenchMap, RustCHashBenchMap, SccBenchMap,
-        StarshardBenchMap, StdBenchMap, TxMapBenchMap, horde_benchmap::HordeBenchMap,
+        BenchMapNew, DashMapBenchMap, HashbrownBenchMap, HashlinkBenchMap,
+        ImmutableChunkMapBenchMap, IndexMapBenchMap, LeapfrogBenchMap, PapayaBenchMap,
+        RustCHashBenchMap, SccBenchMap, StarshardBenchMap, StdBenchMap, TxMapBenchMap,
+        horde_benchmap::HordeBenchMap,
     },
     number_formatter::format_n,
     workload::{design::WorkloadDesign, op::WorkloadOp, thread_workload::ThreadWorkload},
@@ -114,6 +115,7 @@ fn workload_serial(c: &mut Criterion) {
             bench::<DashMapBenchMap<u64, u64>>(&mut group, &map_data, &workload, "dashmap");
             // bench::<FlurryBenchMap<u64, u64>>(&mut group, &map_data, &workload, "flurry"); // too slow
             bench::<HashbrownBenchMap<u64, u64>>(&mut group, &map_data, &workload, "hashbrown");
+            bench::<HashlinkBenchMap<u64, u64>>(&mut group, &map_data, &workload, "hashlink");
             bench::<HordeBenchMap<u64, u64>>(&mut group, &map_data, &workload, "horde");
             bench::<ImmutableChunkMapBenchMap<u64, u64>>(
                 &mut group,
