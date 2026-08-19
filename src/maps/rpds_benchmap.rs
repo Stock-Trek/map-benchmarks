@@ -1,6 +1,6 @@
 use crate::maps::benchmap::{
-    BenchMapClone, BenchMapGetCloned, BenchMapIter, BenchMapMutInsert, BenchMapMutRemove,
-    BenchMapNew, BenchMapNewWithHasher,
+    BenchMapClone, BenchMapGetCloned, BenchMapIter, BenchMapMutGetOrInsert, BenchMapMutInsert,
+    BenchMapMutRemove, BenchMapNew, BenchMapNewWithHasher,
 };
 use rpds::HashTrieMap;
 use std::{
@@ -69,6 +69,24 @@ where
 {
     fn insert(&mut self, key: K, value: V) {
         self.map.insert_mut(key, value);
+    }
+}
+
+impl<K, V, H> BenchMapMutGetOrInsert<K, V> for RpdsHashTrieMapBenchMap<K, V, H>
+where
+    K: Eq + Hash,
+    V: Clone,
+    H: BuildHasher + Clone,
+{
+    fn get_or_insert(&mut self, key: K, default: V) -> V {
+        // rpds has no entry API, so emulate get-or-insert as a get followed
+        // by an in-place insert.
+        if let Some(value) = self.map.get(&key) {
+            value.clone()
+        } else {
+            self.map.insert_mut(key, default.clone());
+            default
+        }
     }
 }
 

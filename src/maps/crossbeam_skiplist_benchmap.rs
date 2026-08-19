@@ -1,6 +1,6 @@
 use crate::maps::benchmap::{
-    BenchMapGetCloned, BenchMapInsert, BenchMapIter, BenchMapMutClear, BenchMapMutInsert,
-    BenchMapMutRemove, BenchMapNew, BenchMapRemove,
+    BenchMapGetCloned, BenchMapGetOrInsert, BenchMapInsert, BenchMapIter, BenchMapMutClear,
+    BenchMapMutGetOrInsert, BenchMapMutInsert, BenchMapMutRemove, BenchMapNew, BenchMapRemove,
 };
 
 pub struct CrossbeamSkiplistBenchMap<K, V> {
@@ -35,6 +35,16 @@ where
     }
 }
 
+impl<K, V> BenchMapGetOrInsert<K, V> for CrossbeamSkiplistBenchMap<K, V>
+where
+    K: Ord + Send + 'static,
+    V: Clone + Send + 'static,
+{
+    fn get_or_insert(&self, key: K, default: V) -> V {
+        self.map.get_or_insert(key, default).value().clone()
+    }
+}
+
 impl<K, V> BenchMapMutInsert<K, V> for CrossbeamSkiplistBenchMap<K, V>
 where
     K: Ord + Send + 'static,
@@ -42,6 +52,16 @@ where
 {
     fn insert(&mut self, key: K, value: V) {
         self.map.insert(key, value);
+    }
+}
+
+impl<K, V> BenchMapMutGetOrInsert<K, V> for CrossbeamSkiplistBenchMap<K, V>
+where
+    K: Ord + Send + 'static,
+    V: Clone + Send + 'static,
+{
+    fn get_or_insert(&mut self, key: K, default: V) -> V {
+        self.map.get_or_insert(key, default).value().clone()
     }
 }
 

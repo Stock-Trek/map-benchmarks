@@ -37,7 +37,9 @@ fn concurrent_map() {
     assert_create_map_populates_existing_keys::<ConcurrentMapBenchMap<u64, u64>>();
     assert_iterate::<ConcurrentMapBenchMap<u64, u64>>();
     assert_mut_insert_remove::<ConcurrentMapBenchMap<u64, u64>>();
+    assert_mut_get_or_insert::<ConcurrentMapBenchMap<u64, u64>>();
     assert_shared_insert_remove::<ConcurrentMapBenchMap<u64, u64>>();
+    assert_shared_get_or_insert::<ConcurrentMapBenchMap<u64, u64>>();
     // assert_clear::<ConcurrentMapBenchMap<u64, u64>>(); // concurrent_map::ConcurrentMap has no clear method
 }
 
@@ -46,8 +48,10 @@ fn crossbeam_skiplist() {
     assert_create_map_populates_existing_keys::<CrossbeamSkiplistBenchMap<u64, u64>>();
     assert_iterate::<CrossbeamSkiplistBenchMap<u64, u64>>();
     assert_mut_insert_remove::<CrossbeamSkiplistBenchMap<u64, u64>>();
+    assert_mut_get_or_insert::<CrossbeamSkiplistBenchMap<u64, u64>>();
     assert_clear::<CrossbeamSkiplistBenchMap<u64, u64>>();
     assert_shared_insert_remove::<CrossbeamSkiplistBenchMap<u64, u64>>();
+    assert_shared_get_or_insert::<CrossbeamSkiplistBenchMap<u64, u64>>();
 }
 
 #[test]
@@ -135,6 +139,7 @@ fn rpds_hash_trie_map() {
     assert_create_map_populates_existing_keys::<RpdsHashTrieMapBenchMap<u64, u64>>();
     assert_iterate::<RpdsHashTrieMapBenchMap<u64, u64>>();
     assert_mut_insert_remove::<RpdsHashTrieMapBenchMap<u64, u64>>();
+    assert_mut_get_or_insert::<RpdsHashTrieMapBenchMap<u64, u64>>();
     // assert_clear::<RpdsHashTrieMapBenchMap<u64, u64>>(); // no clear method
     // assert_shared_insert_remove::<RpdsHashTrieMapBenchMap<u64, u64>>(); // insert/remove return a new map; requires &mut or storing the result
 }

@@ -104,6 +104,16 @@ fn get_or_insert(c: &mut Criterion) {
             bench_out_of_the_box::<AhashBenchMap<u64, u64>>(&mut group, &map_data, "ahash");
             bench_out_of_the_box::<BTreeMapBenchMap<u64, u64>>(&mut group, &map_data, "btreemap");
             // bench_out_of_the_box::<ConcreadBenchMap<u64, u64>>(&mut group, &map_data, "concread"); // too slow
+            bench_out_of_the_box::<ConcurrentMapBenchMap<u64, u64>>(
+                &mut group,
+                &map_data,
+                "concurrent-map",
+            );
+            bench_out_of_the_box::<CrossbeamSkiplistBenchMap<u64, u64>>(
+                &mut group,
+                &map_data,
+                "crossbeam-skiplist",
+            );
             bench_out_of_the_box::<DashMapBenchMap<u64, u64>>(&mut group, &map_data, "dashmap");
             // bench_out_of_the_box::<FlurryBenchMap<u64, u64>>(&mut group, &map_data, "flurry"); // too slow
             bench_out_of_the_box::<HashbrownBenchMap<u64, u64>>(&mut group, &map_data, "hashbrown");
@@ -118,6 +128,11 @@ fn get_or_insert(c: &mut Criterion) {
             bench_out_of_the_box::<IndexMapBenchMap<u64, u64>>(&mut group, &map_data, "indexmap");
             bench_out_of_the_box::<LeapfrogBenchMap<u64, u64>>(&mut group, &map_data, "leapfrog");
             bench_out_of_the_box::<PapayaBenchMap<u64, u64>>(&mut group, &map_data, "papaya");
+            bench_out_of_the_box::<RpdsHashTrieMapBenchMap<u64, u64>>(
+                &mut group,
+                &map_data,
+                "rpds-hash-trie-map",
+            );
             bench_out_of_the_box::<RustCHashBenchMap<u64, u64>>(
                 &mut group,
                 &map_data,
@@ -148,6 +163,8 @@ fn get_or_insert(c: &mut Criterion) {
             );
             // bench_same_hasher::<BTreeMapBenchMap<u64, u64, CommonHasher>>(&mut group, &map_data, "btreemap"); // doesn't allow setting hasher
             // bench_same_hasher::<ConcreadBenchMap<u64, u64, CommonHasher>>(&mut group, &map_data, "concread"); // doesn't allow setting hasher
+            // bench_same_hasher::<ConcurrentMapBenchMap<u64, u64, CommonHasher>>(&mut group, &map_data, "concurrent-map"); // doesn't allow setting hasher
+            // bench_same_hasher::<CrossbeamSkiplistBenchMap<u64, u64, CommonHasher>>(&mut group, &map_data, "crossbeam-skiplist"); // doesn't allow setting hasher
             bench_same_hasher::<DashMapBenchMap<u64, u64, CommonHasher>>(
                 &mut group,
                 &map_data,
@@ -196,6 +213,12 @@ fn get_or_insert(c: &mut Criterion) {
                 &mut group,
                 &map_data,
                 "papaya",
+                hasher.clone(),
+            );
+            bench_same_hasher::<RpdsHashTrieMapBenchMap<u64, u64, CommonHasher>>(
+                &mut group,
+                &map_data,
+                "rpds-hash-trie-map",
                 hasher.clone(),
             );
             // bench_same_hasher::<RustCHashBenchMap<u64, u64, CommonHasher>>(&mut group, &map_data, "rustc-hash"); // doesn't allow setting hasher

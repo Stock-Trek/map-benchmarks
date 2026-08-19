@@ -1,6 +1,6 @@
 use crate::maps::benchmap::{
-    BenchMapClone, BenchMapGetCloned, BenchMapInsert, BenchMapIter, BenchMapMutInsert,
-    BenchMapMutRemove, BenchMapNew, BenchMapRemove,
+    BenchMapClone, BenchMapGetCloned, BenchMapGetOrInsert, BenchMapInsert, BenchMapIter,
+    BenchMapMutGetOrInsert, BenchMapMutInsert, BenchMapMutRemove, BenchMapNew, BenchMapRemove,
 };
 use concurrent_map::{ConcurrentMap, Minimum};
 
@@ -56,6 +56,23 @@ where
     }
 }
 
+impl<K, V> BenchMapGetOrInsert<K, V> for ConcurrentMapBenchMap<K, V>
+where
+    K: 'static + Clone + Minimum + Send + Sync,
+    V: 'static + Clone + Send + Sync,
+{
+    fn get_or_insert(&self, key: K, default: V) -> V {
+        // concurrent-map has no entry API, so emulate get-or-insert as a get
+        // followed by an insert.
+        if let Some(value) = self.map.get(&key) {
+            value
+        } else {
+            self.map.insert(key, default.clone());
+            default
+        }
+    }
+}
+
 impl<K, V> BenchMapMutInsert<K, V> for ConcurrentMapBenchMap<K, V>
 where
     K: 'static + Clone + Minimum + Send + Sync,
@@ -63,6 +80,21 @@ where
 {
     fn insert(&mut self, key: K, value: V) {
         self.map.insert(key, value);
+    }
+}
+
+impl<K, V> BenchMapMutGetOrInsert<K, V> for ConcurrentMapBenchMap<K, V>
+where
+    K: 'static + Clone + Minimum + Send + Sync,
+    V: 'static + Clone + Send + Sync,
+{
+    fn get_or_insert(&mut self, key: K, default: V) -> V {
+        if let Some(value) = self.map.get(&key) {
+            value
+        } else {
+            self.map.insert(key, default.clone());
+            default
+        }
     }
 }
 

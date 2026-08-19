@@ -131,6 +131,14 @@ fn get_or_insert_concurrent(c: &mut Criterion) {
             group.throughput(Throughput::Elements(total_ops as u64));
 
             // bench::<ConcreadBenchMap<u64, u64>>(&mut group, &map_data, thread_count, &workloads, "concread"); // too slow
+            // bench::<ConcurrentMapBenchMap<u64, u64>>(&mut group, &map_data, thread_count, &workloads, "concurrent-map"); // Send but not Sync; cannot share &ConcurrentMap across threads
+            bench::<CrossbeamSkiplistBenchMap<u64, u64>>(
+                &mut group,
+                &map_data,
+                thread_count,
+                &workloads,
+                "crossbeam-skiplist",
+            );
             bench::<DashMapBenchMap<u64, u64>>(
                 &mut group,
                 &map_data,
@@ -153,6 +161,7 @@ fn get_or_insert_concurrent(c: &mut Criterion) {
                 &workloads,
                 "papaya",
             );
+            // bench::<RpdsHashTrieMapBenchMap<u64, u64>>(&mut group, &map_data, thread_count, &workloads, "rpds-hash-trie-map"); // mutation returns a new map; requires &mut or storing the result, cannot mutate through a shared reference (and the default Rc pointer is not Send/Sync)
             bench::<SccBenchMap<u64, u64>>(&mut group, &map_data, thread_count, &workloads, "scc");
             bench::<StarshardBenchMap<u64, u64>>(
                 &mut group,
