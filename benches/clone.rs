@@ -1,16 +1,6 @@
 use bench_map::{
-    config::*,
-    constants::*,
-    data::u64_sparse::U64SparseDataGen,
-    map_data::MapData,
-    map_gen::MapGen,
-    maps::{
-        AhashBenchMap, BTreeMapBenchMap, BenchMapClone, BenchMapMutInsert, BenchMapNew,
-        DashMapBenchMap, HashbrownBenchMap, HashlinkBenchMap, HordeBenchMap,
-        ImmutableChunkMapBenchMap, IndexMapBenchMap, PapayaBenchMap, RustCHashBenchMap,
-        SccBenchMap, StarshardBenchMap, StdBenchMap, TxMapBenchMap,
-    },
-    number_formatter::format_n,
+    config::*, constants::*, data::u64_sparse::U64SparseDataGen, map_data::MapData,
+    map_gen::MapGen, maps::*, number_formatter::format_n,
 };
 use criterion::{
     BenchmarkGroup, Criterion, Throughput, criterion_group, criterion_main, measurement::WallTime,
@@ -59,6 +49,7 @@ fn clone(c: &mut Criterion) {
         bench::<HashlinkBenchMap<u64, u64>>(&mut group, &map_data, "hashlink");
         bench::<HordeBenchMap<u64, u64>>(&mut group, &map_data, "horde");
         bench::<ImmutableChunkMapBenchMap<u64, u64>>(&mut group, &map_data, "immutable-chunkmap");
+        bench::<ImblBenchMap<u64, u64>>(&mut group, &map_data, "imbl");
         bench::<IndexMapBenchMap<u64, u64>>(&mut group, &map_data, "indexmap");
         // bench::<LeapfrogBenchMap<u64, u64>>(&mut group, &map_data, "leapfrog"); // doesn't implement Clone
         bench::<PapayaBenchMap<u64, u64>>(&mut group, &map_data, "papaya");

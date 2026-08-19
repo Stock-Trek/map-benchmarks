@@ -1,13 +1,4 @@
-use bench_map::{
-    config::*,
-    constants::*,
-    maps::{
-        AhashBenchMap, BTreeMapBenchMap, BenchMapNew, DashMapBenchMap, HashbrownBenchMap,
-        HashlinkBenchMap, HordeBenchMap, ImmutableChunkMapBenchMap, IndexMapBenchMap,
-        LeapfrogBenchMap, PapayaBenchMap, RustCHashBenchMap, SccBenchMap, StarshardBenchMap,
-        StdBenchMap, TxMapBenchMap,
-    },
-};
+use bench_map::{config::*, constants::*, maps::*};
 use criterion::{
     BenchmarkGroup, Criterion, Throughput, criterion_group, criterion_main, measurement::WallTime,
 };
@@ -41,6 +32,7 @@ fn create(c: &mut Criterion) {
     bench::<HashlinkBenchMap<u64, u64>>(&mut group, "hashlink");
     bench::<HordeBenchMap<u64, u64>>(&mut group, "horde");
     bench::<ImmutableChunkMapBenchMap<u64, u64>>(&mut group, "immutable-chunkmap");
+    bench::<ImblBenchMap<u64, u64>>(&mut group, "imbl");
     bench::<IndexMapBenchMap<u64, u64>>(&mut group, "indexmap");
     bench::<LeapfrogBenchMap<u64, u64>>(&mut group, "leapfrog");
     bench::<PapayaBenchMap<u64, u64>>(&mut group, "papaya");

@@ -21,6 +21,7 @@ All benchmarks use blackbox to avoid any overly aggressive compiler optimisation
 - [hashlink::LinkedHashMap](https://crates.io/crates/hashlink)
 - [horde::SyncTable](https://crates.io/crates/horde)
 - [immutable_chunkmap::map::MapM](https://crates.io/crates/immutable-chunkmap)
+- [imbl::HashMap](https://crates.io/crates/imbl)
 - [indexmap::IndexMap](https://crates.io/crates/indexmap)
 - [leapfrog::LeapMap](https://crates.io/crates/leapfrog)
 - [papaya::HashMap](https://crates.io/crates/papaya)

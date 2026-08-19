@@ -10,8 +10,7 @@ pub struct HashlinkBenchMap<K, V, H = hashlink::DefaultHashBuilder> {
 
 impl<K, V, H> BenchMapNew<K, V> for HashlinkBenchMap<K, V, H>
 where
-    K: Hash + Eq,
-    H: BuildHasher + Default,
+    H: Default,
 {
     fn new() -> Self {
         Self {
@@ -20,11 +19,7 @@ where
     }
 }
 
-impl<K, V, H> BenchMapNewWithHasher<K, V, H> for HashlinkBenchMap<K, V, H>
-where
-    K: Hash + Eq,
-    H: BuildHasher,
-{
+impl<K, V, H> BenchMapNewWithHasher<K, V, H> for HashlinkBenchMap<K, V, H> {
     fn new_with_hasher(hasher: H) -> Self {
         Self {
             map: hashlink::LinkedHashMap::with_hasher(hasher),
@@ -66,10 +61,7 @@ where
     }
 }
 
-impl<K, V, H> BenchMapIter<K, V> for HashlinkBenchMap<K, V, H>
-where
-    H: BuildHasher,
-{
+impl<K, V, H> BenchMapIter<K, V> for HashlinkBenchMap<K, V, H> {
     fn for_each(&self, mut f: impl FnMut(&K, &V)) {
         for (key, value) in self.map.iter() {
             f(key, value);
@@ -87,11 +79,7 @@ where
     }
 }
 
-impl<K, V, H> BenchMapMutClear<K, V> for HashlinkBenchMap<K, V, H>
-where
-    K: Hash + Eq,
-    H: BuildHasher,
-{
+impl<K, V, H> BenchMapMutClear<K, V> for HashlinkBenchMap<K, V, H> {
     fn clear(&mut self) {
         self.map.clear();
     }

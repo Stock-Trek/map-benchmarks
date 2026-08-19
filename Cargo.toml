@@ -16,6 +16,7 @@ hashbrown = "0"
 hashlink = "0"
 horde = "0"
 immutable-chunkmap = "2"
+imbl = "7"
 indexmap = "2"
 leapfrog = { version = "0", features = ["stable_alloc"] }
 libc = "0"
