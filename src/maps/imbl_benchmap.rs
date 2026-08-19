@@ -14,9 +14,7 @@ pub struct ImblBenchMap<K, V, H = RandomState> {
 
 impl<K, V, H> BenchMapNew<K, V> for ImblBenchMap<K, V, H>
 where
-    K: Hash + Eq + Clone,
-    V: Clone,
-    H: BuildHasher + Clone + Default,
+    H: Default,
 {
     fn new() -> Self {
         Self {
@@ -25,12 +23,7 @@ where
     }
 }
 
-impl<K, V, H> BenchMapNewWithHasher<K, V, H> for ImblBenchMap<K, V, H>
-where
-    K: Hash + Eq + Clone,
-    V: Clone,
-    H: BuildHasher + Clone,
-{
+impl<K, V, H> BenchMapNewWithHasher<K, V, H> for ImblBenchMap<K, V, H> {
     fn new_with_hasher(hasher: H) -> Self {
         Self {
             map: GenericHashMap::with_hasher(hasher),
@@ -73,10 +66,7 @@ where
     }
 }
 
-impl<K, V, H> BenchMapIter<K, V> for ImblBenchMap<K, V, H>
-where
-    H: BuildHasher + Clone,
-{
+impl<K, V, H> BenchMapIter<K, V> for ImblBenchMap<K, V, H> {
     fn for_each(&self, mut f: impl FnMut(&K, &V)) {
         for (key, value) in self.map.iter() {
             f(key, value);
@@ -95,12 +85,7 @@ where
     }
 }
 
-impl<K, V, H> BenchMapMutClear<K, V> for ImblBenchMap<K, V, H>
-where
-    K: Hash + Eq + Clone,
-    V: Clone,
-    H: BuildHasher + Clone,
-{
+impl<K, V, H> BenchMapMutClear<K, V> for ImblBenchMap<K, V, H> {
     fn clear(&mut self) {
         self.map.clear();
     }
