@@ -1,7 +1,7 @@
 # Required outcomes
 
-- A full report in `docs/REPORT.md`
-- An executive summary in `docs/EXECUTIVE_SUMMARY.md`
+- A full report in `<root>/BENCHMARK_REPORT.md`
+- An executive summary in `<root>/EXECUTIVE_SUMMARY.md`
 
 ## Report
 
