@@ -12,4 +12,4 @@ pub const KEY_SENSITIVITY_ENTRY_COUNT: usize = 10_000;
 pub const WORKLOAD_ENTRY_COUNT: &[usize] = &[1_000, 10_000, 100_000];
 pub const WORKLOAD_OP_COUNT: usize = 10_000;
 pub const WORKLOAD_MISSING_KEY_COUNT: usize = 10_000;
-pub const WORKLOAD_CONCURRENT_THREAD_COUNTS: &[usize] = &[2, 4];
+pub const WORKLOAD_CONCURRENT_THREAD_COUNTS: &[usize] = &[2, 3, 4];
