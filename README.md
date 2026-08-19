@@ -34,7 +34,7 @@ There are 3 groups of tests, `out-of-the-box` which uses each map's default impl
 ### Out of the box
 
 - **Clone**: Clones maps containing 1K/10K/100K entries
-- **Workload**: Uses a map with 1K/10K/100K entries. Use cases: [write-heavy, balanced, read-heavy]. Thread counts: [1, 2, 4]. Threads for concurrent tests are pinned to reduce any effects from OS scheduling.
+- **Workload**: Uses a map with 1K/10K/100K entries. Use cases: [write-heavy, balanced, read-heavy]. Thread counts: [1, 2, 3, 4]. Threads for concurrent tests are pinned to reduce any effects from OS scheduling.
 
 ### Same hasher
 
