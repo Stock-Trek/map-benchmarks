@@ -62,16 +62,6 @@ where
     }
 }
 
-impl<K, V, H> BenchMapMutInsert<K, V> for RpdsHashTrieMapBenchMap<K, V, H>
-where
-    K: Eq + Hash,
-    H: BuildHasher + Clone,
-{
-    fn insert(&mut self, key: K, value: V) {
-        self.map.insert_mut(key, value);
-    }
-}
-
 impl<K, V, H> BenchMapMutGetOrInsert<K, V> for RpdsHashTrieMapBenchMap<K, V, H>
 where
     K: Eq + Hash,
@@ -87,6 +77,16 @@ where
             self.map.insert_mut(key, default.clone());
             default
         }
+    }
+}
+
+impl<K, V, H> BenchMapMutInsert<K, V> for RpdsHashTrieMapBenchMap<K, V, H>
+where
+    K: Eq + Hash,
+    H: BuildHasher + Clone,
+{
+    fn insert(&mut self, key: K, value: V) {
+        self.map.insert_mut(key, value);
     }
 }
 

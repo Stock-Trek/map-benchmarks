@@ -34,26 +34,12 @@ where
     }
 }
 
-impl<K, V> BenchMapInsert<K, V> for ConcreadBenchMap<K, V>
-where
-    K: Clone + Debug + Hash + Eq + Send + Sync + 'static,
-    V: Clone + Send + Sync + 'static,
-{
-    fn insert(&self, key: K, value: V) {
-        let mut write = self.map.write();
-        write.insert(key, value);
-        write.commit();
-    }
-}
-
 impl<K, V> BenchMapGetOrInsert<K, V> for ConcreadBenchMap<K, V>
 where
     K: Clone + Debug + Hash + Eq + Send + Sync + 'static,
     V: Clone + Send + Sync + 'static,
 {
     fn get_or_insert(&self, key: K, default: V) -> V {
-        // concread has no entry API, so emulate get-or-insert inside a single
-        // write transaction (writes require a write txn regardless).
         let mut write = self.map.write();
         match write.get(&key).cloned() {
             Some(value) => value,
@@ -63,18 +49,6 @@ where
                 default
             }
         }
-    }
-}
-
-impl<K, V> BenchMapMutInsert<K, V> for ConcreadBenchMap<K, V>
-where
-    K: Clone + Debug + Hash + Eq + Send + Sync + 'static,
-    V: Clone + Send + Sync + 'static,
-{
-    fn insert(&mut self, key: K, value: V) {
-        let mut write = self.map.write();
-        write.insert(key, value);
-        write.commit();
     }
 }
 
@@ -93,6 +67,30 @@ where
                 default
             }
         }
+    }
+}
+
+impl<K, V> BenchMapInsert<K, V> for ConcreadBenchMap<K, V>
+where
+    K: Clone + Debug + Hash + Eq + Send + Sync + 'static,
+    V: Clone + Send + Sync + 'static,
+{
+    fn insert(&self, key: K, value: V) {
+        let mut write = self.map.write();
+        write.insert(key, value);
+        write.commit();
+    }
+}
+
+impl<K, V> BenchMapMutInsert<K, V> for ConcreadBenchMap<K, V>
+where
+    K: Clone + Debug + Hash + Eq + Send + Sync + 'static,
+    V: Clone + Send + Sync + 'static,
+{
+    fn insert(&mut self, key: K, value: V) {
+        let mut write = self.map.write();
+        write.insert(key, value);
+        write.commit();
     }
 }
 

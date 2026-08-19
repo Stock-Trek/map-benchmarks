@@ -63,16 +63,6 @@ where
     }
 }
 
-impl<K, V, H> BenchMapInsert<K, V> for TxMapBenchMap<K, V, H>
-where
-    K: Clone + Hash + Eq,
-    H: BuildHasher,
-{
-    fn insert(&self, key: K, value: V) {
-        self.map.insert(key, value);
-    }
-}
-
 impl<K, V, H> BenchMapGetOrInsert<K, V> for TxMapBenchMap<K, V, H>
 where
     K: Clone + Hash + Eq,
@@ -80,24 +70,7 @@ where
     H: BuildHasher,
 {
     fn get_or_insert(&self, key: K, default: V) -> V {
-        // TxMap has no entry API, so emulate get-or-insert as a get followed
-        // by an atomic insert-if-absent.
-        if let Some(value) = self.map.get_cloned(&key) {
-            value
-        } else {
-            self.map.insert_with_if_absent(key, || default.clone());
-            default
-        }
-    }
-}
-
-impl<K, V, H> BenchMapMutInsert<K, V> for TxMapBenchMap<K, V, H>
-where
-    K: Clone + Hash + Eq,
-    H: BuildHasher,
-{
-    fn insert(&mut self, key: K, value: V) {
-        self.map.insert(key, value);
+        self.map.get_with_or_insert(&key, |v| v.clone(), default)
     }
 }
 
@@ -108,12 +81,27 @@ where
     H: BuildHasher,
 {
     fn get_or_insert(&mut self, key: K, default: V) -> V {
-        if let Some(value) = self.map.get_cloned(&key) {
-            value
-        } else {
-            self.map.insert_with_if_absent(key, || default.clone());
-            default
-        }
+        self.map.get_with_or_insert(&key, |v| v.clone(), default)
+    }
+}
+
+impl<K, V, H> BenchMapInsert<K, V> for TxMapBenchMap<K, V, H>
+where
+    K: Clone + Hash + Eq,
+    H: BuildHasher,
+{
+    fn insert(&self, key: K, value: V) {
+        self.map.insert(key, value);
+    }
+}
+
+impl<K, V, H> BenchMapMutInsert<K, V> for TxMapBenchMap<K, V, H>
+where
+    K: Clone + Hash + Eq,
+    H: BuildHasher,
+{
+    fn insert(&mut self, key: K, value: V) {
+        self.map.insert(key, value);
     }
 }
 

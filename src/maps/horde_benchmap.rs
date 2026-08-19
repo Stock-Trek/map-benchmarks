@@ -59,17 +59,6 @@ where
     }
 }
 
-impl<K, V, H> BenchMapMutInsert<K, V> for HordeBenchMap<K, V, H>
-where
-    K: Clone + Hash + Eq,
-    V: Clone,
-    H: BuildHasher,
-{
-    fn insert(&mut self, key: K, value: V) {
-        self.map.write().insert(key, value, None);
-    }
-}
-
 impl<K, V, H> BenchMapMutGetOrInsert<K, V> for HordeBenchMap<K, V, H>
 where
     K: Clone + Hash + Eq,
@@ -90,6 +79,17 @@ where
                 default
             }
         }
+    }
+}
+
+impl<K, V, H> BenchMapMutInsert<K, V> for HordeBenchMap<K, V, H>
+where
+    K: Clone + Hash + Eq,
+    V: Clone,
+    H: BuildHasher,
+{
+    fn insert(&mut self, key: K, value: V) {
+        self.map.write().insert(key, value, None);
     }
 }
 

@@ -55,17 +55,6 @@ where
     }
 }
 
-impl<K, V, H> BenchMapMutInsert<K, V> for ImblBenchMap<K, V, H>
-where
-    K: Hash + Eq + Clone,
-    V: Clone,
-    H: BuildHasher + Clone,
-{
-    fn insert(&mut self, key: K, value: V) {
-        self.map.insert(key, value);
-    }
-}
-
 impl<K, V, H> BenchMapMutGetOrInsert<K, V> for ImblBenchMap<K, V, H>
 where
     K: Hash + Eq + Clone,
@@ -74,6 +63,17 @@ where
 {
     fn get_or_insert(&mut self, key: K, default: V) -> V {
         self.map.entry(key).or_insert(default).clone()
+    }
+}
+
+impl<K, V, H> BenchMapMutInsert<K, V> for ImblBenchMap<K, V, H>
+where
+    K: Hash + Eq + Clone,
+    V: Clone,
+    H: BuildHasher + Clone,
+{
+    fn insert(&mut self, key: K, value: V) {
+        self.map.insert(key, value);
     }
 }
 

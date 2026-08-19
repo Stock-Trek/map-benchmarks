@@ -58,17 +58,6 @@ where
     }
 }
 
-impl<K, V, H> BenchMapMutInsert<K, V> for AhashBenchMap<K, V, H>
-where
-    K: Hash + Eq,
-    V: Clone,
-    H: BuildHasher,
-{
-    fn insert(&mut self, key: K, value: V) {
-        self.map.insert(key, value);
-    }
-}
-
 impl<K, V, H> BenchMapMutGetOrInsert<K, V> for AhashBenchMap<K, V, H>
 where
     K: Hash + Eq,
@@ -77,6 +66,17 @@ where
 {
     fn get_or_insert(&mut self, key: K, default: V) -> V {
         self.map.entry(key).or_insert(default).clone()
+    }
+}
+
+impl<K, V, H> BenchMapMutInsert<K, V> for AhashBenchMap<K, V, H>
+where
+    K: Hash + Eq,
+    V: Clone,
+    H: BuildHasher,
+{
+    fn insert(&mut self, key: K, value: V) {
+        self.map.insert(key, value);
     }
 }
 

@@ -54,17 +54,6 @@ where
     }
 }
 
-impl<K, V, H> BenchMapInsert<K, V> for LeapfrogBenchMap<K, V, H>
-where
-    K: Eq + Hash + Copy,
-    V: Value,
-    H: BuildHasher + Default,
-{
-    fn insert(&self, key: K, value: V) {
-        self.map.insert(key, value);
-    }
-}
-
 impl<K, V, H> BenchMapGetOrInsert<K, V> for LeapfrogBenchMap<K, V, H>
 where
     K: Eq + Hash + Copy,
@@ -72,23 +61,10 @@ where
     H: BuildHasher + Default,
 {
     fn get_or_insert(&self, key: K, default: V) -> V {
-        // `try_insert` atomically inserts `default` if the key is absent and
-        // returns the existing value otherwise (LeapMap has no entry API).
         match self.map.try_insert(key, default) {
             Some(existing) => existing,
             None => default,
         }
-    }
-}
-
-impl<K, V, H> BenchMapMutInsert<K, V> for LeapfrogBenchMap<K, V, H>
-where
-    K: Eq + Hash + Copy,
-    V: Value,
-    H: BuildHasher + Default,
-{
-    fn insert(&mut self, key: K, value: V) {
-        self.map.insert(key, value);
     }
 }
 
@@ -103,6 +79,28 @@ where
             Some(existing) => existing,
             None => default,
         }
+    }
+}
+
+impl<K, V, H> BenchMapInsert<K, V> for LeapfrogBenchMap<K, V, H>
+where
+    K: Eq + Hash + Copy,
+    V: Value,
+    H: BuildHasher + Default,
+{
+    fn insert(&self, key: K, value: V) {
+        self.map.insert(key, value);
+    }
+}
+
+impl<K, V, H> BenchMapMutInsert<K, V> for LeapfrogBenchMap<K, V, H>
+where
+    K: Eq + Hash + Copy,
+    V: Value,
+    H: BuildHasher + Default,
+{
+    fn insert(&mut self, key: K, value: V) {
+        self.map.insert(key, value);
     }
 }
 

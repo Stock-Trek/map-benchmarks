@@ -25,16 +25,6 @@ where
     }
 }
 
-impl<K, V> BenchMapInsert<K, V> for CrossbeamSkiplistBenchMap<K, V>
-where
-    K: Ord + Send + 'static,
-    V: Send + 'static,
-{
-    fn insert(&self, key: K, value: V) {
-        self.map.insert(key, value);
-    }
-}
-
 impl<K, V> BenchMapGetOrInsert<K, V> for CrossbeamSkiplistBenchMap<K, V>
 where
     K: Ord + Send + 'static,
@@ -45,16 +35,6 @@ where
     }
 }
 
-impl<K, V> BenchMapMutInsert<K, V> for CrossbeamSkiplistBenchMap<K, V>
-where
-    K: Ord + Send + 'static,
-    V: Send + 'static,
-{
-    fn insert(&mut self, key: K, value: V) {
-        self.map.insert(key, value);
-    }
-}
-
 impl<K, V> BenchMapMutGetOrInsert<K, V> for CrossbeamSkiplistBenchMap<K, V>
 where
     K: Ord + Send + 'static,
@@ -62,6 +42,26 @@ where
 {
     fn get_or_insert(&mut self, key: K, default: V) -> V {
         self.map.get_or_insert(key, default).value().clone()
+    }
+}
+
+impl<K, V> BenchMapInsert<K, V> for CrossbeamSkiplistBenchMap<K, V>
+where
+    K: Ord + Send + 'static,
+    V: Send + 'static,
+{
+    fn insert(&self, key: K, value: V) {
+        self.map.insert(key, value);
+    }
+}
+
+impl<K, V> BenchMapMutInsert<K, V> for CrossbeamSkiplistBenchMap<K, V>
+where
+    K: Ord + Send + 'static,
+    V: Send + 'static,
+{
+    fn insert(&mut self, key: K, value: V) {
+        self.map.insert(key, value);
     }
 }
 

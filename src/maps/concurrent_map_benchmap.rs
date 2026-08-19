@@ -46,16 +46,6 @@ where
     }
 }
 
-impl<K, V> BenchMapInsert<K, V> for ConcurrentMapBenchMap<K, V>
-where
-    K: 'static + Clone + Minimum + Send + Sync,
-    V: 'static + Clone + Send + Sync,
-{
-    fn insert(&self, key: K, value: V) {
-        self.map.insert(key, value);
-    }
-}
-
 impl<K, V> BenchMapGetOrInsert<K, V> for ConcurrentMapBenchMap<K, V>
 where
     K: 'static + Clone + Minimum + Send + Sync,
@@ -73,16 +63,6 @@ where
     }
 }
 
-impl<K, V> BenchMapMutInsert<K, V> for ConcurrentMapBenchMap<K, V>
-where
-    K: 'static + Clone + Minimum + Send + Sync,
-    V: 'static + Clone + Send + Sync,
-{
-    fn insert(&mut self, key: K, value: V) {
-        self.map.insert(key, value);
-    }
-}
-
 impl<K, V> BenchMapMutGetOrInsert<K, V> for ConcurrentMapBenchMap<K, V>
 where
     K: 'static + Clone + Minimum + Send + Sync,
@@ -95,6 +75,26 @@ where
             self.map.insert(key, default.clone());
             default
         }
+    }
+}
+
+impl<K, V> BenchMapInsert<K, V> for ConcurrentMapBenchMap<K, V>
+where
+    K: 'static + Clone + Minimum + Send + Sync,
+    V: 'static + Clone + Send + Sync,
+{
+    fn insert(&self, key: K, value: V) {
+        self.map.insert(key, value);
+    }
+}
+
+impl<K, V> BenchMapMutInsert<K, V> for ConcurrentMapBenchMap<K, V>
+where
+    K: 'static + Clone + Minimum + Send + Sync,
+    V: 'static + Clone + Send + Sync,
+{
+    fn insert(&mut self, key: K, value: V) {
+        self.map.insert(key, value);
     }
 }
 

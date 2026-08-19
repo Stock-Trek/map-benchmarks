@@ -64,6 +64,28 @@ where
     }
 }
 
+impl<K, V, H> BenchMapGetOrInsert<K, V> for StarshardBenchMap<K, V, H>
+where
+    K: Clone + Hash + Eq + Send + Sync,
+    V: Clone + Send + Sync,
+    H: BuildHasher + Clone + Send + Sync,
+{
+    fn get_or_insert(&self, key: K, default: V) -> V {
+        self.map.compute_if_absent(key, || default)
+    }
+}
+
+impl<K, V, H> BenchMapMutGetOrInsert<K, V> for StarshardBenchMap<K, V, H>
+where
+    K: Clone + Hash + Eq + Send + Sync,
+    V: Clone + Send + Sync,
+    H: BuildHasher + Clone + Send + Sync,
+{
+    fn get_or_insert(&mut self, key: K, default: V) -> V {
+        self.map.compute_if_absent(key, || default)
+    }
+}
+
 impl<K, V, H> BenchMapInsert<K, V> for StarshardBenchMap<K, V, H>
 where
     K: Clone + Hash + Eq + Send + Sync,
@@ -75,17 +97,6 @@ where
     }
 }
 
-impl<K, V, H> BenchMapGetOrInsert<K, V> for StarshardBenchMap<K, V, H>
-where
-    K: Clone + Hash + Eq + Send + Sync,
-    V: Clone + Send + Sync,
-    H: BuildHasher + Clone + Send + Sync,
-{
-    fn get_or_insert(&self, key: K, default: V) -> V {
-        self.map.compute_if_absent(key, || default.clone())
-    }
-}
-
 impl<K, V, H> BenchMapMutInsert<K, V> for StarshardBenchMap<K, V, H>
 where
     K: Clone + Hash + Eq + Send + Sync,
@@ -94,17 +105,6 @@ where
 {
     fn insert(&mut self, key: K, value: V) {
         self.map.insert(key, value);
-    }
-}
-
-impl<K, V, H> BenchMapMutGetOrInsert<K, V> for StarshardBenchMap<K, V, H>
-where
-    K: Clone + Hash + Eq + Send + Sync,
-    V: Clone + Send + Sync,
-    H: BuildHasher + Clone + Send + Sync,
-{
-    fn get_or_insert(&mut self, key: K, default: V) -> V {
-        self.map.compute_if_absent(key, || default.clone())
     }
 }
 

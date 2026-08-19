@@ -42,16 +42,6 @@ where
     }
 }
 
-impl<K, V> BenchMapMutInsert<K, V> for BTreeMapBenchMap<K, V>
-where
-    K: Ord,
-    V: Clone,
-{
-    fn insert(&mut self, key: K, value: V) {
-        self.map.insert(key, value);
-    }
-}
-
 impl<K, V> BenchMapMutGetOrInsert<K, V> for BTreeMapBenchMap<K, V>
 where
     K: Ord,
@@ -59,6 +49,16 @@ where
 {
     fn get_or_insert(&mut self, key: K, default: V) -> V {
         self.map.entry(key).or_insert(default).clone()
+    }
+}
+
+impl<K, V> BenchMapMutInsert<K, V> for BTreeMapBenchMap<K, V>
+where
+    K: Ord,
+    V: Clone,
+{
+    fn insert(&mut self, key: K, value: V) {
+        self.map.insert(key, value);
     }
 }
 

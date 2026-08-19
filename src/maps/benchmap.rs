@@ -10,11 +10,11 @@ pub trait BenchMapClone<K, V>: Sized {
 pub trait BenchMapGetCloned<K, V> {
     fn get_cloned(&self, key: &K) -> Option<V>;
 }
-pub trait BenchMapInsert<K, V> {
-    fn insert(&self, key: K, value: V);
-}
 pub trait BenchMapGetOrInsert<K, V> {
     fn get_or_insert(&self, key: K, default: V) -> V;
+}
+pub trait BenchMapInsert<K, V> {
+    fn insert(&self, key: K, value: V);
 }
 pub trait BenchMapIter<K, V> {
     fn for_each(&self, f: impl FnMut(&K, &V));

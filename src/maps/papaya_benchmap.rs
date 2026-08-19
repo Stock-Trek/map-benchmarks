@@ -58,16 +58,6 @@ where
     }
 }
 
-impl<K, V, H> BenchMapInsert<K, V> for PapayaBenchMap<K, V, H>
-where
-    K: Hash + Eq,
-    H: BuildHasher,
-{
-    fn insert(&self, key: K, value: V) {
-        self.map.pin().insert(key, value);
-    }
-}
-
 impl<K, V, H> BenchMapGetOrInsert<K, V> for PapayaBenchMap<K, V, H>
 where
     K: Hash + Eq,
@@ -79,16 +69,6 @@ where
     }
 }
 
-impl<K, V, H> BenchMapMutInsert<K, V> for PapayaBenchMap<K, V, H>
-where
-    K: Hash + Eq,
-    H: BuildHasher,
-{
-    fn insert(&mut self, key: K, value: V) {
-        self.map.pin().insert(key, value);
-    }
-}
-
 impl<K, V, H> BenchMapMutGetOrInsert<K, V> for PapayaBenchMap<K, V, H>
 where
     K: Hash + Eq,
@@ -97,6 +77,26 @@ where
 {
     fn get_or_insert(&mut self, key: K, default: V) -> V {
         self.map.pin().get_or_insert(key, default).clone()
+    }
+}
+
+impl<K, V, H> BenchMapInsert<K, V> for PapayaBenchMap<K, V, H>
+where
+    K: Hash + Eq,
+    H: BuildHasher,
+{
+    fn insert(&self, key: K, value: V) {
+        self.map.pin().insert(key, value);
+    }
+}
+
+impl<K, V, H> BenchMapMutInsert<K, V> for PapayaBenchMap<K, V, H>
+where
+    K: Hash + Eq,
+    H: BuildHasher,
+{
+    fn insert(&mut self, key: K, value: V) {
+        self.map.pin().insert(key, value);
     }
 }
 
