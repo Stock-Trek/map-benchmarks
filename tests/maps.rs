@@ -29,6 +29,15 @@ fn concread() {
 }
 
 #[test]
+fn crossbeam_skiplist() {
+    assert_create_map_populates_existing_keys::<CrossbeamSkiplistBenchMap<u64, u64>>();
+    assert_iterate::<CrossbeamSkiplistBenchMap<u64, u64>>();
+    assert_mut_insert_remove::<CrossbeamSkiplistBenchMap<u64, u64>>();
+    assert_clear::<CrossbeamSkiplistBenchMap<u64, u64>>();
+    assert_shared_insert_remove::<CrossbeamSkiplistBenchMap<u64, u64>>();
+}
+
+#[test]
 fn dashmap() {
     assert_create_map_populates_existing_keys::<DashMapBenchMap<u64, u64>>();
     assert_iterate::<DashMapBenchMap<u64, u64>>();

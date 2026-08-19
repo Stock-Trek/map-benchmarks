@@ -25,6 +25,7 @@ rustc-hash = "2"
 scc = "3"
 starshard = "2"
 txmap = "3"
+crossbeam-skiplist = "0.1"
 
 [[bench]]
 name = "clone"

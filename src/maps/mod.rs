@@ -2,6 +2,7 @@ pub mod ahash_benchmap;
 pub mod benchmap;
 pub mod btreemap_benchmap;
 pub mod concread_benchmap;
+pub mod crossbeam_skiplist_benchmap;
 pub mod dashmap_benchmap;
 pub mod flurry_benchmap;
 pub mod hashbrown_benchmap;
@@ -25,6 +26,7 @@ pub use benchmap::{
 };
 pub use btreemap_benchmap::BTreeMapBenchMap;
 pub use concread_benchmap::ConcreadBenchMap;
+pub use crossbeam_skiplist_benchmap::CrossbeamSkiplistBenchMap;
 pub use dashmap_benchmap::DashMapBenchMap;
 pub use flurry_benchmap::FlurryBenchMap;
 pub use hashbrown_benchmap::HashbrownBenchMap;

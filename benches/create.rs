@@ -26,6 +26,7 @@ fn create(c: &mut Criterion) {
     bench::<AhashBenchMap<u64, u64>>(&mut group, "ahash");
     bench::<BTreeMapBenchMap<u64, u64>>(&mut group, "btreemap");
     // bench::<ConcreadBenchMap<u64, u64>>(&mut group, "concread"); // too slow
+    bench::<CrossbeamSkiplistBenchMap<u64, u64>>(&mut group, "crossbeam-skiplist");
     bench::<DashMapBenchMap<u64, u64>>(&mut group, "dashmap");
     // bench::<FlurryBenchMap<u64, u64>>(&mut group, "flurry"); // too slow (creates a seize::Collector per map)
     bench::<HashbrownBenchMap<u64, u64>>(&mut group, "hashbrown");

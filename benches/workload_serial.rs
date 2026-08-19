@@ -106,6 +106,12 @@ fn workload_serial(c: &mut Criterion) {
             bench::<AhashBenchMap<u64, u64>>(&mut group, &map_data, &workload, "ahash");
             bench::<BTreeMapBenchMap<u64, u64>>(&mut group, &map_data, &workload, "btreemap");
             // bench::<ConcreadBenchMap<u64, u64>>(&mut group, &map_data, &workload, "concread"); // too slow
+            bench::<CrossbeamSkiplistBenchMap<u64, u64>>(
+                &mut group,
+                &map_data,
+                &workload,
+                "crossbeam-skiplist",
+            );
             bench::<DashMapBenchMap<u64, u64>>(&mut group, &map_data, &workload, "dashmap");
             // bench::<FlurryBenchMap<u64, u64>>(&mut group, &map_data, &workload, "flurry"); // too slow
             bench::<HashbrownBenchMap<u64, u64>>(&mut group, &map_data, &workload, "hashbrown");

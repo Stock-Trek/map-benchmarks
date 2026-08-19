@@ -1,6 +1,6 @@
 # Map benchmarks
 
-Benchmarks 17 map implementations
+Benchmarks 19 map implementations
 
 [Criterion report can be found here](https://stock-trek.github.io/map-benchmarks)
 
@@ -10,11 +10,12 @@ Benchmarks 17 map implementations
 
 All benchmarks use blackbox to avoid any overly aggressive compiler optimisations.
 
-17 map implementations are benchmarked:
+19 map implementations are benchmarked:
 
 - [ahash::AHashMap](https://crates.io/crates/ahash)
 - [std::collections::btreemap](https://doc.rust-lang.org/std/collections/struct.BTreeMap.html)
 - [concread::hashmap::HashMap](https://crates.io/crates/concread)
+- [crossbeam_skiplist::SkipMap](https://crates.io/crates/crossbeam-skiplist)
 - [dashmap::DashMap](https://crates.io/crates/dashmap)
 - [flurry::HashMap](https://crates.io/crates/flurry)
 - [hashbrown::HashMap](https://crates.io/crates/hashbrown)

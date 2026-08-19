@@ -43,6 +43,7 @@ fn clone(c: &mut Criterion) {
         bench::<AhashBenchMap<u64, u64>>(&mut group, &map_data, "ahash");
         bench::<BTreeMapBenchMap<u64, u64>>(&mut group, &map_data, "btreemap");
         // bench::<ConcreadBenchMap<u64, u64>>(&mut group, &map_data, "concread"); // doesn't implement Clone
+        // bench::<CrossbeamSkiplistBenchMap<u64, u64>>(&mut group, &map_data, "crossbeam-skiplist"); // doesn't implement Clone
         bench::<DashMapBenchMap<u64, u64>>(&mut group, &map_data, "dashmap");
         // bench::<FlurryBenchMap<u64, u64>>(&mut group, &map_data, "flurry"); // too slow
         bench::<HashbrownBenchMap<u64, u64>>(&mut group, &map_data, "hashbrown");
