@@ -1,6 +1,6 @@
 # Map benchmarks
 
-Benchmarks 21 map implementations
+Benchmarks 19 of 21* map implementations
 
 [AI generated executive summary can be found here](./EXECUTIVE_SUMMARY.md)
 
@@ -12,7 +12,7 @@ Benchmarks 21 map implementations
 
 All benchmarks use blackbox to avoid any overly aggressive compiler optimisations.
 
-19 map implementations are benchmarked:
+19 of 21* map implementations are benchmarked:
 
 - [ahash::AHashMap](https://crates.io/crates/ahash)
 - [std::collections::btreemap](https://doc.rust-lang.org/std/collections/struct.BTreeMap.html)
@@ -35,6 +35,8 @@ All benchmarks use blackbox to avoid any overly aggressive compiler optimisation
 - [starshard::ShardedHashMap](https://crates.io/crates/starshard)
 - [std::collections::HashMap](https://doc.rust-lang.org/std/collections/struct.HashMap.html)
 - [txmap::TxMap](https://crates.io/crates/txmap)
+
+*`concread` and `flurry` were all found to be substantially slower than the others so were removed from the benchmarks.
 
 There are 3 groups of tests, `out-of-the-box` which uses each map's default implementation for more realistic "real-world" performance, `same-hasher` which uses the same hasher for more accurate, "fairer" performance, and `both` which contains benchmarks that are run for both types of comparison.
 
