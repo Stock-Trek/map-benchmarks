@@ -1,6 +1,6 @@
 use crate::maps::benchmap::{
-    BenchMapClone, BenchMapGetCloned, BenchMapIter, BenchMapMutClear, BenchMapMutInsert,
-    BenchMapMutRemove, BenchMapNew, BenchMapNewWithHasher,
+    BenchMapClone, BenchMapGetCloned, BenchMapIter, BenchMapMutClear, BenchMapMutGetOrInsert,
+    BenchMapMutInsert, BenchMapMutRemove, BenchMapNew, BenchMapNewWithHasher,
 };
 use std::hash::{BuildHasher, Hash};
 
@@ -58,6 +58,17 @@ where
 {
     fn insert(&mut self, key: K, value: V) {
         self.map.insert(key, value);
+    }
+}
+
+impl<K, V, H> BenchMapMutGetOrInsert<K, V> for HashlinkBenchMap<K, V, H>
+where
+    K: Hash + Eq,
+    V: Clone,
+    H: BuildHasher,
+{
+    fn get_or_insert(&mut self, key: K, default: V) -> V {
+        self.map.entry(key).or_insert(default).clone()
     }
 }
 

@@ -1,6 +1,7 @@
 use crate::maps::benchmap::{
-    BenchMapClone, BenchMapGetCloned, BenchMapInsert, BenchMapIter, BenchMapMutClear,
-    BenchMapMutInsert, BenchMapMutRemove, BenchMapNew, BenchMapNewWithHasher, BenchMapRemove,
+    BenchMapClone, BenchMapGetCloned, BenchMapGetOrInsert, BenchMapInsert, BenchMapIter,
+    BenchMapMutClear, BenchMapMutGetOrInsert, BenchMapMutInsert, BenchMapMutRemove, BenchMapNew,
+    BenchMapNewWithHasher, BenchMapRemove,
 };
 use std::hash::{BuildHasher, Hash};
 
@@ -72,6 +73,24 @@ where
     }
 }
 
+impl<K, V, H> BenchMapGetOrInsert<K, V> for TxMapBenchMap<K, V, H>
+where
+    K: Clone + Hash + Eq,
+    V: Clone,
+    H: BuildHasher,
+{
+    fn get_or_insert(&self, key: K, default: V) -> V {
+        // TxMap has no entry API, so emulate get-or-insert as a get followed
+        // by an atomic insert-if-absent.
+        if let Some(value) = self.map.get_cloned(&key) {
+            value
+        } else {
+            self.map.insert_with_if_absent(key, || default.clone());
+            default
+        }
+    }
+}
+
 impl<K, V, H> BenchMapMutInsert<K, V> for TxMapBenchMap<K, V, H>
 where
     K: Clone + Hash + Eq,
@@ -79,6 +98,22 @@ where
 {
     fn insert(&mut self, key: K, value: V) {
         self.map.insert(key, value);
+    }
+}
+
+impl<K, V, H> BenchMapMutGetOrInsert<K, V> for TxMapBenchMap<K, V, H>
+where
+    K: Clone + Hash + Eq,
+    V: Clone,
+    H: BuildHasher,
+{
+    fn get_or_insert(&mut self, key: K, default: V) -> V {
+        if let Some(value) = self.map.get_cloned(&key) {
+            value
+        } else {
+            self.map.insert_with_if_absent(key, || default.clone());
+            default
+        }
     }
 }
 

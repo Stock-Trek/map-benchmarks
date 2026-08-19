@@ -1,6 +1,7 @@
 use crate::maps::benchmap::{
-    BenchMapClone, BenchMapGetCloned, BenchMapInsert, BenchMapIter, BenchMapMutClear,
-    BenchMapMutInsert, BenchMapMutRemove, BenchMapNew, BenchMapNewWithHasher, BenchMapRemove,
+    BenchMapClone, BenchMapGetCloned, BenchMapGetOrInsert, BenchMapInsert, BenchMapIter,
+    BenchMapMutClear, BenchMapMutGetOrInsert, BenchMapMutInsert, BenchMapMutRemove, BenchMapNew,
+    BenchMapNewWithHasher, BenchMapRemove,
 };
 use std::{
     collections::hash_map::RandomState,
@@ -69,6 +70,17 @@ where
     }
 }
 
+impl<K, V, H> BenchMapGetOrInsert<K, V> for DashMapBenchMap<K, V, H>
+where
+    K: Hash + Eq,
+    V: Clone,
+    H: BuildHasher + Clone,
+{
+    fn get_or_insert(&self, key: K, default: V) -> V {
+        self.map.entry(key).or_insert(default).clone()
+    }
+}
+
 impl<K, V, H> BenchMapMutInsert<K, V> for DashMapBenchMap<K, V, H>
 where
     K: Hash + Eq,
@@ -76,6 +88,17 @@ where
 {
     fn insert(&mut self, key: K, value: V) {
         self.map.insert(key, value);
+    }
+}
+
+impl<K, V, H> BenchMapMutGetOrInsert<K, V> for DashMapBenchMap<K, V, H>
+where
+    K: Hash + Eq,
+    V: Clone,
+    H: BuildHasher + Clone,
+{
+    fn get_or_insert(&mut self, key: K, default: V) -> V {
+        self.map.entry(key).or_insert(default).clone()
     }
 }
 

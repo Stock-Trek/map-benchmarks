@@ -6,6 +6,7 @@ fn ahash() {
     assert_create_map_populates_existing_keys::<AhashBenchMap<u64, u64>>();
     assert_iterate::<AhashBenchMap<u64, u64>>();
     assert_mut_insert_remove::<AhashBenchMap<u64, u64>>();
+    assert_mut_get_or_insert::<AhashBenchMap<u64, u64>>();
     assert_clear::<AhashBenchMap<u64, u64>>();
     // assert_shared_insert_remove::<AhashBenchMap<u64, u64>>();
 }
@@ -15,6 +16,7 @@ fn btree_map() {
     assert_create_map_populates_existing_keys::<BTreeMapBenchMap<u64, u64>>();
     assert_iterate::<BTreeMapBenchMap<u64, u64>>();
     assert_mut_insert_remove::<BTreeMapBenchMap<u64, u64>>();
+    assert_mut_get_or_insert::<BTreeMapBenchMap<u64, u64>>();
     assert_clear::<BTreeMapBenchMap<u64, u64>>();
     // assert_shared_insert_remove::<BTreeMapBenchMap<u64, u64>>();
 }
@@ -24,8 +26,10 @@ fn concread() {
     assert_create_map_populates_existing_keys::<ConcreadBenchMap<u64, u64>>();
     assert_iterate::<ConcreadBenchMap<u64, u64>>();
     assert_mut_insert_remove::<ConcreadBenchMap<u64, u64>>();
+    assert_mut_get_or_insert::<ConcreadBenchMap<u64, u64>>();
     assert_clear::<ConcreadBenchMap<u64, u64>>();
     assert_shared_insert_remove::<ConcreadBenchMap<u64, u64>>();
+    assert_shared_get_or_insert::<ConcreadBenchMap<u64, u64>>();
 }
 
 #[test]
@@ -51,8 +55,10 @@ fn dashmap() {
     assert_create_map_populates_existing_keys::<DashMapBenchMap<u64, u64>>();
     assert_iterate::<DashMapBenchMap<u64, u64>>();
     assert_mut_insert_remove::<DashMapBenchMap<u64, u64>>();
+    assert_mut_get_or_insert::<DashMapBenchMap<u64, u64>>();
     assert_clear::<DashMapBenchMap<u64, u64>>();
     assert_shared_insert_remove::<DashMapBenchMap<u64, u64>>();
+    assert_shared_get_or_insert::<DashMapBenchMap<u64, u64>>();
 }
 
 #[test]
@@ -60,8 +66,10 @@ fn flurry() {
     assert_create_map_populates_existing_keys::<FlurryBenchMap<u64, u64>>();
     assert_iterate::<FlurryBenchMap<u64, u64>>();
     assert_mut_insert_remove::<FlurryBenchMap<u64, u64>>();
+    assert_mut_get_or_insert::<FlurryBenchMap<u64, u64>>();
     assert_clear::<FlurryBenchMap<u64, u64>>();
     assert_shared_insert_remove::<FlurryBenchMap<u64, u64>>();
+    assert_shared_get_or_insert::<FlurryBenchMap<u64, u64>>();
 }
 
 #[test]
@@ -69,6 +77,7 @@ fn hashbrown() {
     assert_create_map_populates_existing_keys::<HashbrownBenchMap<u64, u64>>();
     assert_iterate::<HashbrownBenchMap<u64, u64>>();
     assert_mut_insert_remove::<HashbrownBenchMap<u64, u64>>();
+    assert_mut_get_or_insert::<HashbrownBenchMap<u64, u64>>();
     assert_clear::<HashbrownBenchMap<u64, u64>>();
     // assert_shared_insert_remove::<HashbrownBenchMap<u64, u64>>();
 }
@@ -78,6 +87,7 @@ fn hashlink() {
     assert_create_map_populates_existing_keys::<HashlinkBenchMap<u64, u64>>();
     assert_iterate::<HashlinkBenchMap<u64, u64>>();
     assert_mut_insert_remove::<HashlinkBenchMap<u64, u64>>();
+    assert_mut_get_or_insert::<HashlinkBenchMap<u64, u64>>();
     assert_clear::<HashlinkBenchMap<u64, u64>>();
     // assert_shared_insert_remove::<HashlinkBenchMap<u64, u64>>();
 }
@@ -87,6 +97,7 @@ fn horde() {
     assert_create_map_populates_existing_keys::<HordeBenchMap<u64, u64>>();
     assert_iterate::<HordeBenchMap<u64, u64>>();
     assert_mut_insert_remove::<HordeBenchMap<u64, u64>>();
+    assert_mut_get_or_insert::<HordeBenchMap<u64, u64>>();
     assert_clear::<HordeBenchMap<u64, u64>>();
 }
 
@@ -95,6 +106,7 @@ fn immutable_chunkmap() {
     assert_create_map_populates_existing_keys::<ImmutableChunkMapBenchMap<u64, u64>>();
     assert_iterate::<ImmutableChunkMapBenchMap<u64, u64>>();
     assert_mut_insert_remove::<ImmutableChunkMapBenchMap<u64, u64>>();
+    assert_mut_get_or_insert::<ImmutableChunkMapBenchMap<u64, u64>>();
     // assert_shared_insert_remove::<ImmutableChunkMapBenchMap<u64, u64>>();
 }
 
@@ -103,6 +115,7 @@ fn imbl() {
     assert_create_map_populates_existing_keys::<ImblBenchMap<u64, u64>>();
     assert_iterate::<ImblBenchMap<u64, u64>>();
     assert_mut_insert_remove::<ImblBenchMap<u64, u64>>();
+    assert_mut_get_or_insert::<ImblBenchMap<u64, u64>>();
     assert_clear::<ImblBenchMap<u64, u64>>();
     // assert_shared_insert_remove::<ImblBenchMap<u64, u64>>();
 }
@@ -112,6 +125,7 @@ fn indexmap() {
     assert_create_map_populates_existing_keys::<IndexMapBenchMap<u64, u64>>();
     assert_iterate::<IndexMapBenchMap<u64, u64>>();
     assert_mut_insert_remove::<IndexMapBenchMap<u64, u64>>();
+    assert_mut_get_or_insert::<IndexMapBenchMap<u64, u64>>();
     assert_clear::<IndexMapBenchMap<u64, u64>>();
     // assert_shared_insert_remove::<IndexMapBenchMap<u64, u64>>();
 }
@@ -130,6 +144,7 @@ fn rustc_hash() {
     assert_create_map_populates_existing_keys::<RustCHashBenchMap<u64, u64>>();
     assert_iterate::<RustCHashBenchMap<u64, u64>>();
     assert_mut_insert_remove::<RustCHashBenchMap<u64, u64>>();
+    assert_mut_get_or_insert::<RustCHashBenchMap<u64, u64>>();
     assert_clear::<RustCHashBenchMap<u64, u64>>();
     // assert_shared_insert_remove::<RustCHashBenchMap<u64, u64>>();
 }
@@ -139,7 +154,9 @@ fn leapfrog() {
     assert_create_map_populates_existing_keys::<LeapfrogBenchMap<u64, u64>>();
     assert_iterate::<LeapfrogBenchMap<u64, u64>>();
     assert_mut_insert_remove::<LeapfrogBenchMap<u64, u64>>();
+    assert_mut_get_or_insert::<LeapfrogBenchMap<u64, u64>>();
     assert_shared_insert_remove::<LeapfrogBenchMap<u64, u64>>();
+    assert_shared_get_or_insert::<LeapfrogBenchMap<u64, u64>>();
     // assert_clear::<LeapfrogBenchMap<u64, u64>>(); // leapfrog::LeapMap has no clear method
 }
 
@@ -148,8 +165,10 @@ fn papaya() {
     assert_create_map_populates_existing_keys::<PapayaBenchMap<u64, u64>>();
     assert_iterate::<PapayaBenchMap<u64, u64>>();
     assert_mut_insert_remove::<PapayaBenchMap<u64, u64>>();
+    assert_mut_get_or_insert::<PapayaBenchMap<u64, u64>>();
     assert_clear::<PapayaBenchMap<u64, u64>>();
     assert_shared_insert_remove::<PapayaBenchMap<u64, u64>>();
+    assert_shared_get_or_insert::<PapayaBenchMap<u64, u64>>();
 }
 
 #[test]
@@ -157,8 +176,10 @@ fn scc() {
     assert_create_map_populates_existing_keys::<SccBenchMap<u64, u64>>();
     assert_iterate::<SccBenchMap<u64, u64>>();
     assert_mut_insert_remove::<SccBenchMap<u64, u64>>();
+    assert_mut_get_or_insert::<SccBenchMap<u64, u64>>();
     assert_clear::<SccBenchMap<u64, u64>>();
     assert_shared_insert_remove::<SccBenchMap<u64, u64>>();
+    assert_shared_get_or_insert::<SccBenchMap<u64, u64>>();
 }
 
 #[test]
@@ -166,8 +187,10 @@ fn starshard() {
     assert_create_map_populates_existing_keys::<StarshardBenchMap<u64, u64>>();
     assert_iterate::<StarshardBenchMap<u64, u64>>();
     assert_mut_insert_remove::<StarshardBenchMap<u64, u64>>();
+    assert_mut_get_or_insert::<StarshardBenchMap<u64, u64>>();
     assert_clear::<StarshardBenchMap<u64, u64>>();
     assert_shared_insert_remove::<StarshardBenchMap<u64, u64>>();
+    assert_shared_get_or_insert::<StarshardBenchMap<u64, u64>>();
 }
 
 #[test]
@@ -175,6 +198,7 @@ fn std() {
     assert_create_map_populates_existing_keys::<StdBenchMap<u64, u64>>();
     assert_iterate::<StdBenchMap<u64, u64>>();
     assert_mut_insert_remove::<StdBenchMap<u64, u64>>();
+    assert_mut_get_or_insert::<StdBenchMap<u64, u64>>();
     assert_clear::<StdBenchMap<u64, u64>>();
     // assert_shared_insert_remove::<StdBenchMap<u64, u64>>();
 }
@@ -184,8 +208,10 @@ fn txmap() {
     assert_create_map_populates_existing_keys::<TxMapBenchMap<u64, u64>>();
     assert_iterate::<TxMapBenchMap<u64, u64>>();
     assert_mut_insert_remove::<TxMapBenchMap<u64, u64>>();
+    assert_mut_get_or_insert::<TxMapBenchMap<u64, u64>>();
     assert_clear::<TxMapBenchMap<u64, u64>>();
     assert_shared_insert_remove::<TxMapBenchMap<u64, u64>>();
+    assert_shared_get_or_insert::<TxMapBenchMap<u64, u64>>();
 }
 
 fn assert_create_map_populates_existing_keys<M>()
@@ -442,5 +468,42 @@ where
 
     assert_eq!(map.remove(&1), Some(10));
     assert_eq!(map.get_cloned(&1), None);
+    assert_eq!(map.get_cloned(&2), Some(20));
+}
+
+fn assert_mut_get_or_insert<M>()
+where
+    M: BenchMapNew<u64, u64>
+        + BenchMapMutInsert<u64, u64>
+        + BenchMapMutGetOrInsert<u64, u64>
+        + BenchMapGetCloned<u64, u64>,
+{
+    let mut map = M::new();
+    map.insert(1, 10);
+    // Existing key: returns the stored value and leaves the map unchanged.
+    assert_eq!(map.get_or_insert(1, 99), 10);
+    assert_eq!(map.get_cloned(&1), Some(10));
+    // Missing key: inserts the default and returns it.
+    assert_eq!(map.get_or_insert(2, 20), 20);
+    assert_eq!(map.get_cloned(&2), Some(20));
+    // Now existing: returns the stored value, not the new default.
+    assert_eq!(map.get_or_insert(2, 999), 20);
+    assert_eq!(map.get_cloned(&2), Some(20));
+}
+
+fn assert_shared_get_or_insert<M>()
+where
+    M: BenchMapNew<u64, u64>
+        + BenchMapInsert<u64, u64>
+        + BenchMapGetOrInsert<u64, u64>
+        + BenchMapGetCloned<u64, u64>,
+{
+    let map = M::new();
+    map.insert(1, 10);
+    assert_eq!(map.get_or_insert(1, 99), 10);
+    assert_eq!(map.get_cloned(&1), Some(10));
+    assert_eq!(map.get_or_insert(2, 20), 20);
+    assert_eq!(map.get_cloned(&2), Some(20));
+    assert_eq!(map.get_or_insert(2, 999), 20);
     assert_eq!(map.get_cloned(&2), Some(20));
 }

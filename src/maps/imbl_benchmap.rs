@@ -1,6 +1,6 @@
 use crate::maps::benchmap::{
-    BenchMapClone, BenchMapGetCloned, BenchMapIter, BenchMapMutClear, BenchMapMutInsert,
-    BenchMapMutRemove, BenchMapNew, BenchMapNewWithHasher,
+    BenchMapClone, BenchMapGetCloned, BenchMapIter, BenchMapMutClear, BenchMapMutGetOrInsert,
+    BenchMapMutInsert, BenchMapMutRemove, BenchMapNew, BenchMapNewWithHasher,
 };
 use imbl::{hashmap::GenericHashMap, shared_ptr::DefaultSharedPtr};
 use std::{
@@ -63,6 +63,17 @@ where
 {
     fn insert(&mut self, key: K, value: V) {
         self.map.insert(key, value);
+    }
+}
+
+impl<K, V, H> BenchMapMutGetOrInsert<K, V> for ImblBenchMap<K, V, H>
+where
+    K: Hash + Eq + Clone,
+    V: Clone,
+    H: BuildHasher + Clone,
+{
+    fn get_or_insert(&mut self, key: K, default: V) -> V {
+        self.map.entry(key).or_insert(default).clone()
     }
 }
 

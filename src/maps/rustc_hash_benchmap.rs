@@ -1,6 +1,6 @@
 use crate::maps::benchmap::{
-    BenchMapClone, BenchMapGetCloned, BenchMapIter, BenchMapMutClear, BenchMapMutInsert,
-    BenchMapMutRemove, BenchMapNew,
+    BenchMapClone, BenchMapGetCloned, BenchMapIter, BenchMapMutClear, BenchMapMutGetOrInsert,
+    BenchMapMutInsert, BenchMapMutRemove, BenchMapNew,
 };
 use std::hash::Hash;
 
@@ -44,6 +44,16 @@ where
 {
     fn insert(&mut self, key: K, value: V) {
         self.map.insert(key, value);
+    }
+}
+
+impl<K, V> BenchMapMutGetOrInsert<K, V> for RustCHashBenchMap<K, V>
+where
+    K: Hash + Eq,
+    V: Clone,
+{
+    fn get_or_insert(&mut self, key: K, default: V) -> V {
+        self.map.entry(key).or_insert(default).clone()
     }
 }
 

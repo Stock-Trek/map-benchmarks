@@ -13,6 +13,9 @@ pub trait BenchMapGetCloned<K, V> {
 pub trait BenchMapInsert<K, V> {
     fn insert(&self, key: K, value: V);
 }
+pub trait BenchMapGetOrInsert<K, V> {
+    fn get_or_insert(&self, key: K, default: V) -> V;
+}
 pub trait BenchMapIter<K, V> {
     fn for_each(&self, f: impl FnMut(&K, &V));
 }
@@ -22,6 +25,9 @@ pub trait BenchMapRemove<K, V> {
 
 pub trait BenchMapMutInsert<K, V> {
     fn insert(&mut self, key: K, value: V);
+}
+pub trait BenchMapMutGetOrInsert<K, V> {
+    fn get_or_insert(&mut self, key: K, default: V) -> V;
 }
 pub trait BenchMapMutRemove<K, V> {
     fn remove(&mut self, key: &K) -> Option<V>;
