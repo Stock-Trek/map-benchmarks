@@ -51,6 +51,14 @@ name = "key_sensitivity"
 harness = false
 
 [[bench]]
+name = "get_or_insert"
+harness = false
+
+[[bench]]
+name = "get_or_insert_concurrent"
+harness = false
+
+[[bench]]
 name = "lookup_hit"
 harness = false
 

@@ -1,6 +1,7 @@
 use crate::maps::benchmap::{
-    BenchMapClone, BenchMapGetCloned, BenchMapInsert, BenchMapIter, BenchMapMutClear,
-    BenchMapMutInsert, BenchMapMutRemove, BenchMapNew, BenchMapNewWithHasher, BenchMapRemove,
+    BenchMapClone, BenchMapGetCloned, BenchMapGetOrInsert, BenchMapInsert, BenchMapIter,
+    BenchMapMutClear, BenchMapMutGetOrInsert, BenchMapMutInsert, BenchMapMutRemove, BenchMapNew,
+    BenchMapNewWithHasher, BenchMapRemove,
 };
 use std::{
     collections::hash_map::RandomState,
@@ -54,6 +55,28 @@ where
 {
     fn get_cloned(&self, key: &K) -> Option<V> {
         self.map.pin().get(key).cloned()
+    }
+}
+
+impl<K, V, H> BenchMapGetOrInsert<K, V> for PapayaBenchMap<K, V, H>
+where
+    K: Hash + Eq,
+    V: Clone,
+    H: BuildHasher,
+{
+    fn get_or_insert(&self, key: K, default: V) -> V {
+        self.map.pin().get_or_insert(key, default).clone()
+    }
+}
+
+impl<K, V, H> BenchMapMutGetOrInsert<K, V> for PapayaBenchMap<K, V, H>
+where
+    K: Hash + Eq,
+    V: Clone,
+    H: BuildHasher,
+{
+    fn get_or_insert(&mut self, key: K, default: V) -> V {
+        self.map.pin().get_or_insert(key, default).clone()
     }
 }
 

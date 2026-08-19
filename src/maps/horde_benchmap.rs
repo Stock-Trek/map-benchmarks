@@ -1,6 +1,6 @@
 use crate::maps::benchmap::{
-    BenchMapClone, BenchMapGetCloned, BenchMapIter, BenchMapMutClear, BenchMapMutInsert,
-    BenchMapMutRemove, BenchMapNew, BenchMapNewWithHasher,
+    BenchMapClone, BenchMapGetCloned, BenchMapIter, BenchMapMutClear, BenchMapMutGetOrInsert,
+    BenchMapMutInsert, BenchMapMutRemove, BenchMapNew, BenchMapNewWithHasher,
 };
 use std::hash::{BuildHasher, Hash};
 
@@ -56,6 +56,29 @@ where
                 .get(key, None)
                 .map(|tuple| tuple.1.clone())
         })
+    }
+}
+
+impl<K, V, H> BenchMapMutGetOrInsert<K, V> for HordeBenchMap<K, V, H>
+where
+    K: Clone + Hash + Eq,
+    V: Clone,
+    H: BuildHasher,
+{
+    fn get_or_insert(&mut self, key: K, default: V) -> V {
+        let existing = horde::collect::pin(|pin| {
+            self.map
+                .read(pin)
+                .get(&key, None)
+                .map(|(_key, value)| value.clone())
+        });
+        match existing {
+            Some(value) => value,
+            None => {
+                self.map.write().insert(key, default.clone(), None);
+                default
+            }
+        }
     }
 }
 

@@ -1,6 +1,7 @@
 use crate::maps::benchmap::{
-    BenchMapClone, BenchMapGetCloned, BenchMapInsert, BenchMapIter, BenchMapMutClear,
-    BenchMapMutInsert, BenchMapMutRemove, BenchMapNew, BenchMapNewWithHasher, BenchMapRemove,
+    BenchMapClone, BenchMapGetCloned, BenchMapGetOrInsert, BenchMapInsert, BenchMapIter,
+    BenchMapMutClear, BenchMapMutGetOrInsert, BenchMapMutInsert, BenchMapMutRemove, BenchMapNew,
+    BenchMapNewWithHasher, BenchMapRemove,
 };
 use std::hash::{BuildHasher, Hash};
 
@@ -60,6 +61,28 @@ where
 {
     fn get_cloned(&self, key: &K) -> Option<V> {
         self.map.get(key)
+    }
+}
+
+impl<K, V, H> BenchMapGetOrInsert<K, V> for StarshardBenchMap<K, V, H>
+where
+    K: Clone + Hash + Eq + Send + Sync,
+    V: Clone + Send + Sync,
+    H: BuildHasher + Clone + Send + Sync,
+{
+    fn get_or_insert(&self, key: K, default: V) -> V {
+        self.map.compute_if_absent(key, || default)
+    }
+}
+
+impl<K, V, H> BenchMapMutGetOrInsert<K, V> for StarshardBenchMap<K, V, H>
+where
+    K: Clone + Hash + Eq + Send + Sync,
+    V: Clone + Send + Sync,
+    H: BuildHasher + Clone + Send + Sync,
+{
+    fn get_or_insert(&mut self, key: K, default: V) -> V {
+        self.map.compute_if_absent(key, || default)
     }
 }
 

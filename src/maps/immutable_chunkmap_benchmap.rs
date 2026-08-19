@@ -1,6 +1,6 @@
 use crate::maps::benchmap::{
-    BenchMapClone, BenchMapGetCloned, BenchMapIter, BenchMapMutInsert, BenchMapMutRemove,
-    BenchMapNew,
+    BenchMapClone, BenchMapGetCloned, BenchMapIter, BenchMapMutGetOrInsert, BenchMapMutInsert,
+    BenchMapMutRemove, BenchMapNew,
 };
 
 pub struct ImmutableChunkMapBenchMap<K, V>
@@ -45,15 +45,22 @@ where
     }
 }
 
+impl<K, V> BenchMapMutGetOrInsert<K, V> for ImmutableChunkMapBenchMap<K, V>
+where
+    K: Clone + Ord,
+    V: Clone,
+{
+    fn get_or_insert(&mut self, key: K, default: V) -> V {
+        self.map.get_or_insert_cow(key, || default).clone()
+    }
+}
+
 impl<K, V> BenchMapMutInsert<K, V> for ImmutableChunkMapBenchMap<K, V>
 where
     K: Clone + Ord,
     V: Clone,
 {
     fn insert(&mut self, key: K, value: V) {
-        // insert_cow mutates the map in place (copy-on-write if shared),
-        // unlike `insert`, which returns a new map that would otherwise
-        // be silently discarded, leaving the map empty.
         self.map.insert_cow(key, value);
     }
 }

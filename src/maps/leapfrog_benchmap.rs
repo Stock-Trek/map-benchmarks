@@ -1,6 +1,6 @@
 use crate::maps::benchmap::{
-    BenchMapGetCloned, BenchMapInsert, BenchMapIter, BenchMapMutInsert, BenchMapMutRemove,
-    BenchMapNew, BenchMapNewWithHasher, BenchMapRemove,
+    BenchMapGetCloned, BenchMapGetOrInsert, BenchMapInsert, BenchMapIter, BenchMapMutGetOrInsert,
+    BenchMapMutInsert, BenchMapMutRemove, BenchMapNew, BenchMapNewWithHasher, BenchMapRemove,
 };
 use leapfrog::Value;
 use std::hash::{BuildHasher, Hash};
@@ -51,6 +51,34 @@ where
 {
     fn get_cloned(&self, key: &K) -> Option<V> {
         self.map.get(key).and_then(|mut entry| entry.value())
+    }
+}
+
+impl<K, V, H> BenchMapGetOrInsert<K, V> for LeapfrogBenchMap<K, V, H>
+where
+    K: Eq + Hash + Copy,
+    V: Value,
+    H: BuildHasher + Default,
+{
+    fn get_or_insert(&self, key: K, default: V) -> V {
+        match self.map.try_insert(key, default) {
+            Some(existing) => existing,
+            None => default,
+        }
+    }
+}
+
+impl<K, V, H> BenchMapMutGetOrInsert<K, V> for LeapfrogBenchMap<K, V, H>
+where
+    K: Eq + Hash + Copy,
+    V: Value,
+    H: BuildHasher + Default,
+{
+    fn get_or_insert(&mut self, key: K, default: V) -> V {
+        match self.map.try_insert(key, default) {
+            Some(existing) => existing,
+            None => default,
+        }
     }
 }
 

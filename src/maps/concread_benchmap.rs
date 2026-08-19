@@ -1,6 +1,6 @@
 use crate::maps::benchmap::{
-    BenchMapGetCloned, BenchMapInsert, BenchMapIter, BenchMapMutClear, BenchMapMutInsert,
-    BenchMapMutRemove, BenchMapNew, BenchMapRemove,
+    BenchMapGetCloned, BenchMapGetOrInsert, BenchMapInsert, BenchMapIter, BenchMapMutClear,
+    BenchMapMutGetOrInsert, BenchMapMutInsert, BenchMapMutRemove, BenchMapNew, BenchMapRemove,
 };
 use std::{fmt::Debug, hash::Hash};
 
@@ -31,6 +31,42 @@ where
 {
     fn get_cloned(&self, key: &K) -> Option<V> {
         self.map.read().get(key).cloned()
+    }
+}
+
+impl<K, V> BenchMapGetOrInsert<K, V> for ConcreadBenchMap<K, V>
+where
+    K: Clone + Debug + Hash + Eq + Send + Sync + 'static,
+    V: Clone + Send + Sync + 'static,
+{
+    fn get_or_insert(&self, key: K, default: V) -> V {
+        let mut write = self.map.write();
+        match write.get(&key).cloned() {
+            Some(value) => value,
+            None => {
+                write.insert(key, default.clone());
+                write.commit();
+                default
+            }
+        }
+    }
+}
+
+impl<K, V> BenchMapMutGetOrInsert<K, V> for ConcreadBenchMap<K, V>
+where
+    K: Clone + Debug + Hash + Eq + Send + Sync + 'static,
+    V: Clone + Send + Sync + 'static,
+{
+    fn get_or_insert(&mut self, key: K, default: V) -> V {
+        let mut write = self.map.write();
+        match write.get(&key).cloned() {
+            Some(value) => value,
+            None => {
+                write.insert(key, default.clone());
+                write.commit();
+                default
+            }
+        }
     }
 }
 

@@ -40,6 +40,7 @@ There are 3 groups of tests, `out-of-the-box` which uses each map's default impl
 
 - **Clone**: Clones maps containing 1K/10K/100K entries
 - **Workload**: Uses a map with 1K/10K/100K entries. Use cases: [write-heavy, balanced, read-heavy]. Thread counts: [1, 2, 3, 4]. Threads for concurrent tests are pinned to reduce any effects from OS scheduling.
+- **Get or insert (concurrent)**: Uses a map with 1K/10K/100K entries. The "get-or-create cache entry" pattern: 90% of operations hit existing keys, 10% insert missing keys. Thread counts: [2, 3, 4]. Threads are pinned to reduce any effects from OS scheduling.
 
 ### Same hasher
 
@@ -52,3 +53,4 @@ There are 3 groups of tests, `out-of-the-box` which uses each map's default impl
 - **Lookup hit**: Uses maps containing 1K/10K/100K entries. Finds 100 extant values, found values are cloned to ensure all maps are treated consistently
 - **Lookup miss**: Uses maps containing 1K/10K/100K entries. Finds 100 non-existent values
 - **Remove**: Uses maps containing 1K/10K/100K entries. Removes 100 entries
+- **Get or insert**: Uses maps containing 1K/10K/100K entries. Performs 100 get-or-insert operations on extant keys (hit path) and 100 on missing keys (insert path)

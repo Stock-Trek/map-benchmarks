@@ -1,6 +1,6 @@
 use crate::maps::benchmap::{
-    BenchMapClone, BenchMapGetCloned, BenchMapIter, BenchMapMutClear, BenchMapMutInsert,
-    BenchMapMutRemove, BenchMapNew,
+    BenchMapClone, BenchMapGetCloned, BenchMapIter, BenchMapMutClear, BenchMapMutGetOrInsert,
+    BenchMapMutInsert, BenchMapMutRemove, BenchMapNew,
 };
 use std::collections::btree_map;
 
@@ -39,6 +39,16 @@ where
 {
     fn get_cloned(&self, key: &K) -> Option<V> {
         self.map.get(key).cloned()
+    }
+}
+
+impl<K, V> BenchMapMutGetOrInsert<K, V> for BTreeMapBenchMap<K, V>
+where
+    K: Ord,
+    V: Clone,
+{
+    fn get_or_insert(&mut self, key: K, default: V) -> V {
+        self.map.entry(key).or_insert(default).clone()
     }
 }
 
