@@ -6,7 +6,7 @@ use concurrent_map::{ConcurrentMap, Minimum};
 
 pub struct ConcurrentMapBenchMap<K, V>
 where
-    K: 'static + Clone + Minimum + Ord + Send + Sync,
+    K: 'static + Clone + Minimum + Send + Sync,
     V: 'static + Clone + Send + Sync,
 {
     map: ConcurrentMap<K, V>,
@@ -14,7 +14,7 @@ where
 
 impl<K, V> BenchMapNew<K, V> for ConcurrentMapBenchMap<K, V>
 where
-    K: 'static + Clone + Minimum + Ord + Send + Sync,
+    K: 'static + Clone + Minimum + Send + Sync,
     V: 'static + Clone + Send + Sync,
 {
     fn new() -> Self {
@@ -26,7 +26,7 @@ where
 
 impl<K, V> BenchMapClone<K, V> for ConcurrentMapBenchMap<K, V>
 where
-    K: 'static + Clone + Minimum + Ord + Send + Sync,
+    K: 'static + Clone + Minimum + Send + Sync,
     V: 'static + Clone + Send + Sync,
 {
     fn clone_map(&self) -> Self {
@@ -38,7 +38,7 @@ where
 
 impl<K, V> BenchMapGetCloned<K, V> for ConcurrentMapBenchMap<K, V>
 where
-    K: 'static + Clone + Minimum + Ord + Send + Sync,
+    K: 'static + Clone + Minimum + Send + Sync,
     V: 'static + Clone + Send + Sync,
 {
     fn get_cloned(&self, key: &K) -> Option<V> {
@@ -48,7 +48,7 @@ where
 
 impl<K, V> BenchMapInsert<K, V> for ConcurrentMapBenchMap<K, V>
 where
-    K: 'static + Clone + Minimum + Ord + Send + Sync,
+    K: 'static + Clone + Minimum + Send + Sync,
     V: 'static + Clone + Send + Sync,
 {
     fn insert(&self, key: K, value: V) {
@@ -58,7 +58,7 @@ where
 
 impl<K, V> BenchMapMutInsert<K, V> for ConcurrentMapBenchMap<K, V>
 where
-    K: 'static + Clone + Minimum + Ord + Send + Sync,
+    K: 'static + Clone + Minimum + Send + Sync,
     V: 'static + Clone + Send + Sync,
 {
     fn insert(&mut self, key: K, value: V) {
@@ -68,7 +68,7 @@ where
 
 impl<K, V> BenchMapIter<K, V> for ConcurrentMapBenchMap<K, V>
 where
-    K: 'static + Clone + Minimum + Ord + Send + Sync,
+    K: 'static + Clone + Minimum + Send + Sync,
     V: 'static + Clone + Send + Sync,
 {
     fn for_each(&self, mut f: impl FnMut(&K, &V)) {
@@ -80,7 +80,7 @@ where
 
 impl<K, V> BenchMapRemove<K, V> for ConcurrentMapBenchMap<K, V>
 where
-    K: 'static + Clone + Minimum + Ord + Send + Sync,
+    K: 'static + Clone + Minimum + Send + Sync,
     V: 'static + Clone + Send + Sync,
 {
     fn remove(&self, key: &K) -> Option<V> {
@@ -90,7 +90,7 @@ where
 
 impl<K, V> BenchMapMutRemove<K, V> for ConcurrentMapBenchMap<K, V>
 where
-    K: 'static + Clone + Minimum + Ord + Send + Sync,
+    K: 'static + Clone + Minimum + Send + Sync,
     V: 'static + Clone + Send + Sync,
 {
     fn remove(&mut self, key: &K) -> Option<V> {
