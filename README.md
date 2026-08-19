@@ -47,6 +47,7 @@ There are 3 groups of tests, `out-of-the-box` which uses each map's default impl
 
 ### Both
 
+- **Clear and reuse**: Uses maps containing 1K/10K/100K entries. Clears the map but keeps it alive, then re-inserts the same number of entries. Measures capacity-retention semantics (map pooling)
 - **Insert**: Inserts 1K/10K/100K entries into an empty map
 - **Iterate**: Uses maps containing 1K/10K/100K entries. Iterates through each entry
 - **Lookup hit**: Uses maps containing 1K/10K/100K entries. Finds 100 extant values, found values are cloned to ensure all maps are treated consistently
