@@ -29,6 +29,15 @@ fn concread() {
 }
 
 #[test]
+fn concurrent_map() {
+    assert_create_map_populates_existing_keys::<ConcurrentMapBenchMap<u64, u64>>();
+    assert_iterate::<ConcurrentMapBenchMap<u64, u64>>();
+    assert_mut_insert_remove::<ConcurrentMapBenchMap<u64, u64>>();
+    assert_shared_insert_remove::<ConcurrentMapBenchMap<u64, u64>>();
+    // assert_clear::<ConcurrentMapBenchMap<u64, u64>>(); // concurrent_map::ConcurrentMap has no clear method
+}
+
+#[test]
 fn crossbeam_skiplist() {
     assert_create_map_populates_existing_keys::<CrossbeamSkiplistBenchMap<u64, u64>>();
     assert_iterate::<CrossbeamSkiplistBenchMap<u64, u64>>();

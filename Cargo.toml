@@ -10,6 +10,7 @@ uuid = { version = "1.24.0", features = ["v4"] }
 # map dependencies
 ahash = "0"
 concread = "0"
+concurrent-map = "5"
 crossbeam-skiplist = "0"
 dashmap = "6"
 flurry = "0"

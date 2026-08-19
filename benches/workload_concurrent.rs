@@ -314,6 +314,7 @@ fn workload_concurrent(c: &mut Criterion) {
                 // bench::<AhashBenchMap<u64, u64>>(&mut group, &map_data, thread_count, &workloads, "ahash"); // not concurrent
                 // bench::<BTreeMapBenchMap<u64, u64>>(&mut group, &map_data, thread_count, &workloads, "btreemap"); // not concurrent
                 // bench::<ConcreadBenchMap<u64, u64>>(&mut group, &map_data, thread_count, &workloads, "concread"); // too slow
+                // bench::<ConcurrentMapBenchMap<u64, u64>>(&mut group, &map_data, thread_count, &workloads, "concurrent-map"); // Send but not Sync; cannot share &ConcurrentMap across threads
                 bench::<CrossbeamSkiplistBenchMap<u64, u64>>(
                     &mut group,
                     &map_data,
