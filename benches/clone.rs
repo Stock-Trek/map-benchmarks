@@ -7,8 +7,8 @@ use bench_map::{
     maps::{
         AhashBenchMap, BTreeMapBenchMap, BenchMapClone, BenchMapMutInsert, BenchMapNew,
         DashMapBenchMap, HashbrownBenchMap, HordeBenchMap, ImmutableChunkMapBenchMap,
-        IndexMapBenchMap, PapayaBenchMap, RustCHashBenchMap, SccBenchMap, StarshardBenchMap,
-        StdBenchMap, TxMapBenchMap,
+        IndexMapBenchMap, PapayaBenchMap, RpdsHashTrieMapBenchMap, RustCHashBenchMap, SccBenchMap,
+        StarshardBenchMap, StdBenchMap, TxMapBenchMap,
     },
     number_formatter::format_n,
 };
@@ -61,6 +61,7 @@ fn clone(c: &mut Criterion) {
         bench::<IndexMapBenchMap<u64, u64>>(&mut group, &map_data, "indexmap");
         // bench::<LeapfrogBenchMap<u64, u64>>(&mut group, &map_data, "leapfrog"); // doesn't implement Clone
         bench::<PapayaBenchMap<u64, u64>>(&mut group, &map_data, "papaya");
+        bench::<RpdsHashTrieMapBenchMap<u64, u64>>(&mut group, &map_data, "rpds-hash-trie-map");
         bench::<RustCHashBenchMap<u64, u64>>(&mut group, &map_data, "rustc-hash");
         bench::<SccBenchMap<u64, u64>>(&mut group, &map_data, "scc");
         bench::<StarshardBenchMap<u64, u64>>(&mut group, &map_data, "starshard");

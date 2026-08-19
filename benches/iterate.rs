@@ -7,8 +7,9 @@ use bench_map::{
     maps::{
         AhashBenchMap, BTreeMapBenchMap, BenchMapIter, BenchMapMutInsert, BenchMapNew,
         BenchMapNewWithHasher, DashMapBenchMap, HashbrownBenchMap, ImmutableChunkMapBenchMap,
-        IndexMapBenchMap, LeapfrogBenchMap, PapayaBenchMap, RustCHashBenchMap, SccBenchMap,
-        StarshardBenchMap, StdBenchMap, TxMapBenchMap, horde_benchmap::HordeBenchMap,
+        IndexMapBenchMap, LeapfrogBenchMap, PapayaBenchMap, RpdsHashTrieMapBenchMap,
+        RustCHashBenchMap, SccBenchMap, StarshardBenchMap, StdBenchMap, TxMapBenchMap,
+        horde_benchmap::HordeBenchMap,
     },
     number_formatter::format_n,
 };
@@ -99,6 +100,11 @@ fn iterate(c: &mut Criterion) {
             bench_out_of_the_box::<IndexMapBenchMap<u64, u64>>(&mut group, &map_data, "indexmap");
             bench_out_of_the_box::<LeapfrogBenchMap<u64, u64>>(&mut group, &map_data, "leapfrog");
             bench_out_of_the_box::<PapayaBenchMap<u64, u64>>(&mut group, &map_data, "papaya");
+            bench_out_of_the_box::<RpdsHashTrieMapBenchMap<u64, u64>>(
+                &mut group,
+                &map_data,
+                "rpds-hash-trie-map",
+            );
             bench_out_of_the_box::<RustCHashBenchMap<u64, u64>>(
                 &mut group,
                 &map_data,
@@ -168,6 +174,12 @@ fn iterate(c: &mut Criterion) {
                 hasher.clone(),
             );
             // bench_same_hasher::<RustCHashBenchMap<u64, u64, CommonHasher>>(&mut group, &map_data, "rustc-hash"); // doesn't allow setting hasher
+            bench_same_hasher::<RpdsHashTrieMapBenchMap<u64, u64, CommonHasher>>(
+                &mut group,
+                &map_data,
+                "rpds-hash-trie-map",
+                hasher.clone(),
+            );
             bench_same_hasher::<SccBenchMap<u64, u64, CommonHasher>>(
                 &mut group,
                 &map_data,

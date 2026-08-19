@@ -4,8 +4,8 @@ use bench_map::{
     maps::{
         AhashBenchMap, BTreeMapBenchMap, BenchMapNew, DashMapBenchMap, HashbrownBenchMap,
         HordeBenchMap, ImmutableChunkMapBenchMap, IndexMapBenchMap, LeapfrogBenchMap,
-        PapayaBenchMap, RustCHashBenchMap, SccBenchMap, StarshardBenchMap, StdBenchMap,
-        TxMapBenchMap,
+        PapayaBenchMap, RpdsHashTrieMapBenchMap, RustCHashBenchMap, SccBenchMap, StarshardBenchMap,
+        StdBenchMap, TxMapBenchMap,
     },
 };
 use criterion::{
@@ -43,6 +43,7 @@ fn create(c: &mut Criterion) {
     bench::<IndexMapBenchMap<u64, u64>>(&mut group, "indexmap");
     bench::<LeapfrogBenchMap<u64, u64>>(&mut group, "leapfrog");
     bench::<PapayaBenchMap<u64, u64>>(&mut group, "papaya");
+    bench::<RpdsHashTrieMapBenchMap<u64, u64>>(&mut group, "rpds-hash-trie-map");
     bench::<RustCHashBenchMap<u64, u64>>(&mut group, "rustc-hash");
     bench::<SccBenchMap<u64, u64>>(&mut group, "scc");
     bench::<StarshardBenchMap<u64, u64>>(&mut group, "starshard");

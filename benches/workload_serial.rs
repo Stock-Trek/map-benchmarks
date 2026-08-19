@@ -7,8 +7,9 @@ use bench_map::{
     maps::{
         AhashBenchMap, BTreeMapBenchMap, BenchMapGetCloned, BenchMapMutInsert, BenchMapMutRemove,
         BenchMapNew, DashMapBenchMap, HashbrownBenchMap, ImmutableChunkMapBenchMap,
-        IndexMapBenchMap, LeapfrogBenchMap, PapayaBenchMap, RustCHashBenchMap, SccBenchMap,
-        StarshardBenchMap, StdBenchMap, TxMapBenchMap, horde_benchmap::HordeBenchMap,
+        IndexMapBenchMap, LeapfrogBenchMap, PapayaBenchMap, RpdsHashTrieMapBenchMap,
+        RustCHashBenchMap, SccBenchMap, StarshardBenchMap, StdBenchMap, TxMapBenchMap,
+        horde_benchmap::HordeBenchMap,
     },
     number_formatter::format_n,
     workload::{design::WorkloadDesign, op::WorkloadOp, thread_workload::ThreadWorkload},
@@ -124,6 +125,12 @@ fn workload_serial(c: &mut Criterion) {
             bench::<IndexMapBenchMap<u64, u64>>(&mut group, &map_data, &workload, "indexmap");
             bench::<LeapfrogBenchMap<u64, u64>>(&mut group, &map_data, &workload, "leapfrog");
             bench::<PapayaBenchMap<u64, u64>>(&mut group, &map_data, &workload, "papaya");
+            bench::<RpdsHashTrieMapBenchMap<u64, u64>>(
+                &mut group,
+                &map_data,
+                &workload,
+                "rpds-hash-trie-map",
+            );
             bench::<RustCHashBenchMap<u64, u64>>(&mut group, &map_data, &workload, "rustc-hash");
             bench::<SccBenchMap<u64, u64>>(&mut group, &map_data, &workload, "scc");
             bench::<StarshardBenchMap<u64, u64>>(&mut group, &map_data, &workload, "starshard");

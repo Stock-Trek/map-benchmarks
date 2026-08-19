@@ -9,6 +9,7 @@ rand = "0.10.2"
 uuid = { version = "1.24.0", features = ["v4"] }
 # map dependencies
 ahash = "0"
+archery = "1.2.2"  # pointer kind (RcK) used by rpds::HashTrieMap
 concread = "0"
 dashmap = "6"
 flurry = "0"
@@ -20,6 +21,7 @@ leapfrog = { version = "0", features = ["stable_alloc"] }
 libc = "0"
 papaya = "0"
 rustc-hash = "2"
+rpds = "1"
 scc = "3"
 starshard = "2"
 txmap = "3"

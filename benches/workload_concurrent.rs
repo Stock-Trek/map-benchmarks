@@ -329,6 +329,7 @@ fn workload_concurrent(c: &mut Criterion) {
                 // bench::<HashbrownBenchMap<u64, u64>>(&mut group, &map_data, thread_count, &workloads, "hashbrown"); // not concurrent
                 // bench::<HordeBenchMap<u64, u64>>(&mut group, &map_data, thread_count, &workloads, "horde"); // mutation requires &mut, cannot mutate through a shared reference
                 // bench::<ImmutableChunkMapBenchMap<u64, u64>>(&mut group, &map_data, thread_count, &workloads, "immutable-chunkmap"); // mutation returns a new map; requires &mut or storing the result, cannot mutate through a shared reference
+                // bench::<RpdsHashTrieMapBenchMap<u64, u64>>(&mut group, &map_data, thread_count, &workloads, "rpds-hash-trie-map"); // mutation returns a new map; requires &mut or storing the result, cannot mutate through a shared reference (and the default Rc pointer is not Send/Sync)
                 // bench::<IndexMapBenchMap<u64, u64>>(&mut group, &map_data, thread_count, &workloads, "indexmap"); // not concurrent
                 bench::<LeapfrogBenchMap<u64, u64>>(
                     &mut group,

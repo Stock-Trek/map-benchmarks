@@ -6,8 +6,8 @@ use bench_map::{
         BenchMapMutClear, BenchMapMutInsert, BenchMapMutRemove, BenchMapNew, BenchMapNewWithHasher,
         BenchMapRemove, ConcreadBenchMap, DashMapBenchMap, FlurryBenchMap, HashbrownBenchMap,
         HordeBenchMap, ImmutableChunkMapBenchMap, IndexMapBenchMap, LeapfrogBenchMap,
-        PapayaBenchMap, RustCHashBenchMap, SccBenchMap, StarshardBenchMap, StdBenchMap,
-        TxMapBenchMap,
+        PapayaBenchMap, RpdsHashTrieMapBenchMap, RustCHashBenchMap, SccBenchMap, StarshardBenchMap,
+        StdBenchMap, TxMapBenchMap,
     },
 };
 use std::{collections::hash_map::RandomState, hash::BuildHasher, rc::Rc};
@@ -89,6 +89,15 @@ fn indexmap() {
     assert_mut_insert_remove::<IndexMapBenchMap<u64, u64>>();
     assert_clear::<IndexMapBenchMap<u64, u64>>();
     // assert_shared_insert_remove::<IndexMapBenchMap<u64, u64>>();
+}
+
+#[test]
+fn rpds_hash_trie_map() {
+    assert_create_map_populates_existing_keys::<RpdsHashTrieMapBenchMap<u64, u64>>();
+    assert_iterate::<RpdsHashTrieMapBenchMap<u64, u64>>();
+    assert_mut_insert_remove::<RpdsHashTrieMapBenchMap<u64, u64>>();
+    assert_clear::<RpdsHashTrieMapBenchMap<u64, u64>>();
+    // assert_shared_insert_remove::<RpdsHashTrieMapBenchMap<u64, u64>>(); // insert/remove return a new map; requires &mut or storing the result
 }
 
 #[test]
@@ -273,6 +282,14 @@ fn papaya_with_hasher() {
         ahash::RandomState::new(),
     );
     assert_new_with_hasher::<PapayaBenchMap<u64, u64, RandomState>, _>(RandomState::new());
+}
+
+#[test]
+fn rpds_hash_trie_map_with_hasher() {
+    assert_new_with_hasher::<RpdsHashTrieMapBenchMap<u64, u64, ahash::RandomState>, _>(
+        ahash::RandomState::new(),
+    );
+    assert_new_with_hasher::<RpdsHashTrieMapBenchMap<u64, u64, RandomState>, _>(RandomState::new());
 }
 
 #[test]
