@@ -120,6 +120,12 @@ fn key_sensitivity(c: &mut Criterion) {
             "papaya",
             hasher.clone(),
         );
+        bench::<RpdsHashTrieMapBenchMap<u64, u64, CommonHasher>, u64, u64>(
+            &mut group,
+            &map_data,
+            "rpds-hash-trie-map",
+            hasher.clone(),
+        );
         // bench::<RustCHashBenchMap<u64, u64, CommonHasher>, u64, u64>(&mut group, &map_data, "rustc-hash"); // doesn't allow setting hasher
         bench::<SccBenchMap<u64, u64, CommonHasher>, u64, u64>(
             &mut group,
@@ -218,6 +224,12 @@ fn key_sensitivity(c: &mut Criterion) {
             "papaya",
             hasher.clone(),
         );
+        bench::<RpdsHashTrieMapBenchMap<String, u64, CommonHasher>, String, u64>(
+            &mut group,
+            &map_data,
+            "rpds-hash-trie-map",
+            hasher.clone(),
+        );
         // bench::<RustCHashBenchMap<String, u64, CommonHasher>, String, u64>(&mut group, &map_data, "rustc-hash"); // doesn't allow setting hasher
         bench::<SccBenchMap<String, u64, CommonHasher>, String, u64>(
             &mut group,
@@ -314,6 +326,12 @@ fn key_sensitivity(c: &mut Criterion) {
             &mut group,
             &map_data,
             "papaya",
+            hasher.clone(),
+        );
+        bench::<RpdsHashTrieMapBenchMap<String, u64, CommonHasher>, String, u64>(
+            &mut group,
+            &map_data,
+            "rpds-hash-trie-map",
             hasher.clone(),
         );
         // bench::<RustCHashBenchMap<String, u64, CommonHasher>, String, u64>(&mut group, &map_data, "rustc-hash"); // doesn't allow setting hasher
