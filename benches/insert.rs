@@ -93,6 +93,11 @@ fn insert(c: &mut Criterion) {
             bench_out_of_the_box::<AhashBenchMap<u64, u64>>(&mut group, &map_data, "ahash");
             bench_out_of_the_box::<BTreeMapBenchMap<u64, u64>>(&mut group, &map_data, "btreemap");
             // bench_out_of_the_box::<ConcreadBenchMap<u64, u64>>(&mut group, &map_data, "concread"); // too slow
+            bench_out_of_the_box::<ConcurrentMapBenchMap<u64, u64>>(
+                &mut group,
+                &map_data,
+                "concurrent-map",
+            );
             bench_out_of_the_box::<CrossbeamSkiplistBenchMap<u64, u64>>(
                 &mut group,
                 &map_data,
@@ -142,6 +147,7 @@ fn insert(c: &mut Criterion) {
             );
             // bench_same_hasher::<BTreeMapBenchMap<u64, u64, CommonHasher>>(&mut group, &map_data, "btreemap"); // doesn't allow setting hasher
             // bench_same_hasher::<ConcreadBenchMap<u64, u64, CommonHasher>>(&mut group, &map_data, "concread"); // doesn't allow setting hasher
+            // bench_same_hasher::<ConcurrentMapBenchMap<u64, u64, CommonHasher>>(&mut group, &map_data, "concurrent-map"); // doesn't allow setting hasher
             bench_same_hasher::<DashMapBenchMap<u64, u64, CommonHasher>>(
                 &mut group,
                 &map_data,

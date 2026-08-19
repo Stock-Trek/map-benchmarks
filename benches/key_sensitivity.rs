@@ -69,6 +69,7 @@ fn key_sensitivity(c: &mut Criterion) {
         );
         // bench::<BTreeMapBenchMap<u64, u64, CommonHasher>, u64, u64>(&mut group, &map_data, "btreemap"); // doesn't allow setting hasher
         // bench::<ConcreadBenchMap<u64, u64, CommonHasher>, u64, u64>(&mut group, &map_data, "concread"); // doesn't allow setting hasher
+        // bench::<ConcurrentMapBenchMap<u64, u64>, u64, u64>(&mut group, &map_data, "concurrent-map"); // doesn't allow setting hasher
         bench::<DashMapBenchMap<u64, u64, CommonHasher>, u64, u64>(
             &mut group,
             &map_data,
@@ -171,6 +172,7 @@ fn key_sensitivity(c: &mut Criterion) {
         );
         // bench::<BTreeMapBenchMap<String, u64, CommonHasher>, String, u64>(&mut group, &map_data, "btreemap"); // doesn't allow setting hasher
         // bench::<ConcreadBenchMap<String, u64, CommonHasher>, String, u64>(&mut group, &map_data, "concread"); // doesn't allow setting hasher
+        // bench::<ConcurrentMapBenchMap<String, u64>, String, u64>(&mut group, &map_data, "concurrent-map"); // doesn't allow setting hasher
         bench::<DashMapBenchMap<String, u64, CommonHasher>, String, u64>(
             &mut group,
             &map_data,
@@ -268,6 +270,7 @@ fn key_sensitivity(c: &mut Criterion) {
         );
         // bench::<BTreeMapBenchMap<String, u64, CommonHasher>, String, u64>(&mut group, &map_data, "btreemap"); // doesn't allow setting hasher
         // bench::<ConcreadBenchMap<String, u64, CommonHasher>, String, u64>(&mut group, &map_data, "concread"); // doesn't allow setting hasher
+        // bench::<ConcurrentMapBenchMap<String, u64>, String, u64>(&mut group, &map_data, "concurrent-map"); // doesn't allow setting hasher
         bench::<DashMapBenchMap<String, u64, CommonHasher>, String, u64>(
             &mut group,
             &map_data,
