@@ -6,7 +6,7 @@ use bench_map::{
     map_gen::MapGen,
     maps::{
         AhashBenchMap, BTreeMapBenchMap, BenchMapClone, BenchMapMutInsert, BenchMapNew,
-        DashMapBenchMap, HashbrownBenchMap, HordeBenchMap, ImmutableChunkMapBenchMap,
+        DashMapBenchMap, HashbrownBenchMap, HordeBenchMap, ImblBenchMap, ImmutableChunkMapBenchMap,
         IndexMapBenchMap, PapayaBenchMap, RustCHashBenchMap, SccBenchMap, StarshardBenchMap,
         StdBenchMap, TxMapBenchMap,
     },
@@ -58,6 +58,7 @@ fn clone(c: &mut Criterion) {
         bench::<HashbrownBenchMap<u64, u64>>(&mut group, &map_data, "hashbrown");
         bench::<HordeBenchMap<u64, u64>>(&mut group, &map_data, "horde");
         bench::<ImmutableChunkMapBenchMap<u64, u64>>(&mut group, &map_data, "immutable-chunkmap");
+        bench::<ImblBenchMap<u64, u64>>(&mut group, &map_data, "imbl");
         bench::<IndexMapBenchMap<u64, u64>>(&mut group, &map_data, "indexmap");
         // bench::<LeapfrogBenchMap<u64, u64>>(&mut group, &map_data, "leapfrog"); // doesn't implement Clone
         bench::<PapayaBenchMap<u64, u64>>(&mut group, &map_data, "papaya");
