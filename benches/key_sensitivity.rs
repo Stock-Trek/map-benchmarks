@@ -4,12 +4,7 @@ use bench_map::{
     data::{string::StringDataGen, u64_sparse::U64SparseDataGen},
     map_data::MapData,
     map_gen::MapGen,
-    maps::{
-        AhashBenchMap, BenchMapGetCloned, BenchMapMutInsert, BenchMapNewWithHasher,
-        DashMapBenchMap, HashbrownBenchMap, ImblBenchMap, IndexMapBenchMap, LeapfrogBenchMap,
-        PapayaBenchMap, SccBenchMap, StarshardBenchMap, StdBenchMap, TxMapBenchMap,
-        horde_benchmap::HordeBenchMap,
-    },
+    maps::*,
 };
 use criterion::{
     BenchmarkGroup, Criterion, Throughput, criterion_group, criterion_main, measurement::WallTime,
@@ -85,6 +80,12 @@ fn key_sensitivity(c: &mut Criterion) {
             &mut group,
             &map_data,
             "hashbrown",
+            hasher.clone(),
+        );
+        bench::<HashlinkBenchMap<u64, u64, CommonHasher>, u64, u64>(
+            &mut group,
+            &map_data,
+            "hashlink",
             hasher.clone(),
         );
         bench::<HordeBenchMap<u64, u64, CommonHasher>, u64, u64>(
@@ -183,6 +184,12 @@ fn key_sensitivity(c: &mut Criterion) {
             "hashbrown",
             hasher.clone(),
         );
+        bench::<HashlinkBenchMap<String, u64, CommonHasher>, String, u64>(
+            &mut group,
+            &map_data,
+            "hashlink",
+            hasher.clone(),
+        );
         bench::<HordeBenchMap<String, u64, CommonHasher>, String, u64>(
             &mut group,
             &map_data,
@@ -272,6 +279,12 @@ fn key_sensitivity(c: &mut Criterion) {
             &mut group,
             &map_data,
             "hashbrown",
+            hasher.clone(),
+        );
+        bench::<HashlinkBenchMap<String, u64, CommonHasher>, String, u64>(
+            &mut group,
+            &map_data,
+            "hashlink",
             hasher.clone(),
         );
         bench::<HordeBenchMap<String, u64, CommonHasher>, String, u64>(

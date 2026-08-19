@@ -1,17 +1,6 @@
 use bench_map::{
-    config::*,
-    constants::*,
-    data::u64_sparse::U64SparseDataGen,
-    map_data::MapData,
-    map_gen::MapGen,
-    maps::{
-        AhashBenchMap, BTreeMapBenchMap, BenchMapGetCloned, BenchMapMutInsert, BenchMapNew,
-        BenchMapNewWithHasher, DashMapBenchMap, HashbrownBenchMap, ImblBenchMap,
-        ImmutableChunkMapBenchMap, IndexMapBenchMap, LeapfrogBenchMap, PapayaBenchMap,
-        RustCHashBenchMap, SccBenchMap, StarshardBenchMap, StdBenchMap, TxMapBenchMap,
-        horde_benchmap::HordeBenchMap,
-    },
-    number_formatter::format_n,
+    config::*, constants::*, data::u64_sparse::U64SparseDataGen, map_data::MapData,
+    map_gen::MapGen, maps::*, number_formatter::format_n,
 };
 use criterion::{
     BenchmarkGroup, Criterion, Throughput, criterion_group, criterion_main, measurement::WallTime,
@@ -91,6 +80,7 @@ fn lookup_hit(c: &mut Criterion) {
             bench_out_of_the_box::<DashMapBenchMap<u64, u64>>(&mut group, &map_data, "dashmap");
             // bench_out_of_the_box::<FlurryBenchMap<u64, u64>>(&mut group, &map_data, "flurry"); // too slow
             bench_out_of_the_box::<HashbrownBenchMap<u64, u64>>(&mut group, &map_data, "hashbrown");
+            bench_out_of_the_box::<HashlinkBenchMap<u64, u64>>(&mut group, &map_data, "hashlink");
             bench_out_of_the_box::<HordeBenchMap<u64, u64>>(&mut group, &map_data, "horde");
             bench_out_of_the_box::<ImmutableChunkMapBenchMap<u64, u64>>(
                 &mut group,
@@ -142,6 +132,12 @@ fn lookup_hit(c: &mut Criterion) {
                 &mut group,
                 &map_data,
                 "hashbrown",
+                hasher.clone(),
+            );
+            bench_same_hasher::<HashlinkBenchMap<u64, u64, CommonHasher>>(
+                &mut group,
+                &map_data,
+                "hashlink",
                 hasher.clone(),
             );
             bench_same_hasher::<HordeBenchMap<u64, u64, CommonHasher>>(

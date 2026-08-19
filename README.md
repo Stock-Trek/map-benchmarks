@@ -18,6 +18,7 @@ All benchmarks use blackbox to avoid any overly aggressive compiler optimisation
 - [dashmap::DashMap](https://crates.io/crates/dashmap)
 - [flurry::HashMap](https://crates.io/crates/flurry)
 - [hashbrown::HashMap](https://crates.io/crates/hashbrown)
+- [hashlink::LinkedHashMap](https://crates.io/crates/hashlink)
 - [horde::SyncTable](https://crates.io/crates/horde)
 - [immutable_chunkmap::map::MapM](https://crates.io/crates/immutable-chunkmap)
 - [imbl::HashMap](https://crates.io/crates/imbl)

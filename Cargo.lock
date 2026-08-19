@@ -86,6 +86,7 @@ dependencies = [
  "dashmap",
  "flurry",
  "hashbrown 0.17.1",
+ "hashlink",
  "horde",
  "imbl",
  "immutable-chunkmap",
@@ -531,6 +532,15 @@ dependencies = [
  "equivalent",
  "foldhash",
  "rayon",
+]
+
+[[package]]
+name = "hashlink"
+version = "0.12.1"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "32069d97bb81e38fa67eab65e3393bf804bb85969f2bc06bf13f64aef5aba248"
+dependencies = [
+ "hashbrown 0.17.1",
 ]
 
 [[package]]
