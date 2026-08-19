@@ -3,7 +3,7 @@ use bench_map::{
     constants::*,
     maps::{
         AhashBenchMap, BTreeMapBenchMap, BenchMapNew, DashMapBenchMap, HashbrownBenchMap,
-        HordeBenchMap, ImmutableChunkMapBenchMap, IndexMapBenchMap, LeapfrogBenchMap,
+        HordeBenchMap, ImblBenchMap, ImmutableChunkMapBenchMap, IndexMapBenchMap, LeapfrogBenchMap,
         PapayaBenchMap, RustCHashBenchMap, SccBenchMap, StarshardBenchMap, StdBenchMap,
         TxMapBenchMap,
     },
@@ -40,6 +40,7 @@ fn create(c: &mut Criterion) {
     bench::<HashbrownBenchMap<u64, u64>>(&mut group, "hashbrown");
     bench::<HordeBenchMap<u64, u64>>(&mut group, "horde");
     bench::<ImmutableChunkMapBenchMap<u64, u64>>(&mut group, "immutable-chunkmap");
+    bench::<ImblBenchMap<u64, u64>>(&mut group, "imbl");
     bench::<IndexMapBenchMap<u64, u64>>(&mut group, "indexmap");
     bench::<LeapfrogBenchMap<u64, u64>>(&mut group, "leapfrog");
     bench::<PapayaBenchMap<u64, u64>>(&mut group, "papaya");

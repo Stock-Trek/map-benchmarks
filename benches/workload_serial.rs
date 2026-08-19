@@ -6,7 +6,7 @@ use bench_map::{
     map_gen::MapGen,
     maps::{
         AhashBenchMap, BTreeMapBenchMap, BenchMapGetCloned, BenchMapMutInsert, BenchMapMutRemove,
-        BenchMapNew, DashMapBenchMap, HashbrownBenchMap, ImmutableChunkMapBenchMap,
+        BenchMapNew, DashMapBenchMap, HashbrownBenchMap, ImblBenchMap, ImmutableChunkMapBenchMap,
         IndexMapBenchMap, LeapfrogBenchMap, PapayaBenchMap, RustCHashBenchMap, SccBenchMap,
         StarshardBenchMap, StdBenchMap, TxMapBenchMap, horde_benchmap::HordeBenchMap,
     },
@@ -121,6 +121,7 @@ fn workload_serial(c: &mut Criterion) {
                 &workload,
                 "immutable-chunkmap",
             );
+            bench::<ImblBenchMap<u64, u64>>(&mut group, &map_data, &workload, "imbl");
             bench::<IndexMapBenchMap<u64, u64>>(&mut group, &map_data, &workload, "indexmap");
             bench::<LeapfrogBenchMap<u64, u64>>(&mut group, &map_data, &workload, "leapfrog");
             bench::<PapayaBenchMap<u64, u64>>(&mut group, &map_data, &workload, "papaya");

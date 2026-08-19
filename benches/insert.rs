@@ -6,9 +6,9 @@ use bench_map::{
     map_gen::MapGen,
     maps::{
         AhashBenchMap, BTreeMapBenchMap, BenchMapMutInsert, BenchMapNew, BenchMapNewWithHasher,
-        DashMapBenchMap, HashbrownBenchMap, ImmutableChunkMapBenchMap, IndexMapBenchMap,
-        LeapfrogBenchMap, PapayaBenchMap, RustCHashBenchMap, SccBenchMap, StarshardBenchMap,
-        StdBenchMap, TxMapBenchMap, horde_benchmap::HordeBenchMap,
+        DashMapBenchMap, HashbrownBenchMap, ImblBenchMap, ImmutableChunkMapBenchMap,
+        IndexMapBenchMap, LeapfrogBenchMap, PapayaBenchMap, RustCHashBenchMap, SccBenchMap,
+        StarshardBenchMap, StdBenchMap, TxMapBenchMap, horde_benchmap::HordeBenchMap,
     },
     number_formatter::format_n,
 };
@@ -112,6 +112,7 @@ fn insert(c: &mut Criterion) {
                 &map_data,
                 "immutable-chunkmap",
             );
+            bench_out_of_the_box::<ImblBenchMap<u64, u64>>(&mut group, &map_data, "imbl");
             bench_out_of_the_box::<IndexMapBenchMap<u64, u64>>(&mut group, &map_data, "indexmap");
             bench_out_of_the_box::<LeapfrogBenchMap<u64, u64>>(&mut group, &map_data, "leapfrog");
             bench_out_of_the_box::<PapayaBenchMap<u64, u64>>(&mut group, &map_data, "papaya");
@@ -165,6 +166,12 @@ fn insert(c: &mut Criterion) {
                 hasher.clone(),
             );
             // bench_same_hasher::<ImmutableChunkMapBenchMap<u64, u64, CommonHasher>>(&mut group, &map_data, "immutable-chunkmap"); // doesn't allow setting hasher
+            bench_same_hasher::<ImblBenchMap<u64, u64, CommonHasher>>(
+                &mut group,
+                &map_data,
+                "imbl",
+                hasher.clone(),
+            );
             bench_same_hasher::<IndexMapBenchMap<u64, u64, CommonHasher>>(
                 &mut group,
                 &map_data,
