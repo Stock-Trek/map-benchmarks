@@ -1,6 +1,6 @@
 use crate::maps::benchmap::{
-    BenchMapClone, BenchMapGetCloned, BenchMapIter, BenchMapMutClear, BenchMapMutInsert,
-    BenchMapMutRemove, BenchMapNew, BenchMapNewWithHasher,
+    BenchMapClone, BenchMapGetCloned, BenchMapIter, BenchMapMutInsert, BenchMapMutRemove,
+    BenchMapNew, BenchMapNewWithHasher,
 };
 use rpds::HashTrieMap;
 use std::{
@@ -8,19 +8,11 @@ use std::{
     hash::{BuildHasher, Hash},
 };
 
-/// rpds::HashTrieMap is persistent: `insert`/`remove` return a new map that
-/// shares structure with the old one, so mutations are done in place via
-/// `insert_mut`/`remove_mut` (copy-on-write if the map is shared). Clone is
-/// O(1) structural sharing. The default pointer kind is `archery::RcK` (not
-/// `Send`/`Sync`), and mutation through a shared reference is not possible,
-/// so it is excluded from the concurrent workload.
 pub struct RpdsHashTrieMapBenchMap<K, V, H = RandomState>
 where
-    K: Eq + Hash,
-    H: BuildHasher + Clone,
+    H: BuildHasher,
 {
     map: HashTrieMap<K, V, archery::RcK, H>,
-    hasher: H,
 }
 
 impl<K, V, H> BenchMapNew<K, V> for RpdsHashTrieMapBenchMap<K, V, H>
@@ -29,10 +21,8 @@ where
     H: BuildHasher + Clone + Default,
 {
     fn new() -> Self {
-        let hasher = H::default();
         Self {
-            map: HashTrieMap::new_with_hasher_and_ptr_kind(hasher.clone()),
-            hasher,
+            map: HashTrieMap::new_with_hasher_and_ptr_kind(H::default()),
         }
     }
 }
@@ -44,8 +34,7 @@ where
 {
     fn new_with_hasher(hasher: H) -> Self {
         Self {
-            map: HashTrieMap::new_with_hasher_and_ptr_kind(hasher.clone()),
-            hasher,
+            map: HashTrieMap::new_with_hasher_and_ptr_kind(hasher),
         }
     }
 }
@@ -58,7 +47,6 @@ where
     fn clone_map(&self) -> Self {
         Self {
             map: self.map.clone(),
-            hasher: self.hasher.clone(),
         }
     }
 }
@@ -106,15 +94,5 @@ where
         let value = self.map.get(key).cloned();
         self.map.remove_mut(key);
         value
-    }
-}
-
-impl<K, V, H> BenchMapMutClear<K, V> for RpdsHashTrieMapBenchMap<K, V, H>
-where
-    K: Eq + Hash,
-    H: BuildHasher + Clone,
-{
-    fn clear(&mut self) {
-        self.map = HashTrieMap::new_with_hasher_and_ptr_kind(self.hasher.clone());
     }
 }
