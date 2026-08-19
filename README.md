@@ -4,7 +4,9 @@ Benchmarks 21 map implementations
 
 [Criterion report can be found here](https://stock-trek.github.io/map-benchmarks)
 
-[AI generated summary can be found here](./SUMMARY.md)
+[AI generated benchmark report can be found here](./BENCHMARK_REPORT.md)
+
+[AI generated executive summary of the report can be found here](./EXECUTIVE_SUMMARY.md)
 
 ## Methodology
 
