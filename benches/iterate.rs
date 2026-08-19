@@ -187,13 +187,13 @@ fn iterate(c: &mut Criterion) {
                 "papaya",
                 hasher.clone(),
             );
-            // bench_same_hasher::<RustCHashBenchMap<u64, u64, CommonHasher>>(&mut group, &map_data, "rustc-hash"); // doesn't allow setting hasher
             bench_same_hasher::<RpdsHashTrieMapBenchMap<u64, u64, CommonHasher>>(
                 &mut group,
                 &map_data,
                 "rpds-hash-trie-map",
                 hasher.clone(),
             );
+            // bench_same_hasher::<RustCHashBenchMap<u64, u64, CommonHasher>>(&mut group, &map_data, "rustc-hash"); // doesn't allow setting hasher
             bench_same_hasher::<SccBenchMap<u64, u64, CommonHasher>>(
                 &mut group,
                 &map_data,
