@@ -4,13 +4,7 @@ use bench_map::{
     data::u64_sparse::U64SparseDataGen,
     map_data::MapData,
     map_gen::MapGen,
-    maps::{
-        AhashBenchMap, BTreeMapBenchMap, BenchMapGetCloned, BenchMapMutInsert, BenchMapMutRemove,
-        BenchMapNew, DashMapBenchMap, HashbrownBenchMap, ImmutableChunkMapBenchMap,
-        IndexMapBenchMap, LeapfrogBenchMap, PapayaBenchMap, RpdsHashTrieMapBenchMap,
-        RustCHashBenchMap, SccBenchMap, StarshardBenchMap, StdBenchMap, TxMapBenchMap,
-        horde_benchmap::HordeBenchMap,
-    },
+    maps::*,
     number_formatter::format_n,
     workload::{design::WorkloadDesign, op::WorkloadOp, thread_workload::ThreadWorkload},
 };
@@ -112,9 +106,22 @@ fn workload_serial(c: &mut Criterion) {
             bench::<AhashBenchMap<u64, u64>>(&mut group, &map_data, &workload, "ahash");
             bench::<BTreeMapBenchMap<u64, u64>>(&mut group, &map_data, &workload, "btreemap");
             // bench::<ConcreadBenchMap<u64, u64>>(&mut group, &map_data, &workload, "concread"); // too slow
+            bench::<ConcurrentMapBenchMap<u64, u64>>(
+                &mut group,
+                &map_data,
+                &workload,
+                "concurrent-map",
+            );
+            bench::<CrossbeamSkiplistBenchMap<u64, u64>>(
+                &mut group,
+                &map_data,
+                &workload,
+                "crossbeam-skiplist",
+            );
             bench::<DashMapBenchMap<u64, u64>>(&mut group, &map_data, &workload, "dashmap");
             // bench::<FlurryBenchMap<u64, u64>>(&mut group, &map_data, &workload, "flurry"); // too slow
             bench::<HashbrownBenchMap<u64, u64>>(&mut group, &map_data, &workload, "hashbrown");
+            bench::<HashlinkBenchMap<u64, u64>>(&mut group, &map_data, &workload, "hashlink");
             bench::<HordeBenchMap<u64, u64>>(&mut group, &map_data, &workload, "horde");
             bench::<ImmutableChunkMapBenchMap<u64, u64>>(
                 &mut group,
@@ -122,6 +129,7 @@ fn workload_serial(c: &mut Criterion) {
                 &workload,
                 "immutable-chunkmap",
             );
+            bench::<ImblBenchMap<u64, u64>>(&mut group, &map_data, &workload, "imbl");
             bench::<IndexMapBenchMap<u64, u64>>(&mut group, &map_data, &workload, "indexmap");
             bench::<LeapfrogBenchMap<u64, u64>>(&mut group, &map_data, &workload, "leapfrog");
             bench::<PapayaBenchMap<u64, u64>>(&mut group, &map_data, &workload, "papaya");

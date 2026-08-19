@@ -1,15 +1,4 @@
-use bench_map::{
-    data::u64_sparse::U64SparseDataGen,
-    map_gen::MapGen,
-    maps::{
-        AhashBenchMap, BTreeMapBenchMap, BenchMapGetCloned, BenchMapInsert, BenchMapIter,
-        BenchMapMutClear, BenchMapMutInsert, BenchMapMutRemove, BenchMapNew, BenchMapNewWithHasher,
-        BenchMapRemove, ConcreadBenchMap, DashMapBenchMap, FlurryBenchMap, HashbrownBenchMap,
-        HordeBenchMap, ImmutableChunkMapBenchMap, IndexMapBenchMap, LeapfrogBenchMap,
-        PapayaBenchMap, RpdsHashTrieMapBenchMap, RustCHashBenchMap, SccBenchMap, StarshardBenchMap,
-        StdBenchMap, TxMapBenchMap,
-    },
-};
+use bench_map::{data::u64_sparse::U64SparseDataGen, map_gen::MapGen, maps::*};
 use std::{collections::hash_map::RandomState, hash::BuildHasher, rc::Rc};
 
 #[test]
@@ -40,6 +29,24 @@ fn concread() {
 }
 
 #[test]
+fn concurrent_map() {
+    assert_create_map_populates_existing_keys::<ConcurrentMapBenchMap<u64, u64>>();
+    assert_iterate::<ConcurrentMapBenchMap<u64, u64>>();
+    assert_mut_insert_remove::<ConcurrentMapBenchMap<u64, u64>>();
+    assert_shared_insert_remove::<ConcurrentMapBenchMap<u64, u64>>();
+    // assert_clear::<ConcurrentMapBenchMap<u64, u64>>(); // concurrent_map::ConcurrentMap has no clear method
+}
+
+#[test]
+fn crossbeam_skiplist() {
+    assert_create_map_populates_existing_keys::<CrossbeamSkiplistBenchMap<u64, u64>>();
+    assert_iterate::<CrossbeamSkiplistBenchMap<u64, u64>>();
+    assert_mut_insert_remove::<CrossbeamSkiplistBenchMap<u64, u64>>();
+    assert_clear::<CrossbeamSkiplistBenchMap<u64, u64>>();
+    assert_shared_insert_remove::<CrossbeamSkiplistBenchMap<u64, u64>>();
+}
+
+#[test]
 fn dashmap() {
     assert_create_map_populates_existing_keys::<DashMapBenchMap<u64, u64>>();
     assert_iterate::<DashMapBenchMap<u64, u64>>();
@@ -67,6 +74,15 @@ fn hashbrown() {
 }
 
 #[test]
+fn hashlink() {
+    assert_create_map_populates_existing_keys::<HashlinkBenchMap<u64, u64>>();
+    assert_iterate::<HashlinkBenchMap<u64, u64>>();
+    assert_mut_insert_remove::<HashlinkBenchMap<u64, u64>>();
+    assert_clear::<HashlinkBenchMap<u64, u64>>();
+    // assert_shared_insert_remove::<HashlinkBenchMap<u64, u64>>();
+}
+
+#[test]
 fn horde() {
     assert_create_map_populates_existing_keys::<HordeBenchMap<u64, u64>>();
     assert_iterate::<HordeBenchMap<u64, u64>>();
@@ -80,6 +96,15 @@ fn immutable_chunkmap() {
     assert_iterate::<ImmutableChunkMapBenchMap<u64, u64>>();
     assert_mut_insert_remove::<ImmutableChunkMapBenchMap<u64, u64>>();
     // assert_shared_insert_remove::<ImmutableChunkMapBenchMap<u64, u64>>();
+}
+
+#[test]
+fn imbl() {
+    assert_create_map_populates_existing_keys::<ImblBenchMap<u64, u64>>();
+    assert_iterate::<ImblBenchMap<u64, u64>>();
+    assert_mut_insert_remove::<ImblBenchMap<u64, u64>>();
+    assert_clear::<ImblBenchMap<u64, u64>>();
+    // assert_shared_insert_remove::<ImblBenchMap<u64, u64>>();
 }
 
 #[test]
@@ -245,6 +270,14 @@ fn hashbrown_with_hasher() {
 }
 
 #[test]
+fn hashlink_with_hasher() {
+    assert_new_with_hasher::<HashlinkBenchMap<u64, u64, ahash::RandomState>, _>(
+        ahash::RandomState::new(),
+    );
+    assert_new_with_hasher::<HashlinkBenchMap<u64, u64, RandomState>, _>(RandomState::new());
+}
+
+#[test]
 fn horde_with_hasher() {
     assert_new_with_hasher::<HordeBenchMap<u64, u64, ahash::RandomState>, _>(
         ahash::RandomState::new(),
@@ -258,6 +291,14 @@ fn flurry_with_hasher() {
         ahash::RandomState::new(),
     );
     assert_new_with_hasher::<FlurryBenchMap<u64, u64, RandomState>, _>(RandomState::new());
+}
+
+#[test]
+fn imbl_with_hasher() {
+    assert_new_with_hasher::<ImblBenchMap<u64, u64, ahash::RandomState>, _>(
+        ahash::RandomState::new(),
+    );
+    assert_new_with_hasher::<ImblBenchMap<u64, u64, RandomState>, _>(RandomState::new());
 }
 
 #[test]

@@ -1,6 +1,6 @@
 # Map benchmarks
 
-Benchmarks 17 map implementations
+Benchmarks 21 map implementations
 
 [Criterion report can be found here](https://stock-trek.github.io/map-benchmarks)
 
@@ -10,16 +10,20 @@ Benchmarks 17 map implementations
 
 All benchmarks use blackbox to avoid any overly aggressive compiler optimisations.
 
-17 map implementations are benchmarked:
+21 map implementations are benchmarked:
 
 - [ahash::AHashMap](https://crates.io/crates/ahash)
 - [std::collections::btreemap](https://doc.rust-lang.org/std/collections/struct.BTreeMap.html)
 - [concread::hashmap::HashMap](https://crates.io/crates/concread)
+- [concurrent_map::ConcurrentMap](https://crates.io/crates/concurrent-map)
+- [crossbeam_skiplist::SkipMap](https://crates.io/crates/crossbeam-skiplist)
 - [dashmap::DashMap](https://crates.io/crates/dashmap)
 - [flurry::HashMap](https://crates.io/crates/flurry)
 - [hashbrown::HashMap](https://crates.io/crates/hashbrown)
+- [hashlink::LinkedHashMap](https://crates.io/crates/hashlink)
 - [horde::SyncTable](https://crates.io/crates/horde)
 - [immutable_chunkmap::map::MapM](https://crates.io/crates/immutable-chunkmap)
+- [imbl::HashMap](https://crates.io/crates/imbl)
 - [indexmap::IndexMap](https://crates.io/crates/indexmap)
 - [leapfrog::LeapMap](https://crates.io/crates/leapfrog)
 - [papaya::HashMap](https://crates.io/crates/papaya)
@@ -48,4 +52,3 @@ There are 3 groups of tests, `out-of-the-box` which uses each map's default impl
 - **Lookup hit**: Uses maps containing 1K/10K/100K entries. Finds 100 extant values, found values are cloned to ensure all maps are treated consistently
 - **Lookup miss**: Uses maps containing 1K/10K/100K entries. Finds 100 non-existent values
 - **Remove**: Uses maps containing 1K/10K/100K entries. Removes 100 entries
-

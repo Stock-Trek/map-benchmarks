@@ -11,11 +11,15 @@ uuid = { version = "1.24.0", features = ["v4"] }
 ahash = "0"
 archery = "1.2.2"  # pointer kind (RcK) used by rpds::HashTrieMap
 concread = "0"
+concurrent-map = "5"
+crossbeam-skiplist = "0"
 dashmap = "6"
 flurry = "0"
 hashbrown = "0"
+hashlink = "0"
 horde = "0"
 immutable-chunkmap = "2"
+imbl = "7"
 indexmap = "2"
 leapfrog = { version = "0", features = ["stable_alloc"] }
 libc = "0"

@@ -1,13 +1,4 @@
-use bench_map::{
-    config::*,
-    constants::*,
-    maps::{
-        AhashBenchMap, BTreeMapBenchMap, BenchMapNew, DashMapBenchMap, HashbrownBenchMap,
-        HordeBenchMap, ImmutableChunkMapBenchMap, IndexMapBenchMap, LeapfrogBenchMap,
-        PapayaBenchMap, RpdsHashTrieMapBenchMap, RustCHashBenchMap, SccBenchMap, StarshardBenchMap,
-        StdBenchMap, TxMapBenchMap,
-    },
-};
+use bench_map::{config::*, constants::*, maps::*};
 use criterion::{
     BenchmarkGroup, Criterion, Throughput, criterion_group, criterion_main, measurement::WallTime,
 };
@@ -35,11 +26,15 @@ fn create(c: &mut Criterion) {
     bench::<AhashBenchMap<u64, u64>>(&mut group, "ahash");
     bench::<BTreeMapBenchMap<u64, u64>>(&mut group, "btreemap");
     // bench::<ConcreadBenchMap<u64, u64>>(&mut group, "concread"); // too slow
+    bench::<ConcurrentMapBenchMap<u64, u64>>(&mut group, "concurrent-map");
+    bench::<CrossbeamSkiplistBenchMap<u64, u64>>(&mut group, "crossbeam-skiplist");
     bench::<DashMapBenchMap<u64, u64>>(&mut group, "dashmap");
     // bench::<FlurryBenchMap<u64, u64>>(&mut group, "flurry"); // too slow (creates a seize::Collector per map)
     bench::<HashbrownBenchMap<u64, u64>>(&mut group, "hashbrown");
+    bench::<HashlinkBenchMap<u64, u64>>(&mut group, "hashlink");
     bench::<HordeBenchMap<u64, u64>>(&mut group, "horde");
     bench::<ImmutableChunkMapBenchMap<u64, u64>>(&mut group, "immutable-chunkmap");
+    bench::<ImblBenchMap<u64, u64>>(&mut group, "imbl");
     bench::<IndexMapBenchMap<u64, u64>>(&mut group, "indexmap");
     bench::<LeapfrogBenchMap<u64, u64>>(&mut group, "leapfrog");
     bench::<PapayaBenchMap<u64, u64>>(&mut group, "papaya");

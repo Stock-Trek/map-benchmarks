@@ -4,12 +4,7 @@ use bench_map::{
     data::{string::StringDataGen, u64_sparse::U64SparseDataGen},
     map_data::MapData,
     map_gen::MapGen,
-    maps::{
-        AhashBenchMap, BenchMapGetCloned, BenchMapMutInsert, BenchMapNewWithHasher,
-        DashMapBenchMap, HashbrownBenchMap, IndexMapBenchMap, LeapfrogBenchMap, PapayaBenchMap,
-        RpdsHashTrieMapBenchMap, SccBenchMap, StarshardBenchMap, StdBenchMap, TxMapBenchMap,
-        horde_benchmap::HordeBenchMap,
-    },
+    maps::*,
 };
 use criterion::{
     BenchmarkGroup, Criterion, Throughput, criterion_group, criterion_main, measurement::WallTime,
@@ -74,6 +69,7 @@ fn key_sensitivity(c: &mut Criterion) {
         );
         // bench::<BTreeMapBenchMap<u64, u64, CommonHasher>, u64, u64>(&mut group, &map_data, "btreemap"); // doesn't allow setting hasher
         // bench::<ConcreadBenchMap<u64, u64, CommonHasher>, u64, u64>(&mut group, &map_data, "concread"); // doesn't allow setting hasher
+        // bench::<ConcurrentMapBenchMap<u64, u64>, u64, u64>(&mut group, &map_data, "concurrent-map"); // doesn't allow setting hasher
         bench::<DashMapBenchMap<u64, u64, CommonHasher>, u64, u64>(
             &mut group,
             &map_data,
@@ -87,6 +83,12 @@ fn key_sensitivity(c: &mut Criterion) {
             "hashbrown",
             hasher.clone(),
         );
+        bench::<HashlinkBenchMap<u64, u64, CommonHasher>, u64, u64>(
+            &mut group,
+            &map_data,
+            "hashlink",
+            hasher.clone(),
+        );
         bench::<HordeBenchMap<u64, u64, CommonHasher>, u64, u64>(
             &mut group,
             &map_data,
@@ -94,6 +96,12 @@ fn key_sensitivity(c: &mut Criterion) {
             hasher.clone(),
         );
         // bench::<ImmutableChunkMapBenchMap<u64, u64, CommonHasher>, u64, u64>(&mut group, &map_data, "immutable-chunkmap"); // doesn't allow setting hasher
+        bench::<ImblBenchMap<u64, u64, CommonHasher>, u64, u64>(
+            &mut group,
+            &map_data,
+            "imbl",
+            hasher.clone(),
+        );
         bench::<IndexMapBenchMap<u64, u64, CommonHasher>, u64, u64>(
             &mut group,
             &map_data,
@@ -170,6 +178,7 @@ fn key_sensitivity(c: &mut Criterion) {
         );
         // bench::<BTreeMapBenchMap<String, u64, CommonHasher>, String, u64>(&mut group, &map_data, "btreemap"); // doesn't allow setting hasher
         // bench::<ConcreadBenchMap<String, u64, CommonHasher>, String, u64>(&mut group, &map_data, "concread"); // doesn't allow setting hasher
+        // bench::<ConcurrentMapBenchMap<String, u64>, String, u64>(&mut group, &map_data, "concurrent-map"); // doesn't allow setting hasher
         bench::<DashMapBenchMap<String, u64, CommonHasher>, String, u64>(
             &mut group,
             &map_data,
@@ -183,6 +192,12 @@ fn key_sensitivity(c: &mut Criterion) {
             "hashbrown",
             hasher.clone(),
         );
+        bench::<HashlinkBenchMap<String, u64, CommonHasher>, String, u64>(
+            &mut group,
+            &map_data,
+            "hashlink",
+            hasher.clone(),
+        );
         bench::<HordeBenchMap<String, u64, CommonHasher>, String, u64>(
             &mut group,
             &map_data,
@@ -191,6 +206,12 @@ fn key_sensitivity(c: &mut Criterion) {
         );
         // bench::<ImmutableChunkMapBenchMap<String, u64, CommonHasher>, String, u64>(&mut group, &map_data, "immutable-chunkmap"); // doesn't allow setting hasher
         // bench::<LeapfrogBenchMap<String, u64, CommonHasher>, String, u64>(&mut group, &map_data, "leapfrog", hasher.clone()); // keys must be Copy
+        bench::<ImblBenchMap<String, u64, CommonHasher>, String, u64>(
+            &mut group,
+            &map_data,
+            "imbl",
+            hasher.clone(),
+        );
         bench::<IndexMapBenchMap<String, u64, CommonHasher>, String, u64>(
             &mut group,
             &map_data,
@@ -261,6 +282,7 @@ fn key_sensitivity(c: &mut Criterion) {
         );
         // bench::<BTreeMapBenchMap<String, u64, CommonHasher>, String, u64>(&mut group, &map_data, "btreemap"); // doesn't allow setting hasher
         // bench::<ConcreadBenchMap<String, u64, CommonHasher>, String, u64>(&mut group, &map_data, "concread"); // doesn't allow setting hasher
+        // bench::<ConcurrentMapBenchMap<String, u64>, String, u64>(&mut group, &map_data, "concurrent-map"); // doesn't allow setting hasher
         bench::<DashMapBenchMap<String, u64, CommonHasher>, String, u64>(
             &mut group,
             &map_data,
@@ -274,6 +296,12 @@ fn key_sensitivity(c: &mut Criterion) {
             "hashbrown",
             hasher.clone(),
         );
+        bench::<HashlinkBenchMap<String, u64, CommonHasher>, String, u64>(
+            &mut group,
+            &map_data,
+            "hashlink",
+            hasher.clone(),
+        );
         bench::<HordeBenchMap<String, u64, CommonHasher>, String, u64>(
             &mut group,
             &map_data,
@@ -281,6 +309,12 @@ fn key_sensitivity(c: &mut Criterion) {
             hasher.clone(),
         );
         // bench::<ImmutableChunkMapBenchMap<String, u64, CommonHasher>, String, u64>(&mut group, &map_data, "immutable-chunkmap"); // doesn't allow setting hasher
+        bench::<ImblBenchMap<String, u64, CommonHasher>, String, u64>(
+            &mut group,
+            &map_data,
+            "imbl",
+            hasher.clone(),
+        );
         bench::<IndexMapBenchMap<String, u64, CommonHasher>, String, u64>(
             &mut group,
             &map_data,
