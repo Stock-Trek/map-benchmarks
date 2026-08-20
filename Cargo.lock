@@ -1223,10 +1223,11 @@ checksum = "b40688ea6389c8171614b25491f71d4a27946e0c7ce2da1c6de27e25abf1a0ae"
 
 [[package]]
 name = "txmap"
-version = "3.2.0"
+version = "3.3.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "9adec152400d3edc55c4907ad24621aae45162fbf43964d3643f09171b539cb4"
+checksum = "aa0abdd5e10f181774a0e3b5a8e97c940c50521bf02453369282b0787a9b0f0f"
 dependencies = [
+ "crossbeam-utils",
  "hashbrown 0.17.1",
  "intmap",
  "parking_lot",
