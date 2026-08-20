@@ -153,7 +153,7 @@ fn workload_zipfian_concurrent(c: &mut Criterion) {
                     .collect::<Vec<_>>();
 
                 let mut group = c.benchmark_group(format!(
-                    "workload/{OUT_OF_THE_BOX_GROUP_NAME}/zipfian/{}/map-size-{}/threads-{}",
+                    "workload-zipfian/{OUT_OF_THE_BOX_GROUP_NAME}/{}/map-size-{}/threads-{}",
                     name,
                     format_n(entry_count),
                     thread_count
