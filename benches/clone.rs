@@ -94,10 +94,10 @@ fn clone(c: &mut Criterion) {
 }
 
 fn clone_then_write(c: &mut Criterion) {
+    let existing_key_count = 0;
     let sort_keys = false;
     for entry_count in OUT_OF_THE_BOX_ENTRY_COUNT {
-        let existing_key_count = *entry_count;
-        let missing_key_count = *entry_count;
+        let missing_key_count = *entry_count / 10;
         let map_data = MapGen::generate(
             U64SparseDataGen,
             U64SparseDataGen,
