@@ -94,10 +94,9 @@ fn bench<Map>(
 /// Builds the skewed map data for the Zipfian workload.
 ///
 /// The entry keys are the hottest `entry_count` keys of a Zipfian distribution
-/// over a larger key space (`entry_count * 2`), so the sorted existing-key
-/// slice ranks keys from hottest (index 0) to coldest (index len - 1) and the
-/// hot entries dominate the map. Missing keys are random u64s, which with
-/// overwhelming probability are not present in the map.
+/// over a larger key space (`entry_count * 2`), so the sorted existing-key slice
+/// ranks keys from hottest (index 0) to coldest (index len - 1) and the hot entries
+/// dominate the map. Missing keys are random u64s which are not present in the map.
 fn generate_zipfian_map_data(
     entry_count: usize,
     missing_key_count: usize,
