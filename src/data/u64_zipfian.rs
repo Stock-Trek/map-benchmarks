@@ -36,6 +36,16 @@ impl U64ZipfianDataGen {
             exponent,
         }
     }
+
+    /// Draws a single key from the Zipfian distribution over `0..num_items`.
+    ///
+    /// Unlike [`DataGen::generate`], successive draws are independent rather
+    /// than distinct, so hot (low-rank) keys are returned far more often than
+    /// cold ones. This is the building block for skewed access-pattern
+    /// workloads, where a small set of hot keys receives most of the traffic.
+    pub fn sample_key(&self, rng: &mut impl Rng) -> u64 {
+        zipf_sample(rng, self.num_items, self.exponent)
+    }
 }
 
 impl DataGen for U64ZipfianDataGen {
@@ -176,6 +186,28 @@ mod tests {
 
         // The tail should be rare but present: ~8% of samples land at rank >= 100.
         assert!(max_key >= 100, "cold keys were never generated");
+    }
+
+    #[test]
+    fn sample_key_stays_within_range_and_skews() {
+        let generator = U64ZipfianDataGen::new(1_000, 1.5);
+        let mut rng = seeded_rng();
+        let sample_count = 200_000;
+        let mut rank_one = 0u64;
+        for _ in 0..sample_count {
+            let key = generator.sample_key(&mut rng);
+            assert!(key < 1_000);
+            if key == 0 {
+                rank_one += 1;
+            }
+        }
+
+        let expected = 1.0 / zipf_harmonic(1_000, 1.5);
+        let empirical = rank_one as f64 / sample_count as f64;
+        assert!(
+            (empirical - expected).abs() < 0.02,
+            "rank-one frequency {empirical} differs from expected {expected}"
+        );
     }
 
     #[test]
