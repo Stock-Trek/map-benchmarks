@@ -1,7 +1,7 @@
 use crate::maps::benchmap::{
     BenchMapClone, BenchMapGetCloned, BenchMapGetOrInsert, BenchMapInsert, BenchMapIter,
-    BenchMapMutClear, BenchMapMutGetOrInsert, BenchMapMutInsert, BenchMapMutRemove, BenchMapNew,
-    BenchMapNewWithHasher, BenchMapRemove,
+    BenchMapMutClear, BenchMapMutGetOrInsert, BenchMapMutInsert, BenchMapMutRemove, BenchMapName,
+    BenchMapNew, BenchMapNewWithHasher, BenchMapRemove,
 };
 use std::hash::{BuildHasher, Hash};
 
@@ -10,6 +10,13 @@ where
     H: BuildHasher,
 {
     map: txmap::TxMap<K, V, txmap::MutexPolicy, H>,
+}
+
+impl<K, V, H> BenchMapName for TxMapBenchMap<K, V, H>
+where
+    H: BuildHasher,
+{
+    const NAME: &'static str = "txmap";
 }
 
 impl<K, V, H> BenchMapNew<K, V> for TxMapBenchMap<K, V, H>

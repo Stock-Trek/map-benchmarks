@@ -1,7 +1,7 @@
 use crate::maps::benchmap::{
     BenchMapClone, BenchMapGetCloned, BenchMapGetOrInsert, BenchMapInsert, BenchMapIter,
-    BenchMapMutClear, BenchMapMutGetOrInsert, BenchMapMutInsert, BenchMapMutRemove, BenchMapNew,
-    BenchMapNewWithHasher, BenchMapRemove,
+    BenchMapMutClear, BenchMapMutGetOrInsert, BenchMapMutInsert, BenchMapMutRemove, BenchMapName,
+    BenchMapNew, BenchMapNewWithHasher, BenchMapRemove,
 };
 use std::hash::{BuildHasher, Hash};
 
@@ -12,6 +12,15 @@ where
     H: BuildHasher + Clone + Send + Sync,
 {
     map: starshard::ShardedHashMap<K, V, H>,
+}
+
+impl<K, V, H> BenchMapName for StarshardBenchMap<K, V, H>
+where
+    K: Clone + Hash + Eq + Send + Sync,
+    V: Clone + Send + Sync,
+    H: BuildHasher + Clone + Send + Sync,
+{
+    const NAME: &'static str = "starshard";
 }
 
 impl<K, V, H> BenchMapNew<K, V> for StarshardBenchMap<K, V, H>

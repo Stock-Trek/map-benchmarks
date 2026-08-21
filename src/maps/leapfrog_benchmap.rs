@@ -1,6 +1,7 @@
 use crate::maps::benchmap::{
     BenchMapGetCloned, BenchMapGetOrInsert, BenchMapInsert, BenchMapIter, BenchMapMutGetOrInsert,
-    BenchMapMutInsert, BenchMapMutRemove, BenchMapNew, BenchMapNewWithHasher, BenchMapRemove,
+    BenchMapMutInsert, BenchMapMutRemove, BenchMapName, BenchMapNew, BenchMapNewWithHasher,
+    BenchMapRemove,
 };
 use leapfrog::Value;
 use std::hash::{BuildHasher, Hash};
@@ -15,6 +16,15 @@ pub struct LeapfrogBenchMap<
     H: BuildHasher + Default,
 {
     map: leapfrog::LeapMap<K, V, H>,
+}
+
+impl<K, V, H> BenchMapName for LeapfrogBenchMap<K, V, H>
+where
+    K: Eq + Hash + Copy,
+    V: Value,
+    H: BuildHasher + Default,
+{
+    const NAME: &'static str = "leapfrog";
 }
 
 impl<K, V, H> BenchMapNew<K, V> for LeapfrogBenchMap<K, V, H>

@@ -1,11 +1,15 @@
 use crate::maps::benchmap::{
     BenchMapClone, BenchMapGetCloned, BenchMapIter, BenchMapMutClear, BenchMapMutGetOrInsert,
-    BenchMapMutInsert, BenchMapMutRemove, BenchMapNew, BenchMapNewWithHasher,
+    BenchMapMutInsert, BenchMapMutRemove, BenchMapName, BenchMapNew, BenchMapNewWithHasher,
 };
 use std::hash::{BuildHasher, Hash};
 
 pub struct HashbrownBenchMap<K, V, H = hashbrown::DefaultHashBuilder> {
     map: hashbrown::HashMap<K, V, H>,
+}
+
+impl<K, V, H> BenchMapName for HashbrownBenchMap<K, V, H> {
+    const NAME: &'static str = "hashbrown";
 }
 
 impl<K, V, H> BenchMapNew<K, V> for HashbrownBenchMap<K, V, H>

@@ -1,12 +1,16 @@
 use crate::maps::benchmap::{
     BenchMapClone, BenchMapGetCloned, BenchMapGetOrInsert, BenchMapInsert, BenchMapIter,
-    BenchMapMutClear, BenchMapMutGetOrInsert, BenchMapMutInsert, BenchMapMutRemove, BenchMapNew,
-    BenchMapNewWithHasher, BenchMapRemove,
+    BenchMapMutClear, BenchMapMutGetOrInsert, BenchMapMutInsert, BenchMapMutRemove, BenchMapName,
+    BenchMapNew, BenchMapNewWithHasher, BenchMapRemove,
 };
 use std::hash::{BuildHasher, Hash};
 
 pub struct FlurryBenchMap<K, V, H = flurry::DefaultHashBuilder> {
     map: flurry::HashMap<K, V, H>,
+}
+
+impl<K, V, H> BenchMapName for FlurryBenchMap<K, V, H> {
+    const NAME: &'static str = "flurry";
 }
 
 impl<K, V, H> BenchMapNew<K, V> for FlurryBenchMap<K, V, H>

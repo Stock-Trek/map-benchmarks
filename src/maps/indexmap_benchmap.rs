@@ -1,6 +1,6 @@
 use crate::maps::benchmap::{
     BenchMapClone, BenchMapGetCloned, BenchMapIter, BenchMapMutClear, BenchMapMutGetOrInsert,
-    BenchMapMutInsert, BenchMapMutRemove, BenchMapNew, BenchMapNewWithHasher,
+    BenchMapMutInsert, BenchMapMutRemove, BenchMapName, BenchMapNew, BenchMapNewWithHasher,
 };
 use std::{
     collections::hash_map::RandomState,
@@ -9,6 +9,10 @@ use std::{
 
 pub struct IndexMapBenchMap<K, V, H = RandomState> {
     map: indexmap::IndexMap<K, V, H>,
+}
+
+impl<K, V, H> BenchMapName for IndexMapBenchMap<K, V, H> {
+    const NAME: &'static str = "indexmap";
 }
 
 impl<K, V, H> BenchMapNew<K, V> for IndexMapBenchMap<K, V, H>

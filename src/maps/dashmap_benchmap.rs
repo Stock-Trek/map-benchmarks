@@ -1,7 +1,7 @@
 use crate::maps::benchmap::{
     BenchMapClone, BenchMapGetCloned, BenchMapGetOrInsert, BenchMapInsert, BenchMapIter,
-    BenchMapMutClear, BenchMapMutGetOrInsert, BenchMapMutInsert, BenchMapMutRemove, BenchMapNew,
-    BenchMapNewWithHasher, BenchMapRemove,
+    BenchMapMutClear, BenchMapMutGetOrInsert, BenchMapMutInsert, BenchMapMutRemove, BenchMapName,
+    BenchMapNew, BenchMapNewWithHasher, BenchMapRemove,
 };
 use std::{
     collections::hash_map::RandomState,
@@ -10,6 +10,10 @@ use std::{
 
 pub struct DashMapBenchMap<K, V, H = RandomState> {
     map: dashmap::DashMap<K, V, H>,
+}
+
+impl<K, V, H> BenchMapName for DashMapBenchMap<K, V, H> {
+    const NAME: &'static str = "dashmap";
 }
 
 impl<K, V, H> BenchMapNew<K, V> for DashMapBenchMap<K, V, H>

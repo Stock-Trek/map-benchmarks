@@ -24,8 +24,8 @@ pub mod txmap_benchmap;
 pub use ahash_benchmap::AhashBenchMap;
 pub use benchmap::{
     BenchMapClone, BenchMapGetCloned, BenchMapGetOrInsert, BenchMapInsert, BenchMapIter,
-    BenchMapMutClear, BenchMapMutGetOrInsert, BenchMapMutInsert, BenchMapMutRemove, BenchMapNew,
-    BenchMapNewWithHasher, BenchMapRemove,
+    BenchMapMutClear, BenchMapMutGetOrInsert, BenchMapMutInsert, BenchMapMutRemove, BenchMapName,
+    BenchMapNew, BenchMapNewWithHasher, BenchMapRemove,
 };
 pub use btreemap_benchmap::BTreeMapBenchMap;
 pub use concread_benchmap::ConcreadBenchMap;

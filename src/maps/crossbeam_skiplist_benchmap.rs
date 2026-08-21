@@ -1,10 +1,15 @@
 use crate::maps::benchmap::{
     BenchMapGetCloned, BenchMapGetOrInsert, BenchMapInsert, BenchMapIter, BenchMapMutClear,
-    BenchMapMutGetOrInsert, BenchMapMutInsert, BenchMapMutRemove, BenchMapNew, BenchMapRemove,
+    BenchMapMutGetOrInsert, BenchMapMutInsert, BenchMapMutRemove, BenchMapName, BenchMapNew,
+    BenchMapRemove,
 };
 
 pub struct CrossbeamSkiplistBenchMap<K, V> {
     map: crossbeam_skiplist::SkipMap<K, V>,
+}
+
+impl<K, V> BenchMapName for CrossbeamSkiplistBenchMap<K, V> {
+    const NAME: &'static str = "crossbeam-skiplist";
 }
 
 impl<K, V> BenchMapNew<K, V> for CrossbeamSkiplistBenchMap<K, V> {

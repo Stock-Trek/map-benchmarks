@@ -1,11 +1,15 @@
 use crate::maps::benchmap::{
     BenchMapClone, BenchMapGetCloned, BenchMapIter, BenchMapMutClear, BenchMapMutGetOrInsert,
-    BenchMapMutInsert, BenchMapMutRemove, BenchMapNew,
+    BenchMapMutInsert, BenchMapMutRemove, BenchMapName, BenchMapNew,
 };
 use std::hash::Hash;
 
 pub struct RustCHashBenchMap<K, V> {
     map: rustc_hash::FxHashMap<K, V>,
+}
+
+impl<K, V> BenchMapName for RustCHashBenchMap<K, V> {
+    const NAME: &'static str = "rustc-hash";
 }
 
 impl<K, V> BenchMapNew<K, V> for RustCHashBenchMap<K, V> {

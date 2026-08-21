@@ -1,6 +1,6 @@
 use crate::maps::benchmap::{
     BenchMapClone, BenchMapGetCloned, BenchMapIter, BenchMapMutClear, BenchMapMutGetOrInsert,
-    BenchMapMutInsert, BenchMapMutRemove, BenchMapNew, BenchMapNewWithHasher,
+    BenchMapMutInsert, BenchMapMutRemove, BenchMapName, BenchMapNew, BenchMapNewWithHasher,
 };
 use imbl::{hashmap::GenericHashMap, shared_ptr::DefaultSharedPtr};
 use std::{
@@ -10,6 +10,10 @@ use std::{
 
 pub struct ImblBenchMap<K, V, H = RandomState> {
     map: GenericHashMap<K, V, H, DefaultSharedPtr>,
+}
+
+impl<K, V, H> BenchMapName for ImblBenchMap<K, V, H> {
+    const NAME: &'static str = "imbl";
 }
 
 impl<K, V, H> BenchMapNew<K, V> for ImblBenchMap<K, V, H>

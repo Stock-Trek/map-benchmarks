@@ -1,11 +1,15 @@
 use crate::maps::benchmap::{
     BenchMapClone, BenchMapGetCloned, BenchMapIter, BenchMapMutClear, BenchMapMutGetOrInsert,
-    BenchMapMutInsert, BenchMapMutRemove, BenchMapNew, BenchMapNewWithHasher,
+    BenchMapMutInsert, BenchMapMutRemove, BenchMapName, BenchMapNew, BenchMapNewWithHasher,
 };
 use std::hash::{BuildHasher, Hash};
 
 pub struct HordeBenchMap<K, V, H = horde::sync_table::DefaultHashBuilder> {
     map: horde::SyncTable<K, V, H>,
+}
+
+impl<K, V, H> BenchMapName for HordeBenchMap<K, V, H> {
+    const NAME: &'static str = "horde";
 }
 
 impl<K, V, H> BenchMapNew<K, V> for HordeBenchMap<K, V, H>

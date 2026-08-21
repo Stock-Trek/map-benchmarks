@@ -1,7 +1,7 @@
 use crate::maps::benchmap::{
     BenchMapClone, BenchMapGetCloned, BenchMapGetOrInsert, BenchMapInsert, BenchMapIter,
-    BenchMapMutClear, BenchMapMutGetOrInsert, BenchMapMutInsert, BenchMapMutRemove, BenchMapNew,
-    BenchMapNewWithHasher, BenchMapRemove,
+    BenchMapMutClear, BenchMapMutGetOrInsert, BenchMapMutInsert, BenchMapMutRemove, BenchMapName,
+    BenchMapNew, BenchMapNewWithHasher, BenchMapRemove,
 };
 use std::{
     collections::hash_map::RandomState,
@@ -10,6 +10,10 @@ use std::{
 
 pub struct PapayaBenchMap<K, V, H = RandomState> {
     map: papaya::HashMap<K, V, H>,
+}
+
+impl<K, V, H> BenchMapName for PapayaBenchMap<K, V, H> {
+    const NAME: &'static str = "papaya";
 }
 
 impl<K, V, H> BenchMapNew<K, V> for PapayaBenchMap<K, V, H>
