@@ -2,13 +2,11 @@
 use bench_map::{
     concurrent_workers::ConcurrentWorkers,
     config::*,
-    constants::*,
     data::{u64_dense::U64DenseDataGen, u64_sparse::U64SparseDataGen},
     expand_bench_concurrent,
     map_data::MapData,
     map_gen::MapGen,
     maps::*,
-    number_formatter::format_n,
     workload::{
         design::WorkloadDesign,
         op::WorkloadOp,
@@ -130,10 +128,8 @@ fn contention(c: &mut Criterion) {
             .collect::<Vec<_>>();
 
         let mut group = c.benchmark_group(format!(
-            "contention/{OUT_OF_THE_BOX_GROUP_NAME}/{}/map-size-{}/threads-{}",
-            key_distribution,
-            format_n(DEFAULT_ENTRY_COUNT),
-            DEFAULT_THREAD_COUNT
+            "contention-{DEFAULT_THREAD_COUNT}-threads/{}",
+            key_distribution
         ));
         group.warm_up_time(WARM_UP_TIME);
         group.measurement_time(MEASUREMENT_TIME);

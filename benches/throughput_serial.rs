@@ -1,13 +1,11 @@
 // How does it perform on realistic single-threaded use? Tests the combined read/write/remove design, the interplay of all operations in one pass without concurrency overhead.
 use bench_map::{
     config::*,
-    constants::*,
     data::u64_sparse::U64SparseDataGen,
     expand_bench_concurrent,
     map_data::MapData,
     map_gen::MapGen,
     maps::*,
-    number_formatter::format_n,
     workload::{
         design::WorkloadDesign,
         op::WorkloadOp,
@@ -68,69 +66,62 @@ fn bench<Map>(
 }
 
 fn throughput_serial(c: &mut Criterion) {
+    let entry_count = DEFAULT_ENTRY_COUNT;
+    let existing_key_count = entry_count;
     let missing_key_count = DEFAULT_OP_COUNT;
     let sort_keys = false;
+    let map_data = MapGen::generate(
+        U64SparseDataGen,
+        U64SparseDataGen,
+        entry_count,
+        existing_key_count,
+        missing_key_count,
+        sort_keys,
+    );
 
-    for &entry_count in DEFAULT_ENTRY_COUNTS {
-        let existing_key_count = entry_count;
+    let mut rng = rand::rng();
+    let designs: &[(&str, WorkloadDesign)] = &[
+        ("write-heavy", WorkloadDesign::write_heavy(DEFAULT_OP_COUNT)),
+        ("balanced", WorkloadDesign::balanced(DEFAULT_OP_COUNT)),
+        ("read-heavy", WorkloadDesign::read_heavy(DEFAULT_OP_COUNT)),
+    ];
 
-        let map_data = MapGen::generate(
-            U64SparseDataGen,
-            U64SparseDataGen,
-            entry_count,
-            existing_key_count,
-            missing_key_count,
-            sort_keys,
+    for &(name, design) in designs {
+        let workload = KeyDistribution::Uniform.thread_workload(
+            &design,
+            map_data.existing_keys(),
+            map_data.missing_keys(),
+            &mut rng,
         );
 
-        let mut rng = rand::rng();
-        let designs: &[(&str, WorkloadDesign)] = &[
-            ("write-heavy", WorkloadDesign::write_heavy(DEFAULT_OP_COUNT)),
-            ("balanced", WorkloadDesign::balanced(DEFAULT_OP_COUNT)),
-            ("read-heavy", WorkloadDesign::read_heavy(DEFAULT_OP_COUNT)),
-        ];
+        let mut group = c.benchmark_group(format!("throughput-1-thread/{}", name));
+        group.warm_up_time(WARM_UP_TIME);
+        group.measurement_time(MEASUREMENT_TIME);
+        group.throughput(Throughput::Elements(DEFAULT_OP_COUNT as u64));
 
-        for &(name, design) in designs {
-            let workload = KeyDistribution::Uniform.thread_workload(
-                &design,
-                map_data.existing_keys(),
-                map_data.missing_keys(),
-                &mut rng,
-            );
-
-            let mut group = c.benchmark_group(format!(
-                "workload/{OUT_OF_THE_BOX_GROUP_NAME}/{}/map-size-{}/threads-1",
-                name,
-                format_n(entry_count),
-            ));
-            group.warm_up_time(WARM_UP_TIME);
-            group.measurement_time(MEASUREMENT_TIME);
-            group.throughput(Throughput::Elements(DEFAULT_OP_COUNT as u64));
-
-            expand_bench_concurrent!(bench, &mut group, &map_data, 1, &workload,
-                AhashBenchMap<u64, u64>,
-                BTreeMapBenchMap<u64, u64>,
-                // ConcreadBenchMap<u64, u64>, // too slow
-                ConcurrentMapBenchMap<u64, u64>,
-                CrossbeamSkiplistBenchMap<u64, u64>,
-                DashMapBenchMap<u64, u64>,
-                // FlurryBenchMap<u64, u64>, // too slow
-                HashbrownBenchMap<u64, u64>,
-                HashlinkBenchMap<u64, u64>,
-                HordeBenchMap<u64, u64>,
-                ImmutableChunkMapBenchMap<u64, u64>,
-                ImblBenchMap<u64, u64>,
-                IndexMapBenchMap<u64, u64>,
-                LeapfrogBenchMap<u64, u64>,
-                PapayaBenchMap<u64, u64>,
-                RpdsHashTrieMapBenchMap<u64, u64>,
-                RustCHashBenchMap<u64, u64>,
-                SccBenchMap<u64, u64>,
-                StarshardBenchMap<u64, u64>,
-                StdBenchMap<u64, u64>,
-                TxMapBenchMap<u64, u64>,
-            );
-        }
+        expand_bench_concurrent!(bench, &mut group, &map_data, 1, &workload,
+            AhashBenchMap<u64, u64>,
+            BTreeMapBenchMap<u64, u64>,
+            // ConcreadBenchMap<u64, u64>, // too slow
+            ConcurrentMapBenchMap<u64, u64>,
+            CrossbeamSkiplistBenchMap<u64, u64>,
+            DashMapBenchMap<u64, u64>,
+            // FlurryBenchMap<u64, u64>, // too slow
+            HashbrownBenchMap<u64, u64>,
+            HashlinkBenchMap<u64, u64>,
+            HordeBenchMap<u64, u64>,
+            ImmutableChunkMapBenchMap<u64, u64>,
+            ImblBenchMap<u64, u64>,
+            IndexMapBenchMap<u64, u64>,
+            LeapfrogBenchMap<u64, u64>,
+            PapayaBenchMap<u64, u64>,
+            RpdsHashTrieMapBenchMap<u64, u64>,
+            RustCHashBenchMap<u64, u64>,
+            SccBenchMap<u64, u64>,
+            StarshardBenchMap<u64, u64>,
+            StdBenchMap<u64, u64>,
+            TxMapBenchMap<u64, u64>,
+        );
     }
 }
 

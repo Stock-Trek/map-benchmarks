@@ -1,7 +1,7 @@
 // How does it handle synchronization? Tests locking/synchronization mechanisms when all threads hammer a single key under varying read/write mixes.
 use bench_map::{
-    concurrent_workers::ConcurrentWorkers, config::*, constants::*, expand_bench_concurrent,
-    map_data::MapData, maps::*,
+    concurrent_workers::ConcurrentWorkers, config::*, expand_bench_concurrent, map_data::MapData,
+    maps::*,
 };
 use criterion::{
     BatchSize, BenchmarkGroup, Criterion, Throughput, criterion_group, criterion_main,
@@ -130,8 +130,8 @@ fn synchronization(c: &mut Criterion) {
             .collect::<Vec<_>>();
 
         let mut group = c.benchmark_group(format!(
-            "synchronization/{OUT_OF_THE_BOX_GROUP_NAME}/{}/threads-{}",
-            name, DEFAULT_THREAD_COUNT
+            "synchronization-{DEFAULT_THREAD_COUNT}-threads/{}",
+            name
         ));
         group.warm_up_time(WARM_UP_TIME);
         group.measurement_time(MEASUREMENT_TIME);

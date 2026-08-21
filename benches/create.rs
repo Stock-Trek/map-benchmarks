@@ -1,5 +1,5 @@
 // What is the fixed cost of constructing a map? Tests the construction design, eager vs lazy allocation and per-map setup overhead such as sharding or reclamation infrastructure.
-use bench_map::{config::*, constants::*, expand_bench, maps::*};
+use bench_map::{config::*, expand_bench, maps::*};
 use criterion::{
     BenchmarkGroup, Criterion, Throughput, criterion_group, criterion_main, measurement::WallTime,
 };
@@ -19,7 +19,7 @@ where
 }
 
 fn create(c: &mut Criterion) {
-    let mut group = c.benchmark_group(format!("create/{OUT_OF_THE_BOX_GROUP_NAME}"));
+    let mut group = c.benchmark_group("create");
     group.warm_up_time(WARM_UP_TIME);
     group.measurement_time(MEASUREMENT_TIME);
     group.throughput(Throughput::Elements(DEFAULT_OP_COUNT as u64));

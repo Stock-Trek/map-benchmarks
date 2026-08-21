@@ -2,7 +2,6 @@
 use bench_map::{
     config::*, constants::*, data::u64_sparse::U64SparseDataGen, expand_bench_with_map_data,
     expand_bench_with_map_data_and_hasher, map_data::MapData, map_gen::MapGen, maps::*,
-    number_formatter::format_n,
 };
 use criterion::{
     BenchmarkGroup, Criterion, Throughput, criterion_group, criterion_main, measurement::WallTime,
@@ -68,10 +67,7 @@ fn lookup_hit(c: &mut Criterion) {
 
     // Each map uses its default hasher
     {
-        let mut group = c.benchmark_group(format!(
-            "lookup-hit/{OUT_OF_THE_BOX_GROUP_NAME}/map-size-{}",
-            format_n(entry_count)
-        ));
+        let mut group = c.benchmark_group(format!("lookup-hit/{OUT_OF_THE_BOX_GROUP_NAME}"));
         group.warm_up_time(WARM_UP_TIME);
         group.measurement_time(MEASUREMENT_TIME);
         group.throughput(Throughput::Elements(existing_key_count as u64));
@@ -104,10 +100,7 @@ fn lookup_hit(c: &mut Criterion) {
     // Every map that supports a custom hasher uses the same CommonHasher
     {
         let hasher = CommonHasher::new();
-        let mut group = c.benchmark_group(format!(
-            "lookup-hit/{SAME_HASHER_GROUP_NAME}/map-size-{}",
-            format_n(entry_count)
-        ));
+        let mut group = c.benchmark_group(format!("lookup-hit/{SAME_HASHER_GROUP_NAME}"));
         group.warm_up_time(WARM_UP_TIME);
         group.measurement_time(MEASUREMENT_TIME);
         group.throughput(Throughput::Elements(existing_key_count as u64));

@@ -85,7 +85,7 @@ fn growth(c: &mut Criterion) {
         // Each map uses its default hasher
         {
             let mut group = c.benchmark_group(format!(
-                "growth/{OUT_OF_THE_BOX_GROUP_NAME}/map-size-{}/threads-1",
+                "growth/map-size-{}/{OUT_OF_THE_BOX_GROUP_NAME}",
                 format_n(*missing_key_count)
             ));
             group.warm_up_time(WARM_UP_TIME);
@@ -121,7 +121,7 @@ fn growth(c: &mut Criterion) {
         {
             let hasher = CommonHasher::new();
             let mut group = c.benchmark_group(format!(
-                "growth/{SAME_HASHER_GROUP_NAME}/map-size-{}/threads-1",
+                "growth/map-size-{}/{SAME_HASHER_GROUP_NAME}",
                 format_n(*missing_key_count)
             ));
             group.warm_up_time(WARM_UP_TIME);
