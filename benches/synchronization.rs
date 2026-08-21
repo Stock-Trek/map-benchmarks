@@ -1,5 +1,6 @@
 use bench_map::{
-    concurrent_workers::ConcurrentWorkers, config::*, constants::*, map_data::MapData, maps::*,
+    concurrent_workers::ConcurrentWorkers, config::*, constants::*,
+    expand_bench_with_map_data_and_workload, map_data::MapData, maps::*,
 };
 use criterion::{
     BatchSize, BenchmarkGroup, Criterion, Throughput, criterion_group, criterion_main,
@@ -66,7 +67,6 @@ fn bench<Map>(
     name: &str,
     group: &mut BenchmarkGroup<WallTime>,
     map_data: &MapData<u64, u64>,
-    thread_count: usize,
     workloads: &[Vec<SyncOp>],
 ) where
     Map: BenchMapNew<u64, u64>
@@ -81,10 +81,11 @@ fn bench<Map>(
         // Spawn and pin the worker threads once per sample, outside the timed
         // region, so thread spawn/join and CPU-pinning costs are amortized
         // instead of being measured on every iteration.
-        let workers =
-            ConcurrentWorkers::<Vec<SyncOp>, Map>::new(thread_count, workloads, |ops, map| {
-                run_sync_workload(ops, map)
-            });
+        let workers = ConcurrentWorkers::<Vec<SyncOp>, Map>::new(
+            DEFAULT_THREAD_COUNT,
+            workloads,
+            |ops, map| run_sync_workload(ops, map),
+        );
         // 1-based index of the iteration about to be timed; used to derive the
         // cumulative `done` target for the worker pool.
         let iteration = Cell::new(0usize);
@@ -101,7 +102,7 @@ fn bench<Map>(
             |map| {
                 // Timed region: release the workers and wait for all of them
                 // to finish their workload.
-                let target = iteration.get() * thread_count;
+                let target = iteration.get() * DEFAULT_THREAD_COUNT;
                 workers.run(target);
                 map
             },
@@ -135,58 +136,28 @@ fn synchronization(c: &mut Criterion) {
         group.measurement_time(MEASUREMENT_TIME);
         group.throughput(Throughput::Elements(total_ops as u64));
 
-        // bench::<ConcreadBenchMap<u64, u64>>("concread", &mut group, &map_data, SYNC_THREAD_COUNT, &workloads); // too slow
-        // bench::<ConcurrentMapBenchMap<u64, u64>>("concurrent-map", &mut group, &map_data, SYNC_THREAD_COUNT, &workloads); // Send but not Sync; cannot share &ConcurrentMap across threads
-        bench::<CrossbeamSkiplistBenchMap<u64, u64>>(
-            "crossbeam-skiplist",
-            &mut group,
-            &map_data,
-            DEFAULT_THREAD_COUNT,
-            &workloads,
-        );
-        bench::<DashMapBenchMap<u64, u64>>(
-            "dashmap",
-            &mut group,
-            &map_data,
-            DEFAULT_THREAD_COUNT,
-            &workloads,
-        );
-        // bench::<FlurryBenchMap<u64, u64>>("flurry", &mut group, &map_data, SYNC_THREAD_COUNT, &workloads); // too slow
-        bench::<LeapfrogBenchMap<u64, u64>>(
-            "leapfrog",
-            &mut group,
-            &map_data,
-            DEFAULT_THREAD_COUNT,
-            &workloads,
-        );
-        bench::<PapayaBenchMap<u64, u64>>(
-            "papaya",
-            &mut group,
-            &map_data,
-            DEFAULT_THREAD_COUNT,
-            &workloads,
-        );
-        // bench::<RpdsHashTrieMapBenchMap<u64, u64>>("rpds-hash-trie-map", &mut group, &map_data, SYNC_THREAD_COUNT, &workloads); // mutation returns a new map; requires &mut or storing the result, cannot mutate through a shared reference (and the default Rc pointer is not Send/Sync)
-        bench::<SccBenchMap<u64, u64>>(
-            "scc",
-            &mut group,
-            &map_data,
-            DEFAULT_THREAD_COUNT,
-            &workloads,
-        );
-        bench::<StarshardBenchMap<u64, u64>>(
-            "starshard",
-            &mut group,
-            &map_data,
-            DEFAULT_THREAD_COUNT,
-            &workloads,
-        );
-        bench::<TxMapBenchMap<u64, u64>>(
-            "txmap",
-            &mut group,
-            &map_data,
-            DEFAULT_THREAD_COUNT,
-            &workloads,
+        expand_bench_with_map_data_and_workload!(bench, &mut group, &map_data, &workloads,
+            // AhashBenchMap<u64, u64>, // not concurrent
+            // BTreeMapBenchMap<u64, u64>, // not concurrent
+            // ConcreadBenchMap<u64, u64>, // too slow
+            // ConcurrentMapBenchMap<u64, u64>, // Send but not Sync; cannot share &ConcurrentMap across threads
+            CrossbeamSkiplistBenchMap<u64, u64>,
+            DashMapBenchMap<u64, u64>,
+            // FlurryBenchMap<u64, u64>, // too slow
+            // HashbrownBenchMap<u64, u64>, // not concurrent
+            // HashlinkBenchMap<u64, u64>, // mutation requires &mut, cannot mutate through a shared reference
+            // HordeBenchMap<u64, u64>, // mutation requires &mut, cannot mutate through a shared reference
+            // ImmutableChunkMapBenchMap<u64, u64>, // mutation returns a new map; requires &mut or storing the result, cannot mutate through a shared reference
+            // ImblBenchMap<u64, u64>, // mutation requires &mut, cannot mutate through a shared reference
+            // IndexMapBenchMap<u64, u64>, // not concurrent
+            LeapfrogBenchMap<u64, u64>,
+            PapayaBenchMap<u64, u64>,
+            // RpdsHashTrieMapBenchMap<u64, u64>, // mutation returns a new map; requires &mut or storing the result, cannot mutate through a shared reference (and the default Rc pointer is not Send/Sync)
+            // RustCHashBenchMap<u64, u64>, // not concurrent
+            SccBenchMap<u64, u64>,
+            StarshardBenchMap<u64, u64>,
+            // StdBenchMap<u64, u64>, // not concurrent
+            TxMapBenchMap<u64, u64>,
         );
     }
 }
