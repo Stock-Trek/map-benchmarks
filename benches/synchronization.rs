@@ -16,15 +16,16 @@ enum SyncOp {
     Write,
 }
 
-/// The five synchronization workloads: the fraction of operations that are
+/// The 6 synchronization workloads: the fraction of operations that are
 /// reads (lookups of the single key); the remainder are writes (inserts /
-/// updates of the same key). Every thread hammers the same key, so this
-/// measures worst-case contention on a single hot spot.
+/// updates of the same key). Every thread hammers the same key, so this measures
+/// how well the map can synchronize operations under the worst case scenario.
 const SYNC_WORKLOADS: &[(&str, f64)] = &[
     ("read-only", 1.0),
-    ("read-mostly", 0.75),
-    ("50-50", 0.50),
-    ("write-mostly", 0.25),
+    ("read-mostly", 0.80),
+    ("read-majority", 0.60),
+    ("write-majority", 0.40),
+    ("write-mostly", 0.20),
     ("write-only", 0.0),
 ];
 
