@@ -1,4 +1,5 @@
 pub mod ahash_benchmap;
+pub mod bench_macros;
 pub mod benchmap;
 pub mod btreemap_benchmap;
 pub mod concread_benchmap;
