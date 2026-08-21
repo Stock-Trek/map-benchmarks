@@ -63,11 +63,11 @@ where
 }
 
 fn bench<Map>(
+    name: &str,
     group: &mut BenchmarkGroup<WallTime>,
     map_data: &MapData<u64, u64>,
     thread_count: usize,
     workloads: &[Vec<SyncOp>],
-    name: &str,
 ) where
     Map: BenchMapNew<u64, u64>
         + BenchMapMutInsert<u64, u64>
@@ -135,58 +135,58 @@ fn synchronization(c: &mut Criterion) {
         group.measurement_time(MEASUREMENT_TIME);
         group.throughput(Throughput::Elements(total_ops as u64));
 
-        // bench::<ConcreadBenchMap<u64, u64>>(&mut group, &map_data, SYNC_THREAD_COUNT, &workloads, "concread"); // too slow
-        // bench::<ConcurrentMapBenchMap<u64, u64>>(&mut group, &map_data, SYNC_THREAD_COUNT, &workloads, "concurrent-map"); // Send but not Sync; cannot share &ConcurrentMap across threads
+        // bench::<ConcreadBenchMap<u64, u64>>("concread", &mut group, &map_data, SYNC_THREAD_COUNT, &workloads); // too slow
+        // bench::<ConcurrentMapBenchMap<u64, u64>>("concurrent-map", &mut group, &map_data, SYNC_THREAD_COUNT, &workloads); // Send but not Sync; cannot share &ConcurrentMap across threads
         bench::<CrossbeamSkiplistBenchMap<u64, u64>>(
+            "crossbeam-skiplist",
             &mut group,
             &map_data,
             DEFAULT_THREAD_COUNT,
             &workloads,
-            "crossbeam-skiplist",
         );
         bench::<DashMapBenchMap<u64, u64>>(
-            &mut group,
-            &map_data,
-            DEFAULT_THREAD_COUNT,
-            &workloads,
             "dashmap",
-        );
-        // bench::<FlurryBenchMap<u64, u64>>(&mut group, &map_data, SYNC_THREAD_COUNT, &workloads, "flurry"); // too slow
-        bench::<LeapfrogBenchMap<u64, u64>>(
             &mut group,
             &map_data,
             DEFAULT_THREAD_COUNT,
             &workloads,
+        );
+        // bench::<FlurryBenchMap<u64, u64>>("flurry", &mut group, &map_data, SYNC_THREAD_COUNT, &workloads); // too slow
+        bench::<LeapfrogBenchMap<u64, u64>>(
             "leapfrog",
+            &mut group,
+            &map_data,
+            DEFAULT_THREAD_COUNT,
+            &workloads,
         );
         bench::<PapayaBenchMap<u64, u64>>(
-            &mut group,
-            &map_data,
-            DEFAULT_THREAD_COUNT,
-            &workloads,
             "papaya",
-        );
-        // bench::<RpdsHashTrieMapBenchMap<u64, u64>>(&mut group, &map_data, SYNC_THREAD_COUNT, &workloads, "rpds-hash-trie-map"); // mutation returns a new map; requires &mut or storing the result, cannot mutate through a shared reference (and the default Rc pointer is not Send/Sync)
-        bench::<SccBenchMap<u64, u64>>(
             &mut group,
             &map_data,
             DEFAULT_THREAD_COUNT,
             &workloads,
+        );
+        // bench::<RpdsHashTrieMapBenchMap<u64, u64>>("rpds-hash-trie-map", &mut group, &map_data, SYNC_THREAD_COUNT, &workloads); // mutation returns a new map; requires &mut or storing the result, cannot mutate through a shared reference (and the default Rc pointer is not Send/Sync)
+        bench::<SccBenchMap<u64, u64>>(
             "scc",
+            &mut group,
+            &map_data,
+            DEFAULT_THREAD_COUNT,
+            &workloads,
         );
         bench::<StarshardBenchMap<u64, u64>>(
+            "starshard",
             &mut group,
             &map_data,
             DEFAULT_THREAD_COUNT,
             &workloads,
-            "starshard",
         );
         bench::<TxMapBenchMap<u64, u64>>(
+            "txmap",
             &mut group,
             &map_data,
             DEFAULT_THREAD_COUNT,
             &workloads,
-            "txmap",
         );
     }
 }

@@ -43,10 +43,10 @@ where
 }
 
 fn bench<Map>(
+    name: &str,
     group: &mut BenchmarkGroup<WallTime>,
     map_data: &MapData<u64, u64>,
     workload: &ThreadWorkload,
-    name: &str,
 ) where
     Map: BenchMapNew<u64, u64>
         + BenchMapMutInsert<u64, u64>
@@ -104,47 +104,47 @@ fn workload_serial(c: &mut Criterion) {
             group.measurement_time(MEASUREMENT_TIME);
             group.throughput(Throughput::Elements(DEFAULT_OP_COUNT as u64));
 
-            bench::<AhashBenchMap<u64, u64>>(&mut group, &map_data, &workload, "ahash");
-            bench::<BTreeMapBenchMap<u64, u64>>(&mut group, &map_data, &workload, "btreemap");
-            // bench::<ConcreadBenchMap<u64, u64>>(&mut group, &map_data, &workload, "concread"); // too slow
+            bench::<AhashBenchMap<u64, u64>>("ahash", &mut group, &map_data, &workload);
+            bench::<BTreeMapBenchMap<u64, u64>>("btreemap", &mut group, &map_data, &workload);
+            // bench::<ConcreadBenchMap<u64, u64>>("concread", &mut group, &map_data, &workload); // too slow
             bench::<ConcurrentMapBenchMap<u64, u64>>(
+                "concurrent-map",
                 &mut group,
                 &map_data,
                 &workload,
-                "concurrent-map",
             );
             bench::<CrossbeamSkiplistBenchMap<u64, u64>>(
-                &mut group,
-                &map_data,
-                &workload,
                 "crossbeam-skiplist",
+                &mut group,
+                &map_data,
+                &workload,
             );
-            bench::<DashMapBenchMap<u64, u64>>(&mut group, &map_data, &workload, "dashmap");
-            // bench::<FlurryBenchMap<u64, u64>>(&mut group, &map_data, &workload, "flurry"); // too slow
-            bench::<HashbrownBenchMap<u64, u64>>(&mut group, &map_data, &workload, "hashbrown");
-            bench::<HashlinkBenchMap<u64, u64>>(&mut group, &map_data, &workload, "hashlink");
-            bench::<HordeBenchMap<u64, u64>>(&mut group, &map_data, &workload, "horde");
+            bench::<DashMapBenchMap<u64, u64>>("dashmap", &mut group, &map_data, &workload);
+            // bench::<FlurryBenchMap<u64, u64>>("flurry", &mut group, &map_data, &workload); // too slow
+            bench::<HashbrownBenchMap<u64, u64>>("hashbrown", &mut group, &map_data, &workload);
+            bench::<HashlinkBenchMap<u64, u64>>("hashlink", &mut group, &map_data, &workload);
+            bench::<HordeBenchMap<u64, u64>>("horde", &mut group, &map_data, &workload);
             bench::<ImmutableChunkMapBenchMap<u64, u64>>(
-                &mut group,
-                &map_data,
-                &workload,
                 "immutable-chunkmap",
-            );
-            bench::<ImblBenchMap<u64, u64>>(&mut group, &map_data, &workload, "imbl");
-            bench::<IndexMapBenchMap<u64, u64>>(&mut group, &map_data, &workload, "indexmap");
-            bench::<LeapfrogBenchMap<u64, u64>>(&mut group, &map_data, &workload, "leapfrog");
-            bench::<PapayaBenchMap<u64, u64>>(&mut group, &map_data, &workload, "papaya");
-            bench::<RpdsHashTrieMapBenchMap<u64, u64>>(
                 &mut group,
                 &map_data,
                 &workload,
-                "rpds-hash-trie-map",
             );
-            bench::<RustCHashBenchMap<u64, u64>>(&mut group, &map_data, &workload, "rustc-hash");
-            bench::<SccBenchMap<u64, u64>>(&mut group, &map_data, &workload, "scc");
-            bench::<StarshardBenchMap<u64, u64>>(&mut group, &map_data, &workload, "starshard");
-            bench::<StdBenchMap<u64, u64>>(&mut group, &map_data, &workload, "std");
-            bench::<TxMapBenchMap<u64, u64>>(&mut group, &map_data, &workload, "txmap");
+            bench::<ImblBenchMap<u64, u64>>("imbl", &mut group, &map_data, &workload);
+            bench::<IndexMapBenchMap<u64, u64>>("indexmap", &mut group, &map_data, &workload);
+            bench::<LeapfrogBenchMap<u64, u64>>("leapfrog", &mut group, &map_data, &workload);
+            bench::<PapayaBenchMap<u64, u64>>("papaya", &mut group, &map_data, &workload);
+            bench::<RpdsHashTrieMapBenchMap<u64, u64>>(
+                "rpds-hash-trie-map",
+                &mut group,
+                &map_data,
+                &workload,
+            );
+            bench::<RustCHashBenchMap<u64, u64>>("rustc-hash", &mut group, &map_data, &workload);
+            bench::<SccBenchMap<u64, u64>>("scc", &mut group, &map_data, &workload);
+            bench::<StarshardBenchMap<u64, u64>>("starshard", &mut group, &map_data, &workload);
+            bench::<StdBenchMap<u64, u64>>("std", &mut group, &map_data, &workload);
+            bench::<TxMapBenchMap<u64, u64>>("txmap", &mut group, &map_data, &workload);
         }
     }
 }
