@@ -88,7 +88,7 @@ fn workload_serial(c: &mut Criterion) {
         ];
 
         for &(name, design) in designs {
-            let workload = KeyDistribution::Uniform.new(
+            let workload = KeyDistribution::Uniform.thread_workload(
                 &design,
                 map_data.existing_keys(),
                 map_data.missing_keys(),

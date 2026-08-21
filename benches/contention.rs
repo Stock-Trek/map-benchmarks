@@ -118,7 +118,7 @@ fn contention(c: &mut Criterion) {
         let total_ops = DEFAULT_THREAD_COUNT * DEFAULT_OP_COUNT;
         let workloads = (0..DEFAULT_THREAD_COUNT)
             .map(|_| {
-                key_distribution.new(
+                key_distribution.thread_workload(
                     &design,
                     map_data.existing_keys(),
                     map_data.missing_keys(),

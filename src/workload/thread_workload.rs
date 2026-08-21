@@ -35,7 +35,7 @@ impl std::fmt::Display for KeyDistribution {
 
 impl KeyDistribution {
     /// Builds a thread workload whose keys are drawn from the provided key slices
-    pub fn new(
+    pub fn thread_workload(
         &self,
         design: &WorkloadDesign,
         existing_keys: &[u64],

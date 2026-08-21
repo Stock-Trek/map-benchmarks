@@ -122,7 +122,7 @@ fn workload_concurrent(c: &mut Criterion) {
                 let total_ops = thread_count * DEFAULT_OP_COUNT;
                 let workloads = (0..thread_count)
                     .map(|_| {
-                        KeyDistribution::Uniform.new(
+                        KeyDistribution::Uniform.thread_workload(
                             &design,
                             map_data.existing_keys(),
                             map_data.missing_keys(),
