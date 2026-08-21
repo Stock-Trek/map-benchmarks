@@ -1,4 +1,4 @@
-// How sensitive is performance to the key type? Tests lookups with u64 and String keys of different lengths.
+// How much does the choice of key type matter? Tests hashing and key-handling design — the cost of hashing/comparing keys of different sizes relative to the map itself.
 use bench_map::{
     config::*,
     constants::*,

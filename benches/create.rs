@@ -1,4 +1,4 @@
-// How fast is it to create a new map? Tests constructing empty maps.
+// What is the fixed cost of constructing a map? Tests the construction design — eager vs lazy allocation and per-map setup overhead such as sharding or reclamation infrastructure.
 use bench_map::{config::*, constants::*, expand_bench, maps::*};
 use criterion::{
     BenchmarkGroup, Criterion, Throughput, criterion_group, criterion_main, measurement::WallTime,

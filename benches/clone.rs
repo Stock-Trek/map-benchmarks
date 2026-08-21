@@ -1,4 +1,4 @@
-// How fast is it to clone a map? Tests cloning a fully populated map and cloning-then-writing to the copy.
+// Can copies be made cheaply and written to independently? Tests copy semantics — whether the design uses structural sharing (persistent data structure) or deep-copies, and the copy-on-write cost of mutating a clone.
 use bench_map::{
     config::*, constants::*, data::u64_sparse::U64SparseDataGen, expand_bench_with_map_data,
     map_data::MapData, map_gen::MapGen, maps::*, number_formatter::format_n,

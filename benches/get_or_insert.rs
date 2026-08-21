@@ -1,4 +1,4 @@
-// How does it handle get-or-insert operations? Tests entry-style get-or-insert on both present and absent keys.
+// How well does it support the get-or-create pattern? Tests the entry/upsert design — atomic read-modify-write that avoids the lookup-then-insert race window.
 use bench_map::{
     config::*, constants::*, data::u64_sparse::U64SparseDataGen, expand_bench_with_map_data,
     expand_bench_with_map_data_and_hasher, map_data::MapData, map_gen::MapGen, maps::*,

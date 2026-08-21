@@ -1,4 +1,4 @@
-// How fast are insertions? Tests inserting new keys into a populated map.
+// How efficiently can it absorb new keys? Tests the write path — key placement and collision handling when inserting into an already-populated map.
 use bench_map::{
     config::*, constants::*, data::u64_sparse::U64SparseDataGen, expand_bench_with_map_data,
     expand_bench_with_map_data_and_hasher, map_data::MapData, map_gen::MapGen, maps::*,

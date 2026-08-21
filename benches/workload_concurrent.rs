@@ -1,4 +1,4 @@
-// How does it handle realistic concurrent workloads? Tests mixed read/write/remove workloads across multiple threads.
+// How does it behave under realistic concurrent use? Tests the end-to-end concurrency design — mixed read/write/remove workloads and how performance scales with thread count.
 use bench_map::{
     concurrent_workers::ConcurrentWorkers,
     config::*,

@@ -1,4 +1,4 @@
-// How does it handle realistic serial workloads? Tests mixed read/write/remove workloads in a single thread.
+// How does it perform on realistic single-threaded use? Tests the combined read/write/remove design — the interplay of all operations in one pass without concurrency overhead.
 use bench_map::{
     config::*,
     constants::*,
