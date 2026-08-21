@@ -6,7 +6,11 @@ use bench_map::{
     map_gen::MapGen,
     maps::*,
     number_formatter::format_n,
-    workload::{design::WorkloadDesign, op::WorkloadOp, thread_workload::ThreadWorkload},
+    workload::{
+        design::WorkloadDesign,
+        op::WorkloadOp,
+        thread_workload::{KeyDistribution, ThreadWorkload},
+    },
 };
 use criterion::{
     BatchSize, BenchmarkGroup, Criterion, Throughput, criterion_group, criterion_main,
@@ -87,7 +91,7 @@ fn workload_serial(c: &mut Criterion) {
         ];
 
         for &(name, design) in designs {
-            let workload = ThreadWorkload::new(
+            let workload = KeyDistribution::Uniform.new(
                 &design,
                 map_data.existing_keys(),
                 map_data.missing_keys(),
