@@ -1,7 +1,4 @@
-use crate::maps::benchmap::{
-    BenchMapClone, BenchMapGetCloned, BenchMapIter, BenchMapMutClear, BenchMapMutGetOrInsert,
-    BenchMapMutInsert, BenchMapMutRemove, BenchMapName, BenchMapNew, BenchMapNewWithHasher,
-};
+use crate::maps::*;
 use std::hash::{BuildHasher, Hash};
 
 pub struct HashlinkBenchMap<K, V, H = hashlink::DefaultHashBuilder> {

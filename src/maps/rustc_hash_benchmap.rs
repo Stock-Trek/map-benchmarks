@@ -1,7 +1,4 @@
-use crate::maps::benchmap::{
-    BenchMapClone, BenchMapGetCloned, BenchMapIter, BenchMapMutClear, BenchMapMutGetOrInsert,
-    BenchMapMutInsert, BenchMapMutRemove, BenchMapName, BenchMapNew,
-};
+use crate::maps::*;
 use std::hash::Hash;
 
 pub struct RustCHashBenchMap<K, V> {

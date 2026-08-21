@@ -1,7 +1,4 @@
-use crate::maps::benchmap::{
-    BenchMapClone, BenchMapGetCloned, BenchMapIter, BenchMapMutClear, BenchMapMutGetOrInsert,
-    BenchMapMutInsert, BenchMapMutRemove, BenchMapName, BenchMapNew, BenchMapNewWithHasher,
-};
+use crate::maps::*;
 use imbl::{hashmap::GenericHashMap, shared_ptr::DefaultSharedPtr};
 use std::{
     collections::hash_map::RandomState,

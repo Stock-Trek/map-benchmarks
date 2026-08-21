@@ -1,8 +1,4 @@
-use crate::maps::benchmap::{
-    BenchMapGetCloned, BenchMapGetOrInsert, BenchMapInsert, BenchMapIter, BenchMapMutClear,
-    BenchMapMutGetOrInsert, BenchMapMutInsert, BenchMapMutRemove, BenchMapName, BenchMapNew,
-    BenchMapRemove,
-};
+use crate::maps::*;
 use std::{fmt::Debug, hash::Hash};
 
 pub struct ConcreadBenchMap<K, V>

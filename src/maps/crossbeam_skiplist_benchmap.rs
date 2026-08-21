@@ -1,8 +1,4 @@
-use crate::maps::benchmap::{
-    BenchMapGetCloned, BenchMapGetOrInsert, BenchMapInsert, BenchMapIter, BenchMapMutClear,
-    BenchMapMutGetOrInsert, BenchMapMutInsert, BenchMapMutRemove, BenchMapName, BenchMapNew,
-    BenchMapRemove,
-};
+use crate::maps::*;
 
 pub struct CrossbeamSkiplistBenchMap<K, V> {
     map: crossbeam_skiplist::SkipMap<K, V>,

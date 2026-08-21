@@ -1,7 +1,4 @@
-use crate::maps::benchmap::{
-    BenchMapClone, BenchMapGetCloned, BenchMapIter, BenchMapMutGetOrInsert, BenchMapMutInsert,
-    BenchMapMutRemove, BenchMapName, BenchMapNew,
-};
+use crate::maps::*;
 
 pub struct ImmutableChunkMapBenchMap<K, V>
 where

@@ -1,4 +1,4 @@
-use crate::maps::{BenchMapMutInsert, BenchMapNew, BenchMapNewWithHasher};
+use crate::maps::*;
 use std::hash::{BuildHasher, Hash};
 
 pub struct MapData<K, V> {

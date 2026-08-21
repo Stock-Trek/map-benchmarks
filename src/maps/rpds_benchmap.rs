@@ -1,7 +1,4 @@
-use crate::maps::benchmap::{
-    BenchMapClone, BenchMapGetCloned, BenchMapIter, BenchMapMutGetOrInsert, BenchMapMutInsert,
-    BenchMapMutRemove, BenchMapName, BenchMapNew, BenchMapNewWithHasher,
-};
+use crate::maps::*;
 use rpds::HashTrieMap;
 use std::{
     collections::hash_map::RandomState,

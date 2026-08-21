@@ -1,8 +1,4 @@
-use crate::maps::benchmap::{
-    BenchMapGetCloned, BenchMapGetOrInsert, BenchMapInsert, BenchMapIter, BenchMapMutGetOrInsert,
-    BenchMapMutInsert, BenchMapMutRemove, BenchMapName, BenchMapNew, BenchMapNewWithHasher,
-    BenchMapRemove,
-};
+use crate::maps::*;
 use leapfrog::Value;
 use std::hash::{BuildHasher, Hash};
 

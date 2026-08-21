@@ -1,7 +1,4 @@
-use crate::maps::benchmap::{
-    BenchMapClone, BenchMapGetCloned, BenchMapIter, BenchMapMutClear, BenchMapMutGetOrInsert,
-    BenchMapMutInsert, BenchMapMutRemove, BenchMapName, BenchMapNew,
-};
+use crate::maps::*;
 use std::collections::btree_map;
 
 pub struct BTreeMapBenchMap<K, V> {
