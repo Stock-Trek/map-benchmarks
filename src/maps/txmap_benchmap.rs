@@ -1,8 +1,4 @@
-use crate::maps::benchmap::{
-    BenchMapClone, BenchMapGetCloned, BenchMapGetOrInsert, BenchMapInsert, BenchMapIter,
-    BenchMapMutClear, BenchMapMutGetOrInsert, BenchMapMutInsert, BenchMapMutRemove, BenchMapNew,
-    BenchMapNewWithHasher, BenchMapRemove,
-};
+use crate::maps::*;
 use std::hash::{BuildHasher, Hash};
 
 pub struct TxMapBenchMap<K, V, H = txmap::DefaultBuildHasher>
@@ -10,6 +6,13 @@ where
     H: BuildHasher,
 {
     map: txmap::TxMap<K, V, txmap::MutexPolicy, H>,
+}
+
+impl<K, V, H> BenchMapName for TxMapBenchMap<K, V, H>
+where
+    H: BuildHasher,
+{
+    const NAME: &'static str = "txmap";
 }
 
 impl<K, V, H> BenchMapNew<K, V> for TxMapBenchMap<K, V, H>

@@ -1,7 +1,4 @@
-use crate::maps::benchmap::{
-    BenchMapClone, BenchMapGetCloned, BenchMapGetOrInsert, BenchMapInsert, BenchMapIter,
-    BenchMapMutGetOrInsert, BenchMapMutInsert, BenchMapMutRemove, BenchMapNew, BenchMapRemove,
-};
+use crate::maps::*;
 use concurrent_map::{ConcurrentMap, Minimum};
 
 pub struct ConcurrentMapBenchMap<K, V>
@@ -10,6 +7,14 @@ where
     V: 'static + Clone + Send + Sync,
 {
     map: ConcurrentMap<K, V>,
+}
+
+impl<K, V> BenchMapName for ConcurrentMapBenchMap<K, V>
+where
+    K: 'static + Clone + Minimum + Send + Sync,
+    V: 'static + Clone + Send + Sync,
+{
+    const NAME: &'static str = "concurrent-map";
 }
 
 impl<K, V> BenchMapNew<K, V> for ConcurrentMapBenchMap<K, V>

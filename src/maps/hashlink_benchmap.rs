@@ -1,11 +1,12 @@
-use crate::maps::benchmap::{
-    BenchMapClone, BenchMapGetCloned, BenchMapIter, BenchMapMutClear, BenchMapMutGetOrInsert,
-    BenchMapMutInsert, BenchMapMutRemove, BenchMapNew, BenchMapNewWithHasher,
-};
+use crate::maps::*;
 use std::hash::{BuildHasher, Hash};
 
 pub struct HashlinkBenchMap<K, V, H = hashlink::DefaultHashBuilder> {
     map: hashlink::LinkedHashMap<K, V, H>,
+}
+
+impl<K, V, H> BenchMapName for HashlinkBenchMap<K, V, H> {
+    const NAME: &'static str = "hashlink";
 }
 
 impl<K, V, H> BenchMapNew<K, V> for HashlinkBenchMap<K, V, H>

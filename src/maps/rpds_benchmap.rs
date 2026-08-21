@@ -1,7 +1,4 @@
-use crate::maps::benchmap::{
-    BenchMapClone, BenchMapGetCloned, BenchMapIter, BenchMapMutGetOrInsert, BenchMapMutInsert,
-    BenchMapMutRemove, BenchMapNew, BenchMapNewWithHasher,
-};
+use crate::maps::*;
 use rpds::HashTrieMap;
 use std::{
     collections::hash_map::RandomState,
@@ -13,6 +10,13 @@ where
     H: BuildHasher,
 {
     map: HashTrieMap<K, V, archery::RcK, H>,
+}
+
+impl<K, V, H> BenchMapName for RpdsHashTrieMapBenchMap<K, V, H>
+where
+    H: BuildHasher,
+{
+    const NAME: &'static str = "rpds-hash-trie-map";
 }
 
 impl<K, V, H> BenchMapNew<K, V> for RpdsHashTrieMapBenchMap<K, V, H>

@@ -1,7 +1,4 @@
-use crate::maps::benchmap::{
-    BenchMapClone, BenchMapGetCloned, BenchMapIter, BenchMapMutClear, BenchMapMutGetOrInsert,
-    BenchMapMutInsert, BenchMapMutRemove, BenchMapNew, BenchMapNewWithHasher,
-};
+use crate::maps::*;
 use imbl::{hashmap::GenericHashMap, shared_ptr::DefaultSharedPtr};
 use std::{
     collections::hash_map::RandomState,
@@ -10,6 +7,10 @@ use std::{
 
 pub struct ImblBenchMap<K, V, H = RandomState> {
     map: GenericHashMap<K, V, H, DefaultSharedPtr>,
+}
+
+impl<K, V, H> BenchMapName for ImblBenchMap<K, V, H> {
+    const NAME: &'static str = "imbl";
 }
 
 impl<K, V, H> BenchMapNew<K, V> for ImblBenchMap<K, V, H>

@@ -1,8 +1,4 @@
-use crate::maps::benchmap::{
-    BenchMapClone, BenchMapGetCloned, BenchMapGetOrInsert, BenchMapInsert, BenchMapIter,
-    BenchMapMutClear, BenchMapMutGetOrInsert, BenchMapMutInsert, BenchMapMutRemove, BenchMapNew,
-    BenchMapNewWithHasher, BenchMapRemove,
-};
+use crate::maps::*;
 use std::{
     collections::hash_map::RandomState,
     hash::{BuildHasher, Hash},
@@ -13,6 +9,13 @@ where
     H: BuildHasher,
 {
     map: scc::HashMap<K, V, H>,
+}
+
+impl<K, V, H> BenchMapName for SccBenchMap<K, V, H>
+where
+    H: BuildHasher,
+{
+    const NAME: &'static str = "scc";
 }
 
 impl<K, V, H> BenchMapNew<K, V> for SccBenchMap<K, V, H>

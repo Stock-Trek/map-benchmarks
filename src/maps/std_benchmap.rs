@@ -1,7 +1,4 @@
-use crate::maps::benchmap::{
-    BenchMapClone, BenchMapGetCloned, BenchMapIter, BenchMapMutClear, BenchMapMutGetOrInsert,
-    BenchMapMutInsert, BenchMapMutRemove, BenchMapNew, BenchMapNewWithHasher,
-};
+use crate::maps::*;
 use std::{
     collections::{HashMap, hash_map::RandomState},
     hash::{BuildHasher, Hash},
@@ -9,6 +6,10 @@ use std::{
 
 pub struct StdBenchMap<K, V, H = RandomState> {
     map: HashMap<K, V, H>,
+}
+
+impl<K, V, H> BenchMapName for StdBenchMap<K, V, H> {
+    const NAME: &'static str = "std";
 }
 
 impl<K, V, H> BenchMapNew<K, V> for StdBenchMap<K, V, H>

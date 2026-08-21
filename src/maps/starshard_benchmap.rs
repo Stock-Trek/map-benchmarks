@@ -1,8 +1,4 @@
-use crate::maps::benchmap::{
-    BenchMapClone, BenchMapGetCloned, BenchMapGetOrInsert, BenchMapInsert, BenchMapIter,
-    BenchMapMutClear, BenchMapMutGetOrInsert, BenchMapMutInsert, BenchMapMutRemove, BenchMapNew,
-    BenchMapNewWithHasher, BenchMapRemove,
-};
+use crate::maps::*;
 use std::hash::{BuildHasher, Hash};
 
 pub struct StarshardBenchMap<K, V, H = rustc_hash::FxBuildHasher>
@@ -12,6 +8,15 @@ where
     H: BuildHasher + Clone + Send + Sync,
 {
     map: starshard::ShardedHashMap<K, V, H>,
+}
+
+impl<K, V, H> BenchMapName for StarshardBenchMap<K, V, H>
+where
+    K: Clone + Hash + Eq + Send + Sync,
+    V: Clone + Send + Sync,
+    H: BuildHasher + Clone + Send + Sync,
+{
+    const NAME: &'static str = "starshard";
 }
 
 impl<K, V, H> BenchMapNew<K, V> for StarshardBenchMap<K, V, H>
