@@ -29,15 +29,13 @@ pub const SYNC_OP_COUNT: usize = 10_000;
 pub const SYNC_KEY: u64 = 0;
 
 pub const CONTENTION_THREAD_COUNT: usize = 3;
-/// Number of keys in the contended working set: small enough that the three
-/// threads repeatedly hit the same keys (and hence the same buckets/slots),
-/// unlike the larger map sizes of the workload benchmarks.
-pub const CONTENTION_ENTRY_COUNT: usize = 1_000;
+/// Size of the dense key set held by the contention map: a compact range of
+/// consecutive keys, so the map data is the same for every contention test
+/// and only the query key distribution (uniform / Zipfian) varies. The set
+/// is large enough to exercise the hash table broadly while still letting
+/// the hot-key query distributions concentrate traffic on a small subset.
+pub const CONTENTION_ENTRY_COUNT: usize = 10_000;
 pub const CONTENTION_OP_COUNT: usize = 10_000;
-/// The Zipfian key space is `entry_count * CONTENTION_ZIPFIAN_KEY_SPACE_MULTIPLIER`,
-/// so the map holds the hottest `entry_count` keys of a larger domain while
-/// leaving room for a cold tail of missing keys.
-pub const CONTENTION_ZIPFIAN_KEY_SPACE_MULTIPLIER: usize = 2;
 
 pub const GET_OR_INSERT_EXISTING_KEY_COUNT: usize = 100;
 pub const GET_OR_INSERT_MISSING_KEY_COUNT: usize = 100;

@@ -2,7 +2,7 @@ use bench_map::{
     concurrent_workers::ConcurrentWorkers,
     config::*,
     constants::*,
-    data::{data_gen::DataGen, u64_sparse::U64SparseDataGen, u64_zipfian::U64ZipfianDataGen},
+    data::{u64_dense::U64DenseDataGen, u64_sparse::U64SparseDataGen},
     map_data::MapData,
     map_gen::MapGen,
     maps::*,
@@ -13,19 +13,7 @@ use criterion::{
     BatchSize, BenchmarkGroup, Criterion, Throughput, criterion_group, criterion_main,
     measurement::WallTime,
 };
-use hashbrown::HashSet;
 use std::{cell::Cell, hint::black_box, sync::Arc};
-
-/// The key distribution used to populate (and access) the map for one of the
-/// three contention tests. `SparseUniform` spreads keys across the full u64
-/// space with uniform access (low contention baseline); `Zipfian(exponent)`
-/// concentrates both the keys and the access pattern on a hot set, with
-/// higher exponents producing more extreme contention.
-#[derive(Clone, Copy)]
-enum KeyDistribution {
-    SparseUniform,
-    Zipfian(f64),
-}
 
 fn run_workload<M>(workload: &ThreadWorkload, map: &M)
 where
@@ -51,48 +39,20 @@ where
     }
 }
 
-/// Builds the map data for one contention test.
-///
-/// - `SparseUniform`: `entry_count` keys spread uniformly over the full u64
-///   space, so the hashes (and hence buckets/slots) of different keys rarely
-///   collide.
-/// - `Zipfian(exponent)`: the map holds the hottest `entry_count` keys of a
-///   Zipfian distribution over `entry_count * 2`, so the sorted existing-key
-///   slice ranks keys from hottest (index 0) to coldest (index len - 1) and
-///   the access pattern concentrates on a small hot set.
-fn generate_contention_map_data(
-    distribution: KeyDistribution,
-    entry_count: usize,
-    missing_key_count: usize,
-) -> MapData<u64, u64> {
-    match distribution {
-        KeyDistribution::SparseUniform => MapGen::generate(
-            U64SparseDataGen,
-            U64SparseDataGen,
-            entry_count,
-            entry_count,
-            missing_key_count,
-            true,
-        ),
-        KeyDistribution::Zipfian(exponent) => {
-            let key_space = entry_count * CONTENTION_ZIPFIAN_KEY_SPACE_MULTIPLIER;
-            let mut entry_keys = U64ZipfianDataGen::new(key_space as u64, exponent)
-                .generate(entry_count)
-                .into_iter()
-                .collect::<Vec<_>>();
-            entry_keys.sort_unstable();
-            let entry_set = entry_keys.iter().copied().collect::<HashSet<_>>();
-            let mut missing_keys = U64SparseDataGen
-                .generate_avoiding(missing_key_count, &entry_set)
-                .into_iter()
-                .collect::<Vec<_>>();
-            missing_keys.sort_unstable();
-
-            let values = U64SparseDataGen.generate(entry_count);
-            let entries = entry_keys.iter().copied().zip(values).collect();
-            MapData::new(entries, entry_keys, missing_keys)
-        }
-    }
+/// Builds the map data used by every contention test: a dense set of
+/// `entry_count` consecutive u64 keys (a compact addressable range), so all
+/// three tests measure contention on the same table shape. The query key
+/// distributions (uniform / Zipfian) are drawn from this dense key set when
+/// the per-thread workloads are generated, not from the map population itself.
+fn generate_contention_map_data(entry_count: usize, missing_key_count: usize) -> MapData<u64, u64> {
+    MapGen::generate(
+        U64DenseDataGen,
+        U64SparseDataGen,
+        entry_count,
+        entry_count,
+        missing_key_count,
+        true,
+    )
 }
 
 fn bench<Map>(
@@ -150,28 +110,31 @@ fn bench<Map>(
 fn contention(c: &mut Criterion) {
     let design = WorkloadDesign::contention(CONTENTION_OP_COUNT);
     let missing_key_count = CONTENTION_THREAD_COUNT * CONTENTION_OP_COUNT;
+    let map_data = generate_contention_map_data(CONTENTION_ENTRY_COUNT, missing_key_count);
 
-    let tests: &[(&str, KeyDistribution)] = &[
-        ("sparse-uniform", KeyDistribution::SparseUniform),
-        ("zipfian-exp-1", KeyDistribution::Zipfian(1.0)),
-        ("zipfian-exp-2", KeyDistribution::Zipfian(2.0)),
+    // The three query key distributions, all drawn from the dense map key set:
+    // `None` selects keys uniformly (the low-contention baseline), while
+    // `Some(exponent)` selects keys from a Zipfian distribution with that
+    // exponent, with higher exponents concentrating more traffic on the
+    // hottest keys.
+    let tests: &[(&str, Option<f64>)] = &[
+        ("uniform", None),
+        ("zipfian-exp-1", Some(1.0)),
+        ("zipfian-exp-2", Some(2.0)),
     ];
 
-    for &(name, distribution) in tests {
-        let map_data =
-            generate_contention_map_data(distribution, CONTENTION_ENTRY_COUNT, missing_key_count);
-
+    for &(name, zipfian_exponent) in tests {
         let mut rng = rand::rng();
         let total_ops = CONTENTION_THREAD_COUNT * CONTENTION_OP_COUNT;
         let workloads = (0..CONTENTION_THREAD_COUNT)
-            .map(|_| match distribution {
-                KeyDistribution::SparseUniform => ThreadWorkload::new(
+            .map(|_| match zipfian_exponent {
+                None => ThreadWorkload::new(
                     &design,
                     map_data.existing_keys(),
                     map_data.missing_keys(),
                     &mut rng,
                 ),
-                KeyDistribution::Zipfian(exponent) => ThreadWorkload::new_zipfian(
+                Some(exponent) => ThreadWorkload::new_zipfian(
                     &design,
                     map_data.existing_keys(),
                     map_data.missing_keys(),
