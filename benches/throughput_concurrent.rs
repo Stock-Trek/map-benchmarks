@@ -96,7 +96,7 @@ fn bench<Map>(
     });
 }
 
-fn workload_concurrent(c: &mut Criterion) {
+fn throughput_concurrent(c: &mut Criterion) {
     let max_threads = DEFAULT_THREAD_COUNTS.last().unwrap();
     for &entry_count in DEFAULT_ENTRY_COUNTS {
         let existing_key_count = entry_count;
@@ -210,5 +210,5 @@ fn workload_concurrent(c: &mut Criterion) {
     }
 }
 
-criterion_group!(group, workload_concurrent);
+criterion_group!(group, throughput_concurrent);
 criterion_main!(group);

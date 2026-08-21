@@ -66,7 +66,7 @@ fn bench<Map>(
     });
 }
 
-fn workload_serial(c: &mut Criterion) {
+fn throughput_serial(c: &mut Criterion) {
     let missing_key_count = DEFAULT_OP_COUNT;
     let sort_keys = false;
 
@@ -133,5 +133,5 @@ fn workload_serial(c: &mut Criterion) {
     }
 }
 
-criterion_group!(group, workload_serial);
+criterion_group!(group, throughput_serial);
 criterion_main!(group);
