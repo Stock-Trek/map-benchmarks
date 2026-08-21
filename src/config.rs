@@ -12,7 +12,7 @@ pub const KEY_SENSITIVITY_ENTRY_COUNT: usize = 10_000;
 pub const WORKLOAD_ENTRY_COUNT: &[usize] = &[1_000, 10_000, 100_000];
 pub const WORKLOAD_OP_COUNT: usize = 10_000;
 pub const WORKLOAD_MISSING_KEY_COUNT: usize = 10_000;
-pub const WORKLOAD_CONCURRENT_THREAD_COUNTS: &[usize] = &[2, 3, 4];
+pub const WORKLOAD_CONCURRENT_THREAD_COUNTS: &[usize] = &[2, 3];
 /// Skew exponent `s` of the Zipfian (hot-key) workload: larger values
 /// concentrate more accesses on the hottest keys (`s = 0` is uniform).
 /// `s = 1.0` is classic Zipf's law, the standard model for real-world
