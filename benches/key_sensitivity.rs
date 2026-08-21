@@ -2,6 +2,7 @@ use bench_map::{
     config::*,
     constants::*,
     data::{string::StringDataGen, u64_sparse::U64SparseDataGen},
+    expand_bench_with_kv_map_data_and_hasher,
     map_data::MapData,
     map_gen::MapGen,
     maps::*,
@@ -45,6 +46,7 @@ fn key_sensitivity(c: &mut Criterion) {
     let sort_keys = false;
     // u64 keys
     {
+        let hasher = CommonHasher::new();
         let map_data = MapGen::generate(
             U64SparseDataGen,
             U64SparseDataGen,
@@ -60,100 +62,33 @@ fn key_sensitivity(c: &mut Criterion) {
         group.measurement_time(MEASUREMENT_TIME);
         group.throughput(Throughput::Elements(existing_key_count));
 
-        let hasher = CommonHasher::new();
-        bench::<AhashBenchMap<u64, u64, CommonHasher>, u64, u64>(
-            "ahash",
-            &mut group,
-            &map_data,
-            hasher.clone(),
-        );
-        // bench::<BTreeMapBenchMap<u64, u64, CommonHasher>, u64, u64>("btreemap", &mut group, &map_data); // doesn't allow setting hasher
-        // bench::<ConcreadBenchMap<u64, u64, CommonHasher>, u64, u64>("concread", &mut group, &map_data); // doesn't allow setting hasher
-        // bench::<ConcurrentMapBenchMap<u64, u64>, u64, u64>("concurrent-map", &mut group, &map_data); // doesn't allow setting hasher
-        bench::<DashMapBenchMap<u64, u64, CommonHasher>, u64, u64>(
-            "dashmap",
-            &mut group,
-            &map_data,
-            hasher.clone(),
-        );
-        // bench::<FlurryBenchMap<u64, u64, CommonHasher>, u64, u64>("flurry", &mut group, &map_data, hasher.clone()); // too slow
-        bench::<HashbrownBenchMap<u64, u64, CommonHasher>, u64, u64>(
-            "hashbrown",
-            &mut group,
-            &map_data,
-            hasher.clone(),
-        );
-        bench::<HashlinkBenchMap<u64, u64, CommonHasher>, u64, u64>(
-            "hashlink",
-            &mut group,
-            &map_data,
-            hasher.clone(),
-        );
-        bench::<HordeBenchMap<u64, u64, CommonHasher>, u64, u64>(
-            "horde",
-            &mut group,
-            &map_data,
-            hasher.clone(),
-        );
-        // bench::<ImmutableChunkMapBenchMap<u64, u64, CommonHasher>, u64, u64>("immutable-chunkmap", &mut group, &map_data); // doesn't allow setting hasher
-        bench::<ImblBenchMap<u64, u64, CommonHasher>, u64, u64>(
-            "imbl",
-            &mut group,
-            &map_data,
-            hasher.clone(),
-        );
-        bench::<IndexMapBenchMap<u64, u64, CommonHasher>, u64, u64>(
-            "indexmap",
-            &mut group,
-            &map_data,
-            hasher.clone(),
-        );
-        bench::<LeapfrogBenchMap<u64, u64, CommonHasher>, u64, u64>(
-            "leapfrog",
-            &mut group,
-            &map_data,
-            hasher.clone(),
-        );
-        bench::<PapayaBenchMap<u64, u64, CommonHasher>, u64, u64>(
-            "papaya",
-            &mut group,
-            &map_data,
-            hasher.clone(),
-        );
-        bench::<RpdsHashTrieMapBenchMap<u64, u64, CommonHasher>, u64, u64>(
-            "rpds-hash-trie-map",
-            &mut group,
-            &map_data,
-            hasher.clone(),
-        );
-        // bench::<RustCHashBenchMap<u64, u64, CommonHasher>, u64, u64>("rustc-hash", &mut group, &map_data); // doesn't allow setting hasher
-        bench::<SccBenchMap<u64, u64, CommonHasher>, u64, u64>(
-            "scc",
-            &mut group,
-            &map_data,
-            hasher.clone(),
-        );
-        bench::<StarshardBenchMap<u64, u64, CommonHasher>, u64, u64>(
-            "starshard",
-            &mut group,
-            &map_data,
-            hasher.clone(),
-        );
-        bench::<StdBenchMap<u64, u64, CommonHasher>, u64, u64>(
-            "std",
-            &mut group,
-            &map_data,
-            hasher.clone(),
-        );
-        bench::<TxMapBenchMap<u64, u64, CommonHasher>, u64, u64>(
-            "txmap",
-            &mut group,
-            &map_data,
-            hasher.clone(),
+        expand_bench_with_kv_map_data_and_hasher!(bench, u64, u64, &mut group, &map_data, &hasher,
+            AhashBenchMap<u64, u64, CommonHasher>,
+            // BTreeMapBenchMap<u64, u64, CommonHasher>, // doesn't allow setting hasher
+            // ConcreadBenchMap<u64, u64, CommonHasher>, // too slow
+            // ConcurrentMapBenchMap<u64, u64, CommonHasher>, // doesn't allow setting hasher
+            // CrossbeamSkiplistBenchMap<u64, u64, CommonHasher>, // doesn't allow setting hasher
+            DashMapBenchMap<u64, u64, CommonHasher>,
+            // FlurryBenchMap<u64, u64, CommonHasher>, // too slow
+            HashbrownBenchMap<u64, u64, CommonHasher>,
+            HashlinkBenchMap<u64, u64, CommonHasher>,
+            HordeBenchMap<u64, u64, CommonHasher>,
+            // ImmutableChunkMapBenchMap<u64, u64, CommonHasher>, // doesn't allow setting hasher
+            ImblBenchMap<u64, u64, CommonHasher>,
+            IndexMapBenchMap<u64, u64, CommonHasher>,
+            LeapfrogBenchMap<u64, u64, CommonHasher>,
+            PapayaBenchMap<u64, u64, CommonHasher>,
+            RpdsHashTrieMapBenchMap<u64, u64, CommonHasher>,
+            // RustCHashBenchMap<u64, u64, CommonHasher>, // doesn't allow setting hasher
+            SccBenchMap<u64, u64, CommonHasher>,
+            StarshardBenchMap<u64, u64, CommonHasher>,
+            StdBenchMap<u64, u64, CommonHasher>,
+            TxMapBenchMap<u64, u64, CommonHasher>,
         );
     }
     // String<16> keys
     {
+        let hasher = CommonHasher::new();
         let map_data = Rc::new(MapGen::generate(
             StringDataGen::<16>,
             U64SparseDataGen,
@@ -169,95 +104,33 @@ fn key_sensitivity(c: &mut Criterion) {
         group.measurement_time(MEASUREMENT_TIME);
         group.throughput(Throughput::Elements(existing_key_count));
 
-        let hasher = CommonHasher::new();
-        bench::<AhashBenchMap<String, u64, CommonHasher>, String, u64>(
-            "ahash",
-            &mut group,
-            &map_data,
-            hasher.clone(),
-        );
-        // bench::<BTreeMapBenchMap<String, u64, CommonHasher>, String, u64>("btreemap", &mut group, &map_data); // doesn't allow setting hasher
-        // bench::<ConcreadBenchMap<String, u64, CommonHasher>, String, u64>("concread", &mut group, &map_data); // doesn't allow setting hasher
-        // bench::<ConcurrentMapBenchMap<String, u64>, String, u64>("concurrent-map", &mut group, &map_data); // doesn't allow setting hasher
-        bench::<DashMapBenchMap<String, u64, CommonHasher>, String, u64>(
-            "dashmap",
-            &mut group,
-            &map_data,
-            hasher.clone(),
-        );
-        // bench::<FlurryBenchMap<String, u64, CommonHasher>, String, u64>("flurry", &mut group, &map_data, hasher.clone()); // too slow
-        bench::<HashbrownBenchMap<String, u64, CommonHasher>, String, u64>(
-            "hashbrown",
-            &mut group,
-            &map_data,
-            hasher.clone(),
-        );
-        bench::<HashlinkBenchMap<String, u64, CommonHasher>, String, u64>(
-            "hashlink",
-            &mut group,
-            &map_data,
-            hasher.clone(),
-        );
-        bench::<HordeBenchMap<String, u64, CommonHasher>, String, u64>(
-            "horde",
-            &mut group,
-            &map_data,
-            hasher.clone(),
-        );
-        // bench::<ImmutableChunkMapBenchMap<String, u64, CommonHasher>, String, u64>("immutable-chunkmap", &mut group, &map_data); // doesn't allow setting hasher
-        // bench::<LeapfrogBenchMap<String, u64, CommonHasher>, String, u64>("leapfrog", &mut group, &map_data, hasher.clone()); // keys must be Copy
-        bench::<ImblBenchMap<String, u64, CommonHasher>, String, u64>(
-            "imbl",
-            &mut group,
-            &map_data,
-            hasher.clone(),
-        );
-        bench::<IndexMapBenchMap<String, u64, CommonHasher>, String, u64>(
-            "indexmap",
-            &mut group,
-            &map_data,
-            hasher.clone(),
-        );
-        bench::<PapayaBenchMap<String, u64, CommonHasher>, String, u64>(
-            "papaya",
-            &mut group,
-            &map_data,
-            hasher.clone(),
-        );
-        bench::<RpdsHashTrieMapBenchMap<String, u64, CommonHasher>, String, u64>(
-            "rpds-hash-trie-map",
-            &mut group,
-            &map_data,
-            hasher.clone(),
-        );
-        // bench::<RustCHashBenchMap<String, u64, CommonHasher>, String, u64>("rustc-hash", &mut group, &map_data); // doesn't allow setting hasher
-        bench::<SccBenchMap<String, u64, CommonHasher>, String, u64>(
-            "scc",
-            &mut group,
-            &map_data,
-            hasher.clone(),
-        );
-        bench::<StarshardBenchMap<String, u64, CommonHasher>, String, u64>(
-            "starshard",
-            &mut group,
-            &map_data,
-            hasher.clone(),
-        );
-        bench::<StdBenchMap<String, u64, CommonHasher>, String, u64>(
-            "std",
-            &mut group,
-            &map_data,
-            hasher.clone(),
-        );
-        bench::<TxMapBenchMap<String, u64, CommonHasher>, String, u64>(
-            "txmap",
-            &mut group,
-            &map_data,
-            hasher.clone(),
+        expand_bench_with_kv_map_data_and_hasher!(bench, String, u64, &mut group, &map_data, &hasher,
+            AhashBenchMap<String, u64, CommonHasher>,
+            // BTreeMapBenchMap<String, u64, CommonHasher>, // doesn't allow setting hasher
+            // ConcreadBenchMap<String, u64, CommonHasher>, // too slow
+            // ConcurrentMapBenchMap<String, u64, CommonHasher>, // doesn't allow setting hasher
+            // CrossbeamSkiplistBenchMap<String, u64, CommonHasher>, // doesn't allow setting hasher
+            DashMapBenchMap<String, u64, CommonHasher>,
+            // FlurryBenchMap<String, u64, CommonHasher>, // too slow
+            HashbrownBenchMap<String, u64, CommonHasher>,
+            HashlinkBenchMap<String, u64, CommonHasher>,
+            HordeBenchMap<String, u64, CommonHasher>,
+            // ImmutableChunkMapBenchMap<String, u64, CommonHasher>, // doesn't allow setting hasher
+            ImblBenchMap<String, u64, CommonHasher>,
+            IndexMapBenchMap<String, u64, CommonHasher>,
+            // LeapfrogBenchMap<String, u64, CommonHasher>, // keys must be Copy
+            PapayaBenchMap<String, u64, CommonHasher>,
+            RpdsHashTrieMapBenchMap<String, u64, CommonHasher>,
+            // RustCHashBenchMap<String, u64, CommonHasher>, // doesn't allow setting hasher
+            SccBenchMap<String, u64, CommonHasher>,
+            StarshardBenchMap<String, u64, CommonHasher>,
+            StdBenchMap<String, u64, CommonHasher>,
+            TxMapBenchMap<String, u64, CommonHasher>,
         );
     }
     // String<128> keys
     {
+        let hasher = CommonHasher::new();
         let map_data = Rc::new(MapGen::generate(
             StringDataGen::<128>,
             U64SparseDataGen,
@@ -273,91 +146,28 @@ fn key_sensitivity(c: &mut Criterion) {
         group.measurement_time(MEASUREMENT_TIME);
         group.throughput(Throughput::Elements(existing_key_count));
 
-        let hasher = CommonHasher::new();
-        bench::<AhashBenchMap<String, u64, CommonHasher>, String, u64>(
-            "ahash",
-            &mut group,
-            &map_data,
-            hasher.clone(),
-        );
-        // bench::<BTreeMapBenchMap<String, u64, CommonHasher>, String, u64>("btreemap", &mut group, &map_data); // doesn't allow setting hasher
-        // bench::<ConcreadBenchMap<String, u64, CommonHasher>, String, u64>("concread", &mut group, &map_data); // doesn't allow setting hasher
-        // bench::<ConcurrentMapBenchMap<String, u64>, String, u64>("concurrent-map", &mut group, &map_data); // doesn't allow setting hasher
-        bench::<DashMapBenchMap<String, u64, CommonHasher>, String, u64>(
-            "dashmap",
-            &mut group,
-            &map_data,
-            hasher.clone(),
-        );
-        // bench::<FlurryBenchMap<String, u64, CommonHasher>, String, u64>("flurry", &mut group, &map_data, hasher.clone()); // too slow
-        bench::<HashbrownBenchMap<String, u64, CommonHasher>, String, u64>(
-            "hashbrown",
-            &mut group,
-            &map_data,
-            hasher.clone(),
-        );
-        bench::<HashlinkBenchMap<String, u64, CommonHasher>, String, u64>(
-            "hashlink",
-            &mut group,
-            &map_data,
-            hasher.clone(),
-        );
-        bench::<HordeBenchMap<String, u64, CommonHasher>, String, u64>(
-            "horde",
-            &mut group,
-            &map_data,
-            hasher.clone(),
-        );
-        // bench::<ImmutableChunkMapBenchMap<String, u64, CommonHasher>, String, u64>("immutable-chunkmap", &mut group, &map_data); // doesn't allow setting hasher
-        bench::<ImblBenchMap<String, u64, CommonHasher>, String, u64>(
-            "imbl",
-            &mut group,
-            &map_data,
-            hasher.clone(),
-        );
-        bench::<IndexMapBenchMap<String, u64, CommonHasher>, String, u64>(
-            "indexmap",
-            &mut group,
-            &map_data,
-            hasher.clone(),
-        );
-        // bench::<LeapfrogBenchMap<String, u64, CommonHasher>, String, u64>("leapfrog", &mut group, &map_data, hasher.clone()); // keys must be Copy
-        bench::<PapayaBenchMap<String, u64, CommonHasher>, String, u64>(
-            "papaya",
-            &mut group,
-            &map_data,
-            hasher.clone(),
-        );
-        bench::<RpdsHashTrieMapBenchMap<String, u64, CommonHasher>, String, u64>(
-            "rpds-hash-trie-map",
-            &mut group,
-            &map_data,
-            hasher.clone(),
-        );
-        // bench::<RustCHashBenchMap<String, u64, CommonHasher>, String, u64>("rustc-hash", &mut group, &map_data); // doesn't allow setting hasher
-        bench::<SccBenchMap<String, u64, CommonHasher>, String, u64>(
-            "scc",
-            &mut group,
-            &map_data,
-            hasher.clone(),
-        );
-        bench::<StarshardBenchMap<String, u64, CommonHasher>, String, u64>(
-            "starshard",
-            &mut group,
-            &map_data,
-            hasher.clone(),
-        );
-        bench::<StdBenchMap<String, u64, CommonHasher>, String, u64>(
-            "std",
-            &mut group,
-            &map_data,
-            hasher.clone(),
-        );
-        bench::<TxMapBenchMap<String, u64, CommonHasher>, String, u64>(
-            "txmap",
-            &mut group,
-            &map_data,
-            hasher.clone(),
+        expand_bench_with_kv_map_data_and_hasher!(bench, String, u64, &mut group, &map_data, &hasher,
+            AhashBenchMap<String, u64, CommonHasher>,
+            // BTreeMapBenchMap<String, u64, CommonHasher>, // doesn't allow setting hasher
+            // ConcreadBenchMap<String, u64, CommonHasher>, // too slow
+            // ConcurrentMapBenchMap<String, u64, CommonHasher>, // doesn't allow setting hasher
+            // CrossbeamSkiplistBenchMap<String, u64, CommonHasher>, // doesn't allow setting hasher
+            DashMapBenchMap<String, u64, CommonHasher>,
+            // FlurryBenchMap<String, u64, CommonHasher>, // too slow
+            HashbrownBenchMap<String, u64, CommonHasher>,
+            HashlinkBenchMap<String, u64, CommonHasher>,
+            HordeBenchMap<String, u64, CommonHasher>,
+            // ImmutableChunkMapBenchMap<String, u64, CommonHasher>, // doesn't allow setting hasher
+            ImblBenchMap<String, u64, CommonHasher>,
+            IndexMapBenchMap<String, u64, CommonHasher>,
+            // LeapfrogBenchMap<String, u64, CommonHasher>, // keys must be Copy
+            PapayaBenchMap<String, u64, CommonHasher>,
+            RpdsHashTrieMapBenchMap<String, u64, CommonHasher>,
+            // RustCHashBenchMap<String, u64, CommonHasher>, // doesn't allow setting hasher
+            SccBenchMap<String, u64, CommonHasher>,
+            StarshardBenchMap<String, u64, CommonHasher>,
+            StdBenchMap<String, u64, CommonHasher>,
+            TxMapBenchMap<String, u64, CommonHasher>,
         );
     }
 }
