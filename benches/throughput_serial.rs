@@ -3,7 +3,7 @@ use bench_map::{
     config::*,
     constants::*,
     data::u64_sparse::U64SparseDataGen,
-    expand_bench_with_map_data_and_workload,
+    expand_bench_concurrent,
     map_data::MapData,
     map_gen::MapGen,
     maps::*,
@@ -48,6 +48,7 @@ fn bench<Map>(
     name: &str,
     group: &mut BenchmarkGroup<WallTime>,
     map_data: &MapData<u64, u64>,
+    _thread_count_1: usize,
     workload: &ThreadWorkload,
 ) where
     Map: BenchMapNew<u64, u64>
@@ -106,7 +107,7 @@ fn throughput_serial(c: &mut Criterion) {
             group.measurement_time(MEASUREMENT_TIME);
             group.throughput(Throughput::Elements(DEFAULT_OP_COUNT as u64));
 
-            expand_bench_with_map_data_and_workload!(bench, &mut group, &map_data, &workload,
+            expand_bench_concurrent!(bench, &mut group, &map_data, 1, &workload,
                 AhashBenchMap<u64, u64>,
                 BTreeMapBenchMap<u64, u64>,
                 // ConcreadBenchMap<u64, u64>, // too slow

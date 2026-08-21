@@ -4,7 +4,7 @@ use bench_map::{
     config::*,
     constants::*,
     data::{u64_dense::U64DenseDataGen, u64_sparse::U64SparseDataGen},
-    expand_bench_with_map_data_and_workload,
+    expand_bench_concurrent,
     map_data::MapData,
     map_gen::MapGen,
     maps::*,
@@ -49,6 +49,7 @@ fn bench<Map>(
     name: &str,
     group: &mut BenchmarkGroup<WallTime>,
     map_data: &MapData<u64, u64>,
+    thread_count: usize,
     workloads: &[ThreadWorkload],
 ) where
     Map: BenchMapNew<u64, u64>
@@ -65,7 +66,7 @@ fn bench<Map>(
         // region, so thread spawn/join and CPU-pinning costs are amortized
         // instead of being measured on every iteration.
         let workers = ConcurrentWorkers::<ThreadWorkload, Map>::new(
-            DEFAULT_THREAD_COUNT,
+            thread_count,
             workloads,
             |workload, map| run_workload(workload, map),
         );
@@ -85,7 +86,7 @@ fn bench<Map>(
             |map| {
                 // Timed region: release the workers and wait for all of them
                 // to finish their workload.
-                let target = iteration.get() * DEFAULT_THREAD_COUNT;
+                let target = iteration.get() * thread_count;
                 workers.run(target);
                 map
             },
@@ -138,7 +139,7 @@ fn contention(c: &mut Criterion) {
         group.measurement_time(MEASUREMENT_TIME);
         group.throughput(Throughput::Elements(total_ops as u64));
 
-        expand_bench_with_map_data_and_workload!(bench, &mut group, &map_data, &workloads,
+        expand_bench_concurrent!(bench, &mut group, &map_data, DEFAULT_THREAD_COUNT, &workloads,
             // AhashBenchMap<u64, u64>, // not concurrent
             // BTreeMapBenchMap<u64, u64>, // not concurrent
             // ConcreadBenchMap<u64, u64>, // too slow

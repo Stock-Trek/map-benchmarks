@@ -1,7 +1,7 @@
 // How does it handle synchronization? Tests locking/synchronization mechanisms when all threads hammer a single key under varying read/write mixes.
 use bench_map::{
-    concurrent_workers::ConcurrentWorkers, config::*, constants::*,
-    expand_bench_with_map_data_and_workload, map_data::MapData, maps::*,
+    concurrent_workers::ConcurrentWorkers, config::*, constants::*, expand_bench_concurrent,
+    map_data::MapData, maps::*,
 };
 use criterion::{
     BatchSize, BenchmarkGroup, Criterion, Throughput, criterion_group, criterion_main,
@@ -68,6 +68,7 @@ fn bench<Map>(
     name: &str,
     group: &mut BenchmarkGroup<WallTime>,
     map_data: &MapData<u64, u64>,
+    thread_count: usize,
     workloads: &[Vec<SyncOp>],
 ) where
     Map: BenchMapNew<u64, u64>
@@ -82,11 +83,10 @@ fn bench<Map>(
         // Spawn and pin the worker threads once per sample, outside the timed
         // region, so thread spawn/join and CPU-pinning costs are amortized
         // instead of being measured on every iteration.
-        let workers = ConcurrentWorkers::<Vec<SyncOp>, Map>::new(
-            DEFAULT_THREAD_COUNT,
-            workloads,
-            |ops, map| run_sync_workload(ops, map),
-        );
+        let workers =
+            ConcurrentWorkers::<Vec<SyncOp>, Map>::new(thread_count, workloads, |ops, map| {
+                run_sync_workload(ops, map)
+            });
         // 1-based index of the iteration about to be timed; used to derive the
         // cumulative `done` target for the worker pool.
         let iteration = Cell::new(0usize);
@@ -103,7 +103,7 @@ fn bench<Map>(
             |map| {
                 // Timed region: release the workers and wait for all of them
                 // to finish their workload.
-                let target = iteration.get() * DEFAULT_THREAD_COUNT;
+                let target = iteration.get() * thread_count;
                 workers.run(target);
                 map
             },
@@ -137,7 +137,7 @@ fn synchronization(c: &mut Criterion) {
         group.measurement_time(MEASUREMENT_TIME);
         group.throughput(Throughput::Elements(total_ops as u64));
 
-        expand_bench_with_map_data_and_workload!(bench, &mut group, &map_data, &workloads,
+        expand_bench_concurrent!(bench, &mut group, &map_data, DEFAULT_THREAD_COUNT, &workloads,
             // AhashBenchMap<u64, u64>, // not concurrent
             // BTreeMapBenchMap<u64, u64>, // not concurrent
             // ConcreadBenchMap<u64, u64>, // too slow

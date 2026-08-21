@@ -4,6 +4,7 @@ use bench_map::{
     config::*,
     constants::*,
     data::u64_sparse::U64SparseDataGen,
+    expand_bench_concurrent,
     map_data::MapData,
     map_gen::MapGen,
     maps::*,
@@ -142,68 +143,28 @@ fn throughput_concurrent(c: &mut Criterion) {
                 group.measurement_time(MEASUREMENT_TIME);
                 group.throughput(Throughput::Elements(total_ops as u64));
 
-                // bench::<AhashBenchMap<u64, u64>>("ahash", &mut group, &map_data, thread_count, &workloads); // not concurrent
-                // bench::<BTreeMapBenchMap<u64, u64>>("btreemap", &mut group, &map_data, thread_count, &workloads); // not concurrent
-                // bench::<ConcreadBenchMap<u64, u64>>("concread", &mut group, &map_data, thread_count, &workloads); // too slow
-                // bench::<ConcurrentMapBenchMap<u64, u64>>("concurrent-map", &mut group, &map_data, thread_count, &workloads); // Send but not Sync; cannot share &ConcurrentMap across threads
-                bench::<CrossbeamSkiplistBenchMap<u64, u64>>(
-                    "crossbeam-skiplist",
-                    &mut group,
-                    &map_data,
-                    thread_count,
-                    &workloads,
-                );
-                bench::<DashMapBenchMap<u64, u64>>(
-                    "dashmap",
-                    &mut group,
-                    &map_data,
-                    thread_count,
-                    &workloads,
-                );
-                // bench::<FlurryBenchMap<u64, u64>>("flurry", &mut group, &map_data, thread_count, &workloads); // too slow
-                // bench::<HashbrownBenchMap<u64, u64>>("hashbrown", &mut group, &map_data, thread_count, &workloads); // not concurrent
-                // bench::<HashlinkBenchMap<u64, u64>>("hashlink", &mut group, &map_data, thread_count, &workloads); // mutation requires &mut, cannot mutate through a shared reference
-                // bench::<HordeBenchMap<u64, u64>>("horde", &mut group, &map_data, thread_count, &workloads); // mutation requires &mut, cannot mutate through a shared reference
-                // bench::<ImmutableChunkMapBenchMap<u64, u64>>("immutable-chunkmap", &mut group, &map_data, thread_count, &workloads); // mutation returns a new map; requires &mut or storing the result, cannot mutate through a shared reference
-                // bench::<ImblBenchMap<u64, u64>>("imbl", &mut group, &map_data, thread_count, &workloads); // mutation requires &mut, cannot mutate through a shared reference
-                // bench::<IndexMapBenchMap<u64, u64>>("indexmap", &mut group, &map_data, thread_count, &workloads); // not concurrent
-                bench::<LeapfrogBenchMap<u64, u64>>(
-                    "leapfrog",
-                    &mut group,
-                    &map_data,
-                    thread_count,
-                    &workloads,
-                );
-                bench::<PapayaBenchMap<u64, u64>>(
-                    "papaya",
-                    &mut group,
-                    &map_data,
-                    thread_count,
-                    &workloads,
-                );
-                // bench::<RpdsHashTrieMapBenchMap<u64, u64>>("rpds-hash-trie-map", &mut group, &map_data, thread_count, &workloads); // mutation returns a new map; requires &mut or storing the result, cannot mutate through a shared reference (and the default Rc pointer is not Send/Sync)
-                // bench::<RustCHashBenchMap<u64, u64>>("rustc-hash", &mut group, &map_data, thread_count, &workloads); // not concurrent
-                bench::<SccBenchMap<u64, u64>>(
-                    "scc",
-                    &mut group,
-                    &map_data,
-                    thread_count,
-                    &workloads,
-                );
-                bench::<StarshardBenchMap<u64, u64>>(
-                    "starshard",
-                    &mut group,
-                    &map_data,
-                    thread_count,
-                    &workloads,
-                );
-                // bench::<StdBenchMap<u64, u64>>("std", &mut group, &map_data, thread_count, &workloads); // not concurrent
-                bench::<TxMapBenchMap<u64, u64>>(
-                    "txmap",
-                    &mut group,
-                    &map_data,
-                    thread_count,
-                    &workloads,
+                expand_bench_concurrent!(bench, &mut group, &map_data, thread_count, &workloads,
+                    // AhashBenchMap<u64, u64>, // not concurrent
+                    // BTreeMapBenchMap<u64, u64>, // not concurrent
+                    // ConcreadBenchMap<u64, u64>, // too slow
+                    // ConcurrentMapBenchMap<u64, u64>, // not concurrent
+                    CrossbeamSkiplistBenchMap<u64, u64>,
+                    DashMapBenchMap<u64, u64>,
+                    // FlurryBenchMap<u64, u64>, // too slow
+                    // HashbrownBenchMap<u64, u64>, // not concurrent
+                    // HashlinkBenchMap<u64, u64>, // not concurrent
+                    // HordeBenchMap<u64, u64>, // not concurrent
+                    // ImmutableChunkMapBenchMap<u64, u64>, // not concurrent
+                    // ImblBenchMap<u64, u64>, // not concurrent
+                    // IndexMapBenchMap<u64, u64>, // not concurrent
+                    LeapfrogBenchMap<u64, u64>,
+                    PapayaBenchMap<u64, u64>,
+                    // RpdsHashTrieMapBenchMap<u64, u64>, // not concurrent
+                    // RustCHashBenchMap<u64, u64>, // not concurrent
+                    SccBenchMap<u64, u64>,
+                    StarshardBenchMap<u64, u64>,
+                    // StdBenchMap<u64, u64>, // not concurrent
+                    TxMapBenchMap<u64, u64>,
                 );
             }
         }
