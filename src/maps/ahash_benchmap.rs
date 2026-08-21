@@ -1,11 +1,15 @@
 use crate::maps::benchmap::{
     BenchMapClone, BenchMapGetCloned, BenchMapIter, BenchMapMutClear, BenchMapMutGetOrInsert,
-    BenchMapMutInsert, BenchMapMutRemove, BenchMapNew, BenchMapNewWithHasher,
+    BenchMapMutInsert, BenchMapMutRemove, BenchMapName, BenchMapNew, BenchMapNewWithHasher,
 };
 use std::hash::{BuildHasher, Hash};
 
 pub struct AhashBenchMap<K, V, H = ahash::RandomState> {
     map: ahash::AHashMap<K, V, H>,
+}
+
+impl<K, V, H> BenchMapName for AhashBenchMap<K, V, H> {
+    const NAME: &'static str = "ahash";
 }
 
 impl<K, V, H> BenchMapNew<K, V> for AhashBenchMap<K, V, H>

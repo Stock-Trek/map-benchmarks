@@ -1,3 +1,6 @@
+pub trait BenchMapName {
+    const NAME: &'static str;
+}
 pub trait BenchMapNew<K, V>: Sized {
     fn new() -> Self;
 }

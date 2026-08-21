@@ -1,6 +1,7 @@
 use crate::maps::benchmap::{
     BenchMapGetCloned, BenchMapGetOrInsert, BenchMapInsert, BenchMapIter, BenchMapMutClear,
-    BenchMapMutGetOrInsert, BenchMapMutInsert, BenchMapMutRemove, BenchMapNew, BenchMapRemove,
+    BenchMapMutGetOrInsert, BenchMapMutInsert, BenchMapMutRemove, BenchMapName, BenchMapNew,
+    BenchMapRemove,
 };
 use std::{fmt::Debug, hash::Hash};
 
@@ -10,6 +11,14 @@ where
     V: Clone + Send + Sync + 'static,
 {
     map: concread::hashmap::HashMap<K, V>,
+}
+
+impl<K, V> BenchMapName for ConcreadBenchMap<K, V>
+where
+    K: Clone + Debug + Hash + Eq + Send + Sync + 'static,
+    V: Clone + Send + Sync + 'static,
+{
+    const NAME: &'static str = "concread";
 }
 
 impl<K, V> BenchMapNew<K, V> for ConcreadBenchMap<K, V>

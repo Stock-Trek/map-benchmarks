@@ -1,11 +1,15 @@
 use crate::maps::benchmap::{
     BenchMapClone, BenchMapGetCloned, BenchMapIter, BenchMapMutClear, BenchMapMutGetOrInsert,
-    BenchMapMutInsert, BenchMapMutRemove, BenchMapNew,
+    BenchMapMutInsert, BenchMapMutRemove, BenchMapName, BenchMapNew,
 };
 use std::collections::btree_map;
 
 pub struct BTreeMapBenchMap<K, V> {
     map: btree_map::BTreeMap<K, V>,
+}
+
+impl<K, V> BenchMapName for BTreeMapBenchMap<K, V> {
+    const NAME: &'static str = "btreemap";
 }
 
 impl<K, V> BenchMapNew<K, V> for BTreeMapBenchMap<K, V>
