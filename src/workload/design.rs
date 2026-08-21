@@ -20,6 +20,13 @@ impl WorkloadDesign {
     pub fn read_heavy(total_ops: usize) -> Self {
         Self::from_ratios(total_ops, 0.90, 0.05, 0.05, 0.0, 0.0)
     }
+    /// 80% reads (lookup hits) / 20% writes (updates of existing keys) — the
+    /// read-mostly mix used by the contention benchmark. Writes are updates
+    /// rather than inserts/removes so the map size stays constant while all
+    /// threads still hammer the write path on the contended keys.
+    pub fn contention(total_ops: usize) -> Self {
+        Self::from_ratios(total_ops, 0.80, 0.0, 0.0, 0.20, 0.0)
+    }
     fn from_ratios(
         total_ops: usize,
         lookup_hits: f64,
