@@ -107,8 +107,8 @@ fn bench<Map>(
 }
 
 fn contention(c: &mut Criterion) {
-    let design = WorkloadDesign::contention(CONTENTION_OP_COUNT);
-    let missing_key_count = CONTENTION_THREAD_COUNT * CONTENTION_OP_COUNT;
+    let design = WorkloadDesign::contention(DEFAULT_OP_COUNT);
+    let missing_key_count = DEFAULT_THREAD_COUNT * DEFAULT_OP_COUNT;
     let map_data = generate_contention_map_data(DEFAULT_ENTRY_COUNT, missing_key_count);
 
     let key_distributions = vec![
@@ -119,8 +119,8 @@ fn contention(c: &mut Criterion) {
 
     for key_distribution in key_distributions {
         let mut rng = rand::rng();
-        let total_ops = CONTENTION_THREAD_COUNT * CONTENTION_OP_COUNT;
-        let workloads = (0..CONTENTION_THREAD_COUNT)
+        let total_ops = DEFAULT_THREAD_COUNT * DEFAULT_OP_COUNT;
+        let workloads = (0..DEFAULT_THREAD_COUNT)
             .map(|_| {
                 key_distribution.new(
                     &design,
@@ -135,7 +135,7 @@ fn contention(c: &mut Criterion) {
             "contention/{OUT_OF_THE_BOX_GROUP_NAME}/{}/map-size-{}/threads-{}",
             key_distribution,
             format_n(DEFAULT_ENTRY_COUNT),
-            CONTENTION_THREAD_COUNT
+            DEFAULT_THREAD_COUNT
         ));
         group.warm_up_time(WARM_UP_TIME);
         group.measurement_time(MEASUREMENT_TIME);
@@ -148,14 +148,14 @@ fn contention(c: &mut Criterion) {
         bench::<CrossbeamSkiplistBenchMap<u64, u64>>(
             &mut group,
             &map_data,
-            CONTENTION_THREAD_COUNT,
+            DEFAULT_THREAD_COUNT,
             &workloads,
             "crossbeam-skiplist",
         );
         bench::<DashMapBenchMap<u64, u64>>(
             &mut group,
             &map_data,
-            CONTENTION_THREAD_COUNT,
+            DEFAULT_THREAD_COUNT,
             &workloads,
             "dashmap",
         );
@@ -169,14 +169,14 @@ fn contention(c: &mut Criterion) {
         bench::<LeapfrogBenchMap<u64, u64>>(
             &mut group,
             &map_data,
-            CONTENTION_THREAD_COUNT,
+            DEFAULT_THREAD_COUNT,
             &workloads,
             "leapfrog",
         );
         bench::<PapayaBenchMap<u64, u64>>(
             &mut group,
             &map_data,
-            CONTENTION_THREAD_COUNT,
+            DEFAULT_THREAD_COUNT,
             &workloads,
             "papaya",
         );
@@ -185,14 +185,14 @@ fn contention(c: &mut Criterion) {
         bench::<SccBenchMap<u64, u64>>(
             &mut group,
             &map_data,
-            CONTENTION_THREAD_COUNT,
+            DEFAULT_THREAD_COUNT,
             &workloads,
             "scc",
         );
         bench::<StarshardBenchMap<u64, u64>>(
             &mut group,
             &map_data,
-            CONTENTION_THREAD_COUNT,
+            DEFAULT_THREAD_COUNT,
             &workloads,
             "starshard",
         );
@@ -200,7 +200,7 @@ fn contention(c: &mut Criterion) {
         bench::<TxMapBenchMap<u64, u64>>(
             &mut group,
             &map_data,
-            CONTENTION_THREAD_COUNT,
+            DEFAULT_THREAD_COUNT,
             &workloads,
             "txmap",
         );

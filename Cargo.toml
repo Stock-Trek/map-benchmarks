@@ -87,9 +87,5 @@ name = "workload_concurrent"
 harness = false
 
 [[bench]]
-name = "workload_zipfian_concurrent"
-harness = false
-
-[[bench]]
 name = "workload_serial"
 harness = false

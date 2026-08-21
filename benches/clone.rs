@@ -44,7 +44,7 @@ fn clone(c: &mut Criterion) {
     let existing_key_count = 0;
     let missing_key_count = 0;
     let sort_keys = false;
-    for entry_count in ENTRY_COUNTS {
+    for entry_count in DEFAULT_ENTRY_COUNTS {
         let map_data = MapGen::generate(
             U64SparseDataGen,
             U64SparseDataGen,
@@ -96,7 +96,7 @@ fn clone(c: &mut Criterion) {
 fn clone_then_write(c: &mut Criterion) {
     let existing_key_count = 0;
     let sort_keys = false;
-    for entry_count in ENTRY_COUNTS {
+    for entry_count in DEFAULT_ENTRY_COUNTS {
         let missing_key_count = *entry_count / 10;
         let map_data = MapGen::generate(
             U64SparseDataGen,

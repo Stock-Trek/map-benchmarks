@@ -22,9 +22,7 @@ fn bench_out_of_the_box<Map>(
         b.iter_batched(
             move || {
                 let map = map_data_ref.create_map::<Map>();
-                let mut keys = Vec::with_capacity(
-                    GET_OR_INSERT_EXISTING_KEY_COUNT + GET_OR_INSERT_MISSING_KEY_COUNT,
-                );
+                let mut keys = Vec::with_capacity(DEFAULT_OP_COUNT + DEFAULT_OP_COUNT);
                 keys.extend(map_data_ref.existing_keys().iter().copied());
                 keys.extend(map_data_ref.missing_keys().iter().copied());
                 (map, keys)
@@ -57,9 +55,7 @@ fn bench_same_hasher<Map>(
         b.iter_batched(
             move || {
                 let map = map_data_ref.create_map_with_hasher::<Map, CommonHasher>(hasher.clone());
-                let mut keys = Vec::with_capacity(
-                    GET_OR_INSERT_EXISTING_KEY_COUNT + GET_OR_INSERT_MISSING_KEY_COUNT,
-                );
+                let mut keys = Vec::with_capacity(DEFAULT_OP_COUNT + DEFAULT_OP_COUNT);
                 keys.extend(map_data_ref.existing_keys().iter().copied());
                 keys.extend(map_data_ref.missing_keys().iter().copied());
                 (map, keys)
@@ -78,8 +74,8 @@ fn bench_same_hasher<Map>(
 
 fn get_or_insert(c: &mut Criterion) {
     let entry_count = DEFAULT_ENTRY_COUNT;
-    let existing_key_count = GET_OR_INSERT_EXISTING_KEY_COUNT;
-    let missing_key_count = GET_OR_INSERT_MISSING_KEY_COUNT;
+    let existing_key_count = DEFAULT_OP_COUNT;
+    let missing_key_count = DEFAULT_OP_COUNT;
     let sort_keys = false;
     let map_data = MapGen::generate(
         U64SparseDataGen,

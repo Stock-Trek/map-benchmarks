@@ -69,7 +69,7 @@ fn bench_out_of_the_box<Map>(
 fn insert(c: &mut Criterion) {
     let entry_count = DEFAULT_ENTRY_COUNT;
     let existing_key_count = 0;
-    let missing_key_count = INSERT_MISSING_KEY_COUNT;
+    let missing_key_count = DEFAULT_OP_COUNT;
     let sort_keys = false;
     let map_data = MapGen::generate(
         U64SparseDataGen,

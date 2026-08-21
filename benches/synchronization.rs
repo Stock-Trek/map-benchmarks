@@ -16,6 +16,8 @@ enum SyncOp {
     Write,
 }
 
+const SYNCHRONIZATION_HIT_KEY: u64 = 0;
+
 /// The 6 synchronization workloads: the fraction of operations that are
 /// reads (lookups of the single key); the remainder are writes (inserts /
 /// updates of the same key). Every thread hammers the same key, so this measures
@@ -120,14 +122,14 @@ fn synchronization(c: &mut Criterion) {
 
     let mut rng = rand::rng();
     for &(name, read_ratio) in SYNC_WORKLOADS {
-        let total_ops = SYNCHRONIZATION_THREAD_COUNT * SYNCHRONIZATION_OP_COUNT;
-        let workloads = (0..SYNCHRONIZATION_THREAD_COUNT)
-            .map(|_| generate_sync_workload(SYNCHRONIZATION_OP_COUNT, read_ratio, &mut rng))
+        let total_ops = DEFAULT_THREAD_COUNT * DEFAULT_OP_COUNT;
+        let workloads = (0..DEFAULT_THREAD_COUNT)
+            .map(|_| generate_sync_workload(DEFAULT_OP_COUNT, read_ratio, &mut rng))
             .collect::<Vec<_>>();
 
         let mut group = c.benchmark_group(format!(
             "synchronization/{OUT_OF_THE_BOX_GROUP_NAME}/{}/threads-{}",
-            name, SYNCHRONIZATION_THREAD_COUNT
+            name, DEFAULT_THREAD_COUNT
         ));
         group.warm_up_time(WARM_UP_TIME);
         group.measurement_time(MEASUREMENT_TIME);
@@ -138,14 +140,14 @@ fn synchronization(c: &mut Criterion) {
         bench::<CrossbeamSkiplistBenchMap<u64, u64>>(
             &mut group,
             &map_data,
-            SYNCHRONIZATION_THREAD_COUNT,
+            DEFAULT_THREAD_COUNT,
             &workloads,
             "crossbeam-skiplist",
         );
         bench::<DashMapBenchMap<u64, u64>>(
             &mut group,
             &map_data,
-            SYNCHRONIZATION_THREAD_COUNT,
+            DEFAULT_THREAD_COUNT,
             &workloads,
             "dashmap",
         );
@@ -153,14 +155,14 @@ fn synchronization(c: &mut Criterion) {
         bench::<LeapfrogBenchMap<u64, u64>>(
             &mut group,
             &map_data,
-            SYNCHRONIZATION_THREAD_COUNT,
+            DEFAULT_THREAD_COUNT,
             &workloads,
             "leapfrog",
         );
         bench::<PapayaBenchMap<u64, u64>>(
             &mut group,
             &map_data,
-            SYNCHRONIZATION_THREAD_COUNT,
+            DEFAULT_THREAD_COUNT,
             &workloads,
             "papaya",
         );
@@ -168,21 +170,21 @@ fn synchronization(c: &mut Criterion) {
         bench::<SccBenchMap<u64, u64>>(
             &mut group,
             &map_data,
-            SYNCHRONIZATION_THREAD_COUNT,
+            DEFAULT_THREAD_COUNT,
             &workloads,
             "scc",
         );
         bench::<StarshardBenchMap<u64, u64>>(
             &mut group,
             &map_data,
-            SYNCHRONIZATION_THREAD_COUNT,
+            DEFAULT_THREAD_COUNT,
             &workloads,
             "starshard",
         );
         bench::<TxMapBenchMap<u64, u64>>(
             &mut group,
             &map_data,
-            SYNCHRONIZATION_THREAD_COUNT,
+            DEFAULT_THREAD_COUNT,
             &workloads,
             "txmap",
         );

@@ -3,35 +3,10 @@ use std::time::Duration;
 pub const WARM_UP_TIME: Duration = Duration::from_secs(1);
 pub const MEASUREMENT_TIME: Duration = Duration::from_secs(2);
 
-pub const ENTRY_COUNTS: &[usize] = &[1_000, 10_000, 100_000];
-
-pub const CONTENTION_THREAD_COUNT: usize = 3;
-pub const CONTENTION_OP_COUNT: usize = 10_000;
-
-pub const CREATE_MAP_COUNT: usize = 10_000;
-
 pub const DEFAULT_ENTRY_COUNT: usize = 10_000;
-
-pub const GET_OR_INSERT_EXISTING_KEY_COUNT: usize = 100;
-pub const GET_OR_INSERT_MISSING_KEY_COUNT: usize = 100;
+pub const DEFAULT_ENTRY_COUNTS: &[usize] = &[1_000, 10_000, 100_000];
+pub const DEFAULT_OP_COUNT: usize = 10_000;
+pub const DEFAULT_THREAD_COUNT: usize = 3;
+pub const DEFAULT_THREAD_COUNTS: &[usize] = &[2, 3];
 
 pub const GROWTH_ENTRY_COUNTS: &[usize] = &[1_000, 10_000, 100_000, 1_000_000];
-
-pub const INSERT_MISSING_KEY_COUNT: usize = 100;
-
-pub const SYNCHRONIZATION_THREAD_COUNT: usize = 3;
-pub const SYNCHRONIZATION_OP_COUNT: usize = 10_000;
-pub const SYNCHRONIZATION_HIT_KEY: u64 = 0;
-
-pub const WORKLOAD_OP_COUNT: usize = 10_000;
-pub const WORKLOAD_MISSING_KEY_COUNT: usize = 10_000;
-pub const WORKLOAD_CONCURRENT_THREAD_COUNTS: &[usize] = &[2, 3];
-/// Skew exponent `s` of the Zipfian (hot-key) workload: larger values
-/// concentrate more accesses on the hottest keys (`s = 0` is uniform).
-/// `s = 1.0` is classic Zipf's law, the standard model for real-world
-/// hot-key workloads (caches, trending items).
-pub const WORKLOAD_ZIPFIAN_EXPONENT: f64 = 1.0;
-/// The Zipfian key space is `entry_count * WORKLOAD_ZIPFIAN_KEY_SPACE_MULTIPLIER`,
-/// so the map holds the hottest `entry_count` keys of a larger domain while
-/// leaving room for a cold tail of missing keys.
-pub const WORKLOAD_ZIPFIAN_KEY_SPACE_MULTIPLIER: usize = 2;
