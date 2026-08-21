@@ -43,17 +43,6 @@ where
     }
 }
 
-fn generate_contention_map_data(entry_count: usize, missing_key_count: usize) -> MapData<u64, u64> {
-    MapGen::generate(
-        U64DenseDataGen,
-        U64SparseDataGen,
-        entry_count,
-        entry_count,
-        missing_key_count,
-        true,
-    )
-}
-
 fn bench<Map>(
     group: &mut BenchmarkGroup<WallTime>,
     map_data: &MapData<u64, u64>,
@@ -109,7 +98,14 @@ fn bench<Map>(
 fn contention(c: &mut Criterion) {
     let design = WorkloadDesign::contention(DEFAULT_OP_COUNT);
     let missing_key_count = DEFAULT_THREAD_COUNT * DEFAULT_OP_COUNT;
-    let map_data = generate_contention_map_data(DEFAULT_ENTRY_COUNT, missing_key_count);
+    let map_data = MapGen::generate(
+        U64DenseDataGen,
+        U64SparseDataGen,
+        DEFAULT_ENTRY_COUNT,
+        DEFAULT_ENTRY_COUNT,
+        missing_key_count,
+        true,
+    );
 
     let key_distributions = vec![
         KeyDistribution::Uniform,
