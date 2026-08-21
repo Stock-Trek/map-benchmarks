@@ -51,10 +51,10 @@ where
     for op in ops {
         match op {
             SyncOp::Read => {
-                black_box(map.get_cloned(&SYNC_KEY));
+                black_box(map.get_cloned(&SYNCHRONIZATION_HIT_KEY));
             }
             SyncOp::Write => {
-                map.insert(SYNC_KEY, 42u64);
+                map.insert(SYNCHRONIZATION_HIT_KEY, 42u64);
             }
         }
     }
@@ -112,18 +112,22 @@ fn bench<Map>(
 
 fn synchronization(c: &mut Criterion) {
     // The map holds exactly one entry: the single key all threads contend on.
-    let map_data = MapData::new(vec![(SYNC_KEY, 42u64)], vec![SYNC_KEY], vec![]);
+    let map_data = MapData::new(
+        vec![(SYNCHRONIZATION_HIT_KEY, 42u64)],
+        vec![SYNCHRONIZATION_HIT_KEY],
+        vec![],
+    );
 
     let mut rng = rand::rng();
     for &(name, read_ratio) in SYNC_WORKLOADS {
-        let total_ops = SYNC_THREAD_COUNT * SYNC_OP_COUNT;
-        let workloads = (0..SYNC_THREAD_COUNT)
-            .map(|_| generate_sync_workload(SYNC_OP_COUNT, read_ratio, &mut rng))
+        let total_ops = SYNCHRONIZATION_THREAD_COUNT * SYNCHRONIZATION_OP_COUNT;
+        let workloads = (0..SYNCHRONIZATION_THREAD_COUNT)
+            .map(|_| generate_sync_workload(SYNCHRONIZATION_OP_COUNT, read_ratio, &mut rng))
             .collect::<Vec<_>>();
 
         let mut group = c.benchmark_group(format!(
             "synchronization/{OUT_OF_THE_BOX_GROUP_NAME}/{}/threads-{}",
-            name, SYNC_THREAD_COUNT
+            name, SYNCHRONIZATION_THREAD_COUNT
         ));
         group.warm_up_time(WARM_UP_TIME);
         group.measurement_time(MEASUREMENT_TIME);
@@ -134,14 +138,14 @@ fn synchronization(c: &mut Criterion) {
         bench::<CrossbeamSkiplistBenchMap<u64, u64>>(
             &mut group,
             &map_data,
-            SYNC_THREAD_COUNT,
+            SYNCHRONIZATION_THREAD_COUNT,
             &workloads,
             "crossbeam-skiplist",
         );
         bench::<DashMapBenchMap<u64, u64>>(
             &mut group,
             &map_data,
-            SYNC_THREAD_COUNT,
+            SYNCHRONIZATION_THREAD_COUNT,
             &workloads,
             "dashmap",
         );
@@ -149,30 +153,36 @@ fn synchronization(c: &mut Criterion) {
         bench::<LeapfrogBenchMap<u64, u64>>(
             &mut group,
             &map_data,
-            SYNC_THREAD_COUNT,
+            SYNCHRONIZATION_THREAD_COUNT,
             &workloads,
             "leapfrog",
         );
         bench::<PapayaBenchMap<u64, u64>>(
             &mut group,
             &map_data,
-            SYNC_THREAD_COUNT,
+            SYNCHRONIZATION_THREAD_COUNT,
             &workloads,
             "papaya",
         );
         // bench::<RpdsHashTrieMapBenchMap<u64, u64>>(&mut group, &map_data, SYNC_THREAD_COUNT, &workloads, "rpds-hash-trie-map"); // mutation returns a new map; requires &mut or storing the result, cannot mutate through a shared reference (and the default Rc pointer is not Send/Sync)
-        bench::<SccBenchMap<u64, u64>>(&mut group, &map_data, SYNC_THREAD_COUNT, &workloads, "scc");
+        bench::<SccBenchMap<u64, u64>>(
+            &mut group,
+            &map_data,
+            SYNCHRONIZATION_THREAD_COUNT,
+            &workloads,
+            "scc",
+        );
         bench::<StarshardBenchMap<u64, u64>>(
             &mut group,
             &map_data,
-            SYNC_THREAD_COUNT,
+            SYNCHRONIZATION_THREAD_COUNT,
             &workloads,
             "starshard",
         );
         bench::<TxMapBenchMap<u64, u64>>(
             &mut group,
             &map_data,
-            SYNC_THREAD_COUNT,
+            SYNCHRONIZATION_THREAD_COUNT,
             &workloads,
             "txmap",
         );
