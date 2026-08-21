@@ -43,11 +43,6 @@ where
     }
 }
 
-/// Builds the map data used by every contention test: a dense set of
-/// `entry_count` consecutive u64 keys (a compact addressable range), so all
-/// three tests measure contention on the same table shape. The query key
-/// distributions (uniform / Zipfian) are drawn from this dense key set when
-/// the per-thread workloads are generated, not from the map population itself.
 fn generate_contention_map_data(entry_count: usize, missing_key_count: usize) -> MapData<u64, u64> {
     MapGen::generate(
         U64DenseDataGen,
