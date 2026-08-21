@@ -47,6 +47,14 @@ name = "create"
 harness = false
 
 [[bench]]
+name = "get_or_insert"
+harness = false
+
+[[bench]]
+name = "growth"
+harness = false
+
+[[bench]]
 name = "insert"
 harness = false
 
@@ -56,18 +64,6 @@ harness = false
 
 [[bench]]
 name = "key_sensitivity"
-harness = false
-
-[[bench]]
-name = "get_or_insert"
-harness = false
-
-[[bench]]
-name = "growth"
-harness = false
-
-[[bench]]
-name = "synchronization"
 harness = false
 
 [[bench]]
@@ -83,9 +79,13 @@ name = "remove"
 harness = false
 
 [[bench]]
-name = "workload_concurrent"
+name = "synchronization"
 harness = false
 
 [[bench]]
-name = "workload_serial"
+name = "throughput_concurrent"
+harness = false
+
+[[bench]]
+name = "throughput_serial"
 harness = false
