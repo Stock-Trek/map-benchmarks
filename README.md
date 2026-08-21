@@ -46,6 +46,7 @@ There are 3 groups of tests, `out-of-the-box` which uses each map's default impl
 - **Clone then write**: Clones maps containing 1K/10K/100K entries, then inserts 10% new entries into the clone
 - **Workload**: Uses a map with 1K/10K/100K entries. Use cases: [write-heavy, balanced, read-heavy]. Thread counts: [1, 2, 3]. Threads for concurrent tests are pinned to reduce any effects from OS scheduling.
 - **Get or insert (concurrent)**: Uses a map with 1K/10K/100K entries. The "get-or-create cache entry" pattern: 90% of operations hit existing keys, 10% insert missing keys. Thread counts: [2, 3]. Threads are pinned to reduce any effects from OS scheduling.
+- **Synchronization (concurrent)**: Uses a map with a single entry. All 3 threads contend on the same key. Workloads: [read-only, read-mostly (75/25), 50-50, write-mostly (25/75), write-only]. Threads are pinned to reduce any effects from OS scheduling.
 
 ### Same hasher
 

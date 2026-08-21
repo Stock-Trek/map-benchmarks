@@ -1,0 +1,182 @@
+use bench_map::{
+    concurrent_workers::ConcurrentWorkers, config::*, constants::*, map_data::MapData, maps::*,
+};
+use criterion::{
+    BatchSize, BenchmarkGroup, Criterion, Throughput, criterion_group, criterion_main,
+    measurement::WallTime,
+};
+use rand::RngExt;
+use std::{cell::Cell, hint::black_box, sync::Arc};
+
+/// A single operation of the synchronization benchmark, performed on the one
+/// contended key.
+#[derive(Clone, Copy, Debug)]
+enum SyncOp {
+    Read,
+    Write,
+}
+
+/// The five synchronization workloads: the fraction of operations that are
+/// reads (lookups of the single key); the remainder are writes (inserts /
+/// updates of the same key). Every thread hammers the same key, so this
+/// measures worst-case contention on a single hot spot.
+const SYNC_WORKLOADS: &[(&str, f64)] = &[
+    ("read-only", 1.0),
+    ("read-mostly", 0.75),
+    ("50-50", 0.50),
+    ("write-mostly", 0.25),
+    ("write-only", 0.0),
+];
+
+/// Generates one worker's operations: `op_count` operations on the single
+/// synchronization key, each a read with probability `read_ratio` and a write
+/// otherwise.
+fn generate_sync_workload(op_count: usize, read_ratio: f64, rng: &mut impl RngExt) -> Vec<SyncOp> {
+    let mut ops = Vec::with_capacity(op_count);
+    for _ in 0..op_count {
+        ops.push(if rng.random_bool(read_ratio) {
+            SyncOp::Read
+        } else {
+            SyncOp::Write
+        });
+    }
+    ops
+}
+
+fn run_sync_workload<M>(ops: &[SyncOp], map: &M)
+where
+    M: BenchMapGetCloned<u64, u64> + BenchMapInsert<u64, u64>,
+{
+    for op in ops {
+        match op {
+            SyncOp::Read => {
+                black_box(map.get_cloned(&SYNC_KEY));
+            }
+            SyncOp::Write => {
+                map.insert(SYNC_KEY, 42u64);
+            }
+        }
+    }
+}
+
+fn bench<Map>(
+    group: &mut BenchmarkGroup<WallTime>,
+    map_data: &MapData<u64, u64>,
+    thread_count: usize,
+    workloads: &[Vec<SyncOp>],
+    name: &str,
+) where
+    Map: BenchMapNew<u64, u64>
+        + BenchMapMutInsert<u64, u64>
+        + BenchMapGetCloned<u64, u64>
+        + BenchMapInsert<u64, u64>
+        + Send
+        + Sync
+        + 'static,
+{
+    group.bench_function(name, move |b| {
+        // Spawn and pin the worker threads once per sample, outside the timed
+        // region, so thread spawn/join and CPU-pinning costs are amortized
+        // instead of being measured on every iteration.
+        let workers =
+            ConcurrentWorkers::<Vec<SyncOp>, Map>::new(thread_count, workloads, |ops, map| {
+                run_sync_workload(ops, map)
+            });
+        // 1-based index of the iteration about to be timed; used to derive the
+        // cumulative `done` target for the worker pool.
+        let iteration = Cell::new(0usize);
+        b.iter_batched(
+            || {
+                // Untimed setup: publish a fresh map for this iteration.
+                let map = Arc::new(map_data.create_map::<Map>());
+                for slot in workers.slots() {
+                    *slot.lock().unwrap() = Some(map.clone());
+                }
+                iteration.set(iteration.get() + 1);
+                map
+            },
+            |map| {
+                // Timed region: release the workers and wait for all of them
+                // to finish their workload.
+                let target = iteration.get() * thread_count;
+                workers.run(target);
+                map
+            },
+            BatchSize::PerIteration,
+        );
+        // The worker pool is shut down and joined here, outside the timed
+        // region (its `Drop` implementation).
+    });
+}
+
+fn synchronization(c: &mut Criterion) {
+    // The map holds exactly one entry: the single key all threads contend on.
+    let map_data = MapData::new(vec![(SYNC_KEY, 42u64)], vec![SYNC_KEY], vec![]);
+
+    let mut rng = rand::rng();
+    for &(name, read_ratio) in SYNC_WORKLOADS {
+        let total_ops = SYNC_THREAD_COUNT * SYNC_OP_COUNT;
+        let workloads = (0..SYNC_THREAD_COUNT)
+            .map(|_| generate_sync_workload(SYNC_OP_COUNT, read_ratio, &mut rng))
+            .collect::<Vec<_>>();
+
+        let mut group = c.benchmark_group(format!(
+            "synchronization/{OUT_OF_THE_BOX_GROUP_NAME}/{}/threads-{}",
+            name, SYNC_THREAD_COUNT
+        ));
+        group.warm_up_time(WARM_UP_TIME);
+        group.measurement_time(MEASUREMENT_TIME);
+        group.throughput(Throughput::Elements(total_ops as u64));
+
+        // bench::<ConcreadBenchMap<u64, u64>>(&mut group, &map_data, SYNC_THREAD_COUNT, &workloads, "concread"); // too slow
+        // bench::<ConcurrentMapBenchMap<u64, u64>>(&mut group, &map_data, SYNC_THREAD_COUNT, &workloads, "concurrent-map"); // Send but not Sync; cannot share &ConcurrentMap across threads
+        bench::<CrossbeamSkiplistBenchMap<u64, u64>>(
+            &mut group,
+            &map_data,
+            SYNC_THREAD_COUNT,
+            &workloads,
+            "crossbeam-skiplist",
+        );
+        bench::<DashMapBenchMap<u64, u64>>(
+            &mut group,
+            &map_data,
+            SYNC_THREAD_COUNT,
+            &workloads,
+            "dashmap",
+        );
+        // bench::<FlurryBenchMap<u64, u64>>(&mut group, &map_data, SYNC_THREAD_COUNT, &workloads, "flurry"); // too slow
+        bench::<LeapfrogBenchMap<u64, u64>>(
+            &mut group,
+            &map_data,
+            SYNC_THREAD_COUNT,
+            &workloads,
+            "leapfrog",
+        );
+        bench::<PapayaBenchMap<u64, u64>>(
+            &mut group,
+            &map_data,
+            SYNC_THREAD_COUNT,
+            &workloads,
+            "papaya",
+        );
+        // bench::<RpdsHashTrieMapBenchMap<u64, u64>>(&mut group, &map_data, SYNC_THREAD_COUNT, &workloads, "rpds-hash-trie-map"); // mutation returns a new map; requires &mut or storing the result, cannot mutate through a shared reference (and the default Rc pointer is not Send/Sync)
+        bench::<SccBenchMap<u64, u64>>(&mut group, &map_data, SYNC_THREAD_COUNT, &workloads, "scc");
+        bench::<StarshardBenchMap<u64, u64>>(
+            &mut group,
+            &map_data,
+            SYNC_THREAD_COUNT,
+            &workloads,
+            "starshard",
+        );
+        bench::<TxMapBenchMap<u64, u64>>(
+            &mut group,
+            &map_data,
+            SYNC_THREAD_COUNT,
+            &workloads,
+            "txmap",
+        );
+    }
+}
+
+criterion_group!(group, synchronization);
+criterion_main!(group);

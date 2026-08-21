@@ -63,6 +63,10 @@ name = "get_or_insert_concurrent"
 harness = false
 
 [[bench]]
+name = "synchronization"
+harness = false
+
+[[bench]]
 name = "lookup_hit"
 harness = false
 
