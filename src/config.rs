@@ -9,7 +9,7 @@ pub const OUT_OF_THE_BOX_ENTRY_COUNT: &[usize] = &[1_000, 10_000, 100_000];
 /// by inserting this many u64 keys on a single thread.
 pub const GROWTH_ENTRY_COUNT: &[usize] = &[1_000, 10_000, 100_000, 1_000_000];
 
-pub const SAME_HASHER_MAP_COUNT: usize = 10_000;
+pub const CREATE_MAP_COUNT: usize = 10_000;
 
 pub const KEY_SENSITIVITY_ENTRY_COUNT: usize = 10_000;
 
