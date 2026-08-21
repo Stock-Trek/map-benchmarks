@@ -1,3 +1,4 @@
+// How does it handle realistic concurrent workloads? Tests mixed read/write/remove workloads across multiple threads.
 use bench_map::{
     concurrent_workers::ConcurrentWorkers,
     config::*,

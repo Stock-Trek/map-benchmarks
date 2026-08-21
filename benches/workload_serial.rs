@@ -1,3 +1,4 @@
+// How does it handle realistic serial workloads? Tests mixed read/write/remove workloads in a single thread.
 use bench_map::{
     config::*,
     constants::*,

@@ -1,3 +1,4 @@
+// How fast is it to clone a map? Tests cloning a fully populated map and cloning-then-writing to the copy.
 use bench_map::{
     config::*, constants::*, data::u64_sparse::U64SparseDataGen, expand_bench_with_map_data,
     map_data::MapData, map_gen::MapGen, maps::*, number_formatter::format_n,

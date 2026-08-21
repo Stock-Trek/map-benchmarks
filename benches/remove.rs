@@ -1,3 +1,4 @@
+// How fast is removal? Tests deleting existing keys from a populated map.
 use bench_map::{
     config::*, constants::*, data::u64_sparse::U64SparseDataGen, expand_bench_with_map_data,
     expand_bench_with_map_data_and_hasher, map_data::MapData, map_gen::MapGen, maps::*,

@@ -1,3 +1,4 @@
+// How does it handle contention? Tests concurrent mixed workloads where threads compete for the same keys under uniform and Zipfian key distributions.
 use bench_map::{
     concurrent_workers::ConcurrentWorkers,
     config::*,

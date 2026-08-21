@@ -1,3 +1,4 @@
+// How fast is iteration? Tests iterating over every entry of a fully populated map.
 use bench_map::{
     config::*, constants::*, data::u64_sparse::U64SparseDataGen, expand_bench_with_map_data,
     expand_bench_with_map_data_and_hasher, map_data::MapData, map_gen::MapGen, maps::*,

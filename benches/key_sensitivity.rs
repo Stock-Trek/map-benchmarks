@@ -1,3 +1,4 @@
+// How sensitive is performance to the key type? Tests lookups with u64 and String keys of different lengths.
 use bench_map::{
     config::*,
     constants::*,

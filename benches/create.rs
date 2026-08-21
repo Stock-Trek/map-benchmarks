@@ -1,3 +1,4 @@
+// How fast is it to create a new map? Tests constructing empty maps.
 use bench_map::{config::*, constants::*, expand_bench, maps::*};
 use criterion::{
     BenchmarkGroup, Criterion, Throughput, criterion_group, criterion_main, measurement::WallTime,
