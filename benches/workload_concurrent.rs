@@ -7,7 +7,11 @@ use bench_map::{
     map_gen::MapGen,
     maps::*,
     number_formatter::format_n,
-    workload::{design::WorkloadDesign, op::WorkloadOp, thread_workload::ThreadWorkload},
+    workload::{
+        design::WorkloadDesign,
+        op::WorkloadOp,
+        thread_workload::{KeyDistribution, ThreadWorkload},
+    },
 };
 use criterion::{
     BatchSize, BenchmarkGroup, Criterion, Throughput, criterion_group, criterion_main,
@@ -121,7 +125,7 @@ fn workload_concurrent(c: &mut Criterion) {
                 let total_ops = thread_count * WORKLOAD_OP_COUNT;
                 let workloads = (0..thread_count)
                     .map(|_| {
-                        ThreadWorkload::new(
+                        KeyDistribution::Uniform.new(
                             &design,
                             map_data.existing_keys(),
                             map_data.missing_keys(),

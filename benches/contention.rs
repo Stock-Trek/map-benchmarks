@@ -7,7 +7,11 @@ use bench_map::{
     map_gen::MapGen,
     maps::*,
     number_formatter::format_n,
-    workload::{design::WorkloadDesign, op::WorkloadOp, thread_workload::ThreadWorkload},
+    workload::{
+        design::WorkloadDesign,
+        op::WorkloadOp,
+        thread_workload::{KeyDistribution, ThreadWorkload},
+    },
 };
 use criterion::{
     BatchSize, BenchmarkGroup, Criterion, Throughput, criterion_group, criterion_main,
@@ -112,41 +116,29 @@ fn contention(c: &mut Criterion) {
     let missing_key_count = CONTENTION_THREAD_COUNT * CONTENTION_OP_COUNT;
     let map_data = generate_contention_map_data(CONTENTION_ENTRY_COUNT, missing_key_count);
 
-    // The three query key distributions, all drawn from the dense map key set:
-    // `None` selects keys uniformly (the low-contention baseline), while
-    // `Some(exponent)` selects keys from a Zipfian distribution with that
-    // exponent, with higher exponents concentrating more traffic on the
-    // hottest keys.
-    let tests: &[(&str, Option<f64>)] = &[
-        ("uniform", None),
-        ("zipfian-exp-1", Some(1.0)),
-        ("zipfian-exp-2", Some(2.0)),
+    let key_distributions = vec![
+        KeyDistribution::Uniform,
+        KeyDistribution::Zipfian(1.0),
+        KeyDistribution::Zipfian(2.0),
     ];
 
-    for &(name, zipfian_exponent) in tests {
+    for key_distribution in key_distributions {
         let mut rng = rand::rng();
         let total_ops = CONTENTION_THREAD_COUNT * CONTENTION_OP_COUNT;
         let workloads = (0..CONTENTION_THREAD_COUNT)
-            .map(|_| match zipfian_exponent {
-                None => ThreadWorkload::new(
+            .map(|_| {
+                key_distribution.new(
                     &design,
                     map_data.existing_keys(),
                     map_data.missing_keys(),
                     &mut rng,
-                ),
-                Some(exponent) => ThreadWorkload::new_zipfian(
-                    &design,
-                    map_data.existing_keys(),
-                    map_data.missing_keys(),
-                    &mut rng,
-                    exponent,
-                ),
+                )
             })
             .collect::<Vec<_>>();
 
         let mut group = c.benchmark_group(format!(
             "contention/{OUT_OF_THE_BOX_GROUP_NAME}/{}/map-size-{}/threads-{}",
-            name,
+            key_distribution,
             format_n(CONTENTION_ENTRY_COUNT),
             CONTENTION_THREAD_COUNT
         ));
