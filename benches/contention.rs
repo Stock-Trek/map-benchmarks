@@ -109,7 +109,7 @@ fn bench<Map>(
 fn contention(c: &mut Criterion) {
     let design = WorkloadDesign::contention(CONTENTION_OP_COUNT);
     let missing_key_count = CONTENTION_THREAD_COUNT * CONTENTION_OP_COUNT;
-    let map_data = generate_contention_map_data(CONTENTION_ENTRY_COUNT, missing_key_count);
+    let map_data = generate_contention_map_data(DEFAULT_ENTRY_COUNT, missing_key_count);
 
     let key_distributions = vec![
         KeyDistribution::Uniform,
@@ -134,7 +134,7 @@ fn contention(c: &mut Criterion) {
         let mut group = c.benchmark_group(format!(
             "contention/{OUT_OF_THE_BOX_GROUP_NAME}/{}/map-size-{}/threads-{}",
             key_distribution,
-            format_n(CONTENTION_ENTRY_COUNT),
+            format_n(DEFAULT_ENTRY_COUNT),
             CONTENTION_THREAD_COUNT
         ));
         group.warm_up_time(WARM_UP_TIME);

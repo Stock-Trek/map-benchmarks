@@ -3,27 +3,26 @@ use std::time::Duration;
 pub const WARM_UP_TIME: Duration = Duration::from_secs(1);
 pub const MEASUREMENT_TIME: Duration = Duration::from_secs(2);
 
+pub const ENTRY_COUNTS: &[usize] = &[1_000, 10_000, 100_000];
+
 pub const CONTENTION_THREAD_COUNT: usize = 3;
-pub const CONTENTION_ENTRY_COUNT: usize = 10_000;
 pub const CONTENTION_OP_COUNT: usize = 10_000;
 
 pub const CREATE_MAP_COUNT: usize = 10_000;
 
+pub const DEFAULT_ENTRY_COUNT: usize = 10_000;
+
 pub const GET_OR_INSERT_EXISTING_KEY_COUNT: usize = 100;
 pub const GET_OR_INSERT_MISSING_KEY_COUNT: usize = 100;
-pub const GET_OR_INSERT_CONCURRENT_HIT_RATIO: f64 = 0.90;
 
-pub const GROWTH_ENTRY_COUNT: &[usize] = &[1_000, 10_000, 100_000, 1_000_000];
+pub const GROWTH_ENTRY_COUNTS: &[usize] = &[1_000, 10_000, 100_000, 1_000_000];
 
-pub const KEY_SENSITIVITY_ENTRY_COUNT: usize = 10_000;
-
-pub const OUT_OF_THE_BOX_ENTRY_COUNT: &[usize] = &[1_000, 10_000, 100_000];
+pub const INSERT_MISSING_KEY_COUNT: usize = 100;
 
 pub const SYNCHRONIZATION_THREAD_COUNT: usize = 3;
 pub const SYNCHRONIZATION_OP_COUNT: usize = 10_000;
 pub const SYNCHRONIZATION_HIT_KEY: u64 = 0;
 
-pub const WORKLOAD_ENTRY_COUNT: &[usize] = &[1_000, 10_000, 100_000];
 pub const WORKLOAD_OP_COUNT: usize = 10_000;
 pub const WORKLOAD_MISSING_KEY_COUNT: usize = 10_000;
 pub const WORKLOAD_CONCURRENT_THREAD_COUNTS: &[usize] = &[2, 3];

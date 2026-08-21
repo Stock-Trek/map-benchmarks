@@ -126,7 +126,7 @@ fn generate_zipfian_map_data(
 
 fn workload_zipfian_concurrent(c: &mut Criterion) {
     let max_threads = WORKLOAD_CONCURRENT_THREAD_COUNTS.last().unwrap();
-    for &entry_count in WORKLOAD_ENTRY_COUNT {
+    for &entry_count in ENTRY_COUNTS {
         let missing_key_count = max_threads * WORKLOAD_OP_COUNT;
         let map_data =
             generate_zipfian_map_data(entry_count, missing_key_count, WORKLOAD_ZIPFIAN_EXPONENT);

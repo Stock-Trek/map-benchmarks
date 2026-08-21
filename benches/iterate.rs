@@ -54,7 +54,7 @@ fn iterate(c: &mut Criterion) {
     let existing_key_count = 0;
     let missing_key_count = 0;
     let sort_keys = false;
-    for entry_count in OUT_OF_THE_BOX_ENTRY_COUNT {
+    for entry_count in ENTRY_COUNTS {
         let map_data = MapGen::generate(
             U64SparseDataGen,
             U64SparseDataGen,

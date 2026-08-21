@@ -68,7 +68,7 @@ fn workload_serial(c: &mut Criterion) {
     let missing_key_count = WORKLOAD_MISSING_KEY_COUNT;
     let sort_keys = false;
 
-    for &entry_count in WORKLOAD_ENTRY_COUNT {
+    for &entry_count in ENTRY_COUNTS {
         let existing_key_count = entry_count;
 
         let map_data = MapGen::generate(

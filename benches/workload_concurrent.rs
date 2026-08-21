@@ -97,7 +97,7 @@ fn bench<Map>(
 
 fn workload_concurrent(c: &mut Criterion) {
     let max_threads = WORKLOAD_CONCURRENT_THREAD_COUNTS.last().unwrap();
-    for &entry_count in WORKLOAD_ENTRY_COUNT {
+    for &entry_count in ENTRY_COUNTS {
         let existing_key_count = entry_count;
         let missing_key_count = max_threads * WORKLOAD_OP_COUNT;
         let sort_keys = false;
