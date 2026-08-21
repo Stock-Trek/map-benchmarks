@@ -5,6 +5,10 @@ pub const MEASUREMENT_TIME: Duration = Duration::from_secs(2);
 
 pub const OUT_OF_THE_BOX_ENTRY_COUNT: &[usize] = &[1_000, 10_000, 100_000];
 
+/// Entry counts for the growth benchmark: the map starts empty and is grown
+/// by inserting this many u64 keys on a single thread.
+pub const GROWTH_ENTRY_COUNT: &[usize] = &[1_000, 10_000, 100_000, 1_000_000];
+
 pub const SAME_HASHER_MAP_COUNT: usize = 10_000;
 
 pub const KEY_SENSITIVITY_ENTRY_COUNT: usize = 10_000;
