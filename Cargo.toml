@@ -39,6 +39,10 @@ name = "clone"
 harness = false
 
 [[bench]]
+name = "contention"
+harness = false
+
+[[bench]]
 name = "create"
 harness = false
 
