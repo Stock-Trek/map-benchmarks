@@ -1,4 +1,4 @@
-// How well does it cope when threads compete for the same keys? Tests synchronization granularity — how sharding/locking handles hot spots under uniform and skewed (Zipfian) key distributions.
+// How well does it cope when threads compete for the same keys? Tests synchronization granularity, how sharding/locking handles hot spots under uniform and skewed (Zipfian) key distributions.
 use bench_map::{
     concurrent_workers::ConcurrentWorkers,
     config::*,

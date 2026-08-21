@@ -1,4 +1,4 @@
-// Can a map be recycled as a reusable pool without paying rebuild costs? Tests capacity-retention semantics — whether clearing preserves the underlying allocation so refilling avoids reallocation and re-growth.
+// Can a map be recycled as a reusable pool without paying rebuild costs? Tests capacity-retention semantics, whether clearing preserves the underlying allocation so refilling avoids reallocation and re-growth.
 use bench_map::{
     config::*, constants::*, data::u64_sparse::U64SparseDataGen, expand_bench_with_map_data,
     expand_bench_with_map_data_and_hasher, map_data::MapData, map_gen::MapGen, maps::*,

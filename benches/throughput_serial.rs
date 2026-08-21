@@ -1,4 +1,4 @@
-// How does it perform on realistic single-threaded use? Tests the combined read/write/remove design — the interplay of all operations in one pass without concurrency overhead.
+// How does it perform on realistic single-threaded use? Tests the combined read/write/remove design, the interplay of all operations in one pass without concurrency overhead.
 use bench_map::{
     config::*,
     constants::*,

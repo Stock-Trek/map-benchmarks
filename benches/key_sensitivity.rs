@@ -1,4 +1,4 @@
-// How much does the choice of key type matter? Tests hashing and key-handling design — the cost of hashing/comparing keys of different sizes relative to the map itself.
+// How much does the choice of key type matter? Tests hashing and key-handling design, the cost of hashing/comparing keys of different sizes.
 use bench_map::{
     config::*,
     constants::*,
