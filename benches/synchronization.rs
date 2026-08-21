@@ -1,3 +1,4 @@
+// How does it handle synchronization? Tests locking/synchronization mechanisms when all threads hammer a single key under varying read/write mixes.
 use bench_map::{
     concurrent_workers::ConcurrentWorkers, config::*, constants::*,
     expand_bench_with_map_data_and_workload, map_data::MapData, maps::*,
