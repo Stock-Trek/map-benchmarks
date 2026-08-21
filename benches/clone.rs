@@ -1,6 +1,6 @@
 use bench_map::{
-    config::*, constants::*, data::u64_sparse::U64SparseDataGen, map_data::MapData,
-    map_gen::MapGen, maps::*, number_formatter::format_n,
+    config::*, constants::*, data::u64_sparse::U64SparseDataGen, expand_bench_with_map_data,
+    map_data::MapData, map_gen::MapGen, maps::*, number_formatter::format_n,
 };
 use criterion::{
     BenchmarkGroup, Criterion, Throughput, criterion_group, criterion_main, measurement::WallTime,
@@ -61,35 +61,29 @@ fn clone(c: &mut Criterion) {
         group.measurement_time(MEASUREMENT_TIME);
         group.throughput(Throughput::Elements(*entry_count as u64));
 
-        bench_clone::<AhashBenchMap<u64, u64>>("ahash", &mut group, &map_data);
-        bench_clone::<BTreeMapBenchMap<u64, u64>>("btreemap", &mut group, &map_data);
-        // bench_clone::<ConcreadBenchMap<u64, u64>>("concread", &mut group, &map_data); // doesn't implement Clone
-        bench_clone::<ConcurrentMapBenchMap<u64, u64>>("concurrent-map", &mut group, &map_data);
-        // bench_clone::<CrossbeamSkiplistBenchMap<u64, u64>>("crossbeam-skiplist", &mut group, &map_data); // doesn't implement Clone
-        bench_clone::<DashMapBenchMap<u64, u64>>("dashmap", &mut group, &map_data);
-        // bench_clone::<FlurryBenchMap<u64, u64>>("flurry", &mut group, &map_data); // too slow
-        bench_clone::<HashbrownBenchMap<u64, u64>>("hashbrown", &mut group, &map_data);
-        bench_clone::<HashlinkBenchMap<u64, u64>>("hashlink", &mut group, &map_data);
-        bench_clone::<HordeBenchMap<u64, u64>>("horde", &mut group, &map_data);
-        bench_clone::<ImmutableChunkMapBenchMap<u64, u64>>(
-            "immutable-chunkmap",
-            &mut group,
-            &map_data,
+        expand_bench_with_map_data!(bench_clone, &mut group, &map_data,
+            AhashBenchMap<u64, u64>,
+            BTreeMapBenchMap<u64, u64>,
+            // ConcreadBenchMap<u64, u64>, // doesn't implement Clone
+            ConcurrentMapBenchMap<u64, u64>,
+            // CrossbeamSkiplistBenchMap<u64, u64>, // doesn't implement Clone
+            DashMapBenchMap<u64, u64>,
+            // FlurryBenchMap<u64, u64>, // too slow
+            HashbrownBenchMap<u64, u64>,
+            HashlinkBenchMap<u64, u64>,
+            HordeBenchMap<u64, u64>,
+            ImmutableChunkMapBenchMap<u64, u64>,
+            ImblBenchMap<u64, u64>,
+            IndexMapBenchMap<u64, u64>,
+            // LeapfrogBenchMap<u64, u64>, // doesn't implement Clone
+            PapayaBenchMap<u64, u64>,
+            RpdsHashTrieMapBenchMap<u64, u64>,
+            RustCHashBenchMap<u64, u64>,
+            SccBenchMap<u64, u64>,
+            StarshardBenchMap<u64, u64>,
+            StdBenchMap<u64, u64>,
+            TxMapBenchMap<u64, u64>,
         );
-        bench_clone::<ImblBenchMap<u64, u64>>("imbl", &mut group, &map_data);
-        bench_clone::<IndexMapBenchMap<u64, u64>>("indexmap", &mut group, &map_data);
-        // bench_clone::<LeapfrogBenchMap<u64, u64>>("leapfrog", &mut group, &map_data); // doesn't implement Clone
-        bench_clone::<PapayaBenchMap<u64, u64>>("papaya", &mut group, &map_data);
-        bench_clone::<RpdsHashTrieMapBenchMap<u64, u64>>(
-            "rpds-hash-trie-map",
-            &mut group,
-            &map_data,
-        );
-        bench_clone::<RustCHashBenchMap<u64, u64>>("rustc-hash", &mut group, &map_data);
-        bench_clone::<SccBenchMap<u64, u64>>("scc", &mut group, &map_data);
-        bench_clone::<StarshardBenchMap<u64, u64>>("starshard", &mut group, &map_data);
-        bench_clone::<StdBenchMap<u64, u64>>("std", &mut group, &map_data);
-        bench_clone::<TxMapBenchMap<u64, u64>>("txmap", &mut group, &map_data);
     }
 }
 
@@ -114,39 +108,29 @@ fn clone_then_write(c: &mut Criterion) {
         group.measurement_time(MEASUREMENT_TIME);
         group.throughput(Throughput::Elements(*entry_count as u64));
 
-        bench_clone_then_write::<AhashBenchMap<u64, u64>>("ahash", &mut group, &map_data);
-        bench_clone_then_write::<BTreeMapBenchMap<u64, u64>>("btreemap", &mut group, &map_data);
-        // bench_clone_then_write::<ConcreadBenchMap<u64, u64>>("concread", &mut group, &map_data); // doesn't implement Clone
-        bench_clone_then_write::<ConcurrentMapBenchMap<u64, u64>>(
-            "concurrent-map",
-            &mut group,
-            &map_data,
+        expand_bench_with_map_data!(bench_clone_then_write, &mut group, &map_data,
+            AhashBenchMap<u64, u64>,
+            BTreeMapBenchMap<u64, u64>,
+            // ConcreadBenchMap<u64, u64>, // doesn't implement Clone
+            ConcurrentMapBenchMap<u64, u64>,
+            // CrossbeamSkiplistBenchMap<u64, u64>, // doesn't implement Clone
+            DashMapBenchMap<u64, u64>,
+            // FlurryBenchMap<u64, u64>, // too slow
+            HashbrownBenchMap<u64, u64>,
+            HashlinkBenchMap<u64, u64>,
+            HordeBenchMap<u64, u64>,
+            ImmutableChunkMapBenchMap<u64, u64>,
+            ImblBenchMap<u64, u64>,
+            IndexMapBenchMap<u64, u64>,
+            // LeapfrogBenchMap<u64, u64>, // doesn't implement Clone
+            PapayaBenchMap<u64, u64>,
+            RpdsHashTrieMapBenchMap<u64, u64>,
+            RustCHashBenchMap<u64, u64>,
+            SccBenchMap<u64, u64>,
+            StarshardBenchMap<u64, u64>,
+            StdBenchMap<u64, u64>,
+            TxMapBenchMap<u64, u64>,
         );
-        // bench_clone_then_write::<CrossbeamSkiplistBenchMap<u64, u64>>("crossbeam-skiplist", &mut group, &map_data); // doesn't implement Clone
-        bench_clone_then_write::<DashMapBenchMap<u64, u64>>("dashmap", &mut group, &map_data);
-        // bench_clone_then_write::<FlurryBenchMap<u64, u64>>("flurry", &mut group, &map_data); // too slow
-        bench_clone_then_write::<HashbrownBenchMap<u64, u64>>("hashbrown", &mut group, &map_data);
-        bench_clone_then_write::<HashlinkBenchMap<u64, u64>>("hashlink", &mut group, &map_data);
-        bench_clone_then_write::<HordeBenchMap<u64, u64>>("horde", &mut group, &map_data);
-        bench_clone_then_write::<ImmutableChunkMapBenchMap<u64, u64>>(
-            "immutable-chunkmap",
-            &mut group,
-            &map_data,
-        );
-        bench_clone_then_write::<ImblBenchMap<u64, u64>>("imbl", &mut group, &map_data);
-        bench_clone_then_write::<IndexMapBenchMap<u64, u64>>("indexmap", &mut group, &map_data);
-        // bench_clone_then_write::<LeapfrogBenchMap<u64, u64>>("leapfrog", &mut group, &map_data); // doesn't implement Clone
-        bench_clone_then_write::<PapayaBenchMap<u64, u64>>("papaya", &mut group, &map_data);
-        bench_clone_then_write::<RpdsHashTrieMapBenchMap<u64, u64>>(
-            "rpds-hash-trie-map",
-            &mut group,
-            &map_data,
-        );
-        bench_clone_then_write::<RustCHashBenchMap<u64, u64>>("rustc-hash", &mut group, &map_data);
-        bench_clone_then_write::<SccBenchMap<u64, u64>>("scc", &mut group, &map_data);
-        bench_clone_then_write::<StarshardBenchMap<u64, u64>>("starshard", &mut group, &map_data);
-        bench_clone_then_write::<StdBenchMap<u64, u64>>("std", &mut group, &map_data);
-        bench_clone_then_write::<TxMapBenchMap<u64, u64>>("txmap", &mut group, &map_data);
     }
 }
 

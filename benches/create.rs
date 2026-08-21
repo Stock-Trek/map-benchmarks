@@ -1,4 +1,4 @@
-use bench_map::{config::*, constants::*, maps::*};
+use bench_map::{config::*, constants::*, expand_bench, maps::*};
 use criterion::{
     BenchmarkGroup, Criterion, Throughput, criterion_group, criterion_main, measurement::WallTime,
 };
@@ -23,27 +23,29 @@ fn create(c: &mut Criterion) {
     group.measurement_time(MEASUREMENT_TIME);
     group.throughput(Throughput::Elements(DEFAULT_OP_COUNT as u64));
 
-    bench::<AhashBenchMap<u64, u64>>("ahash", &mut group);
-    bench::<BTreeMapBenchMap<u64, u64>>("btreemap", &mut group);
-    // bench::<ConcreadBenchMap<u64, u64>>("concread", &mut group); // too slow
-    bench::<ConcurrentMapBenchMap<u64, u64>>("concurrent-map", &mut group);
-    bench::<CrossbeamSkiplistBenchMap<u64, u64>>("crossbeam-skiplist", &mut group);
-    bench::<DashMapBenchMap<u64, u64>>("dashmap", &mut group);
-    // bench::<FlurryBenchMap<u64, u64>>("flurry", &mut group); // too slow (creates a seize::Collector per map)
-    bench::<HashbrownBenchMap<u64, u64>>("hashbrown", &mut group);
-    bench::<HashlinkBenchMap<u64, u64>>("hashlink", &mut group);
-    bench::<HordeBenchMap<u64, u64>>("horde", &mut group);
-    bench::<ImmutableChunkMapBenchMap<u64, u64>>("immutable-chunkmap", &mut group);
-    bench::<ImblBenchMap<u64, u64>>("imbl", &mut group);
-    bench::<IndexMapBenchMap<u64, u64>>("indexmap", &mut group);
-    bench::<LeapfrogBenchMap<u64, u64>>("leapfrog", &mut group);
-    bench::<PapayaBenchMap<u64, u64>>("papaya", &mut group);
-    bench::<RpdsHashTrieMapBenchMap<u64, u64>>("rpds-hash-trie-map", &mut group);
-    bench::<RustCHashBenchMap<u64, u64>>("rustc-hash", &mut group);
-    bench::<SccBenchMap<u64, u64>>("scc", &mut group);
-    bench::<StarshardBenchMap<u64, u64>>("starshard", &mut group);
-    bench::<StdBenchMap<u64, u64>>("std", &mut group);
-    bench::<TxMapBenchMap<u64, u64>>("txmap", &mut group);
+    expand_bench!(bench, &mut group,
+        AhashBenchMap<u64, u64>,
+        BTreeMapBenchMap<u64, u64>,
+        // ConcreadBenchMap<u64, u64>, // too slow
+        ConcurrentMapBenchMap<u64, u64>,
+        CrossbeamSkiplistBenchMap<u64, u64>,
+        DashMapBenchMap<u64, u64>,
+        // FlurryBenchMap<u64, u64>, // too slow (creates a seize::Collector per map)
+        HashbrownBenchMap<u64, u64>,
+        HashlinkBenchMap<u64, u64>,
+        HordeBenchMap<u64, u64>,
+        ImmutableChunkMapBenchMap<u64, u64>,
+        ImblBenchMap<u64, u64>,
+        IndexMapBenchMap<u64, u64>,
+        LeapfrogBenchMap<u64, u64>,
+        PapayaBenchMap<u64, u64>,
+        RpdsHashTrieMapBenchMap<u64, u64>,
+        RustCHashBenchMap<u64, u64>,
+        SccBenchMap<u64, u64>,
+        StarshardBenchMap<u64, u64>,
+        StdBenchMap<u64, u64>,
+        TxMapBenchMap<u64, u64>,
+    );
 }
 
 criterion_group!(group, create);
