@@ -4,7 +4,7 @@ use bench_map::{
     concurrent_workers::ConcurrentWorkers,
     config::*,
     constants::*,
-    data::{u64_dense::U64DenseDataGen, u64_sparse::U64SparseDataGen},
+    data::{string::StringDataGen, u64_dense::U64DenseDataGen, u64_sparse::U64SparseDataGen},
     expand_bench_concurrent, expand_bench_concurrent_with_common_hasher,
     map_data::MapData,
     map_gen::MapGen,
@@ -157,8 +157,16 @@ fn bench_same_hasher<Map, K>(
 fn contention(c: &mut Criterion) {
     let design = WorkloadDesign::contention(DEFAULT_OP_COUNT);
     let missing_key_count = DEFAULT_THREAD_COUNT * DEFAULT_OP_COUNT;
-    let map_data = MapGen::generate(
+    let map_data_u64 = MapGen::generate(
         U64DenseDataGen,
+        U64SparseDataGen,
+        DEFAULT_ENTRY_COUNT,
+        DEFAULT_ENTRY_COUNT,
+        missing_key_count,
+        true,
+    );
+    let map_data_string_32 = MapGen::generate(
+        StringDataGen::<32>,
         U64SparseDataGen,
         DEFAULT_ENTRY_COUNT,
         DEFAULT_ENTRY_COUNT,
@@ -179,24 +187,34 @@ fn contention(c: &mut Criterion) {
             .map(|_| {
                 key_distribution.thread_workload(
                     &design,
-                    map_data.existing_keys(),
-                    map_data.missing_keys(),
+                    map_data_u64.existing_keys(),
+                    map_data_u64.missing_keys(),
+                    &mut rng,
+                )
+            })
+            .collect::<Vec<_>>();
+        let workloads_string_32 = (0..DEFAULT_THREAD_COUNT)
+            .map(|_| {
+                key_distribution.thread_workload(
+                    &design,
+                    map_data_string_32.existing_keys(),
+                    map_data_string_32.missing_keys(),
                     &mut rng,
                 )
             })
             .collect::<Vec<_>>();
 
-        // default hashers
+        // default hashers, u64 keys
         {
             let mut group = c.benchmark_group(format!(
-                "contention/threads-{DEFAULT_THREAD_COUNT}/{DEFAULT_HASHER}/{}",
+                "contention/threads-{DEFAULT_THREAD_COUNT}/{DEFAULT_HASHER}/u64/{}",
                 key_distribution
             ));
             group.warm_up_time(WARM_UP_TIME);
             group.measurement_time(MEASUREMENT_TIME);
             group.throughput(Throughput::Elements(total_ops as u64));
 
-            expand_bench_concurrent!(bench_out_of_the_box, u64, &mut group, &map_data, DEFAULT_THREAD_COUNT, &workloads,
+            expand_bench_concurrent!(bench_out_of_the_box, u64, &mut group, &map_data_u64, DEFAULT_THREAD_COUNT, &workloads,
                 // AhashBenchMap<u64, u64>, // not concurrent
                 // BTreeMapBenchMap<u64, u64>, // not concurrent
                 // ConcreadBenchMap<u64, u64>, // too slow
@@ -222,17 +240,53 @@ fn contention(c: &mut Criterion) {
             );
         }
 
-        // CommonHasher
+        // default hashers, String<32> keys
         {
             let mut group = c.benchmark_group(format!(
-                "contention/threads-{DEFAULT_THREAD_COUNT}/{COMMON_HASHER}/{}",
+                "contention/threads-{DEFAULT_THREAD_COUNT}/{DEFAULT_HASHER}/String<32>/{}",
                 key_distribution
             ));
             group.warm_up_time(WARM_UP_TIME);
             group.measurement_time(MEASUREMENT_TIME);
             group.throughput(Throughput::Elements(total_ops as u64));
 
-            expand_bench_concurrent_with_common_hasher!(bench_same_hasher, u64, &mut group, &map_data, DEFAULT_THREAD_COUNT, &workloads,
+            expand_bench_concurrent!(bench_out_of_the_box, String, &mut group, &map_data_string_32, DEFAULT_THREAD_COUNT, &workloads_string_32,
+                // AhashBenchMap<String, u64>, // not concurrent
+                // BTreeMapBenchMap<String, u64>, // not concurrent
+                // ConcreadBenchMap<String, u64>, // too slow
+                ConcurrentMapBenchMap<String, u64>,
+                CrossbeamSkiplistBenchMap<String, u64>,
+                DashMapBenchMap<String, u64>,
+                // FlurryBenchMap<String, u64>, // too slow
+                // HashbrownBenchMap<String, u64>, // not concurrent
+                // HashlinkBenchMap<String, u64>, // mutation requires &mut, cannot mutate through a shared reference
+                // HordeBenchMap<String, u64>, // mutation requires &mut, cannot mutate through a shared reference
+                // ImmutableChunkMapBenchMap<String, u64>, // mutation returns a new map; requires &mut or storing the result, cannot mutate through a shared reference
+                // ImblBenchMap<String, u64>, // mutation requires &mut, cannot mutate through a shared reference
+                // IndexMapBenchMap<String, u64>, // not concurrent
+                // IntMapBenchMap<String, u64>, // keys require IntKey
+                // LeapfrogBenchMap<String, u64>, // keys require Copy
+                PapayaBenchMap<String, u64>,
+                // RpdsHashTrieMapBenchMap<String, u64> // mutation returns a new map; requires &mut or storing the result, cannot mutate through a shared reference
+                // RustCHashBenchMap<String, u64> // not concurrent
+                SccBenchMap<String, u64>,
+                StarshardBenchMap<String, u64>,
+                // StdBenchMap<String, u64>, // not concurrent
+                TxMapBenchMap<String, u64>,
+            );
+        }
+
+        // CommonHasher, u64 keys
+        {
+            let mut group = c.benchmark_group(format!(
+                "contention/threads-{DEFAULT_THREAD_COUNT}/{COMMON_HASHER}/u64/{}",
+                key_distribution
+            ));
+            group.warm_up_time(WARM_UP_TIME);
+            group.measurement_time(MEASUREMENT_TIME);
+            group.throughput(Throughput::Elements(total_ops as u64));
+
+            expand_bench_concurrent_with_common_hasher!(bench_same_hasher, u64, &mut group, &map_data_u64, DEFAULT_THREAD_COUNT, &workloads,
                 // AhashBenchMap<u64, u64, CommonHasher>, // not concurrent
                 // BTreeMapBenchMap<u64, u64, CommonHasher>, // not concurrent
                 // ConcreadBenchMap<u64, u64, CommonHasher>, // too slow
@@ -255,6 +309,42 @@ fn contention(c: &mut Criterion) {
                 StarshardBenchMap<u64, u64, CommonHasher>,
                 // StdBenchMap<u64, u64, CommonHasher>, // not concurrent
                 TxMapBenchMap<u64, u64, CommonHasher>,
+            );
+        }
+
+        // CommonHasher, String<32> keys
+        {
+            let mut group = c.benchmark_group(format!(
+                "contention/threads-{DEFAULT_THREAD_COUNT}/{COMMON_HASHER}/String<32>/{}",
+                key_distribution
+            ));
+            group.warm_up_time(WARM_UP_TIME);
+            group.measurement_time(MEASUREMENT_TIME);
+            group.throughput(Throughput::Elements(total_ops as u64));
+
+            expand_bench_concurrent_with_common_hasher!(bench_same_hasher, String, &mut group, &map_data_string_32, DEFAULT_THREAD_COUNT, &workloads_string_32,
+                // AhashBenchMap<String, u64, CommonHasher>, // not concurrent
+                // BTreeMapBenchMap<String, u64, CommonHasher>, // not concurrent
+                // ConcreadBenchMap<String, u64, CommonHasher>, // too slow
+                // ConcurrentMapBenchMap<String, u64, CommonHasher>, // doesn't allow setting hasher
+                // CrossbeamSkiplistBenchMap<String, u64, CommonHasher>, // doesn't allow setting hasher
+                DashMapBenchMap<String, u64, CommonHasher>,
+                // FlurryBenchMap<String, u64, CommonHasher>, // too slow
+                // HashbrownBenchMap<String, u64, CommonHasher>, // not concurrent
+                // HashlinkBenchMap<String, u64, CommonHasher>, // mutation requires &mut, cannot mutate through a shared reference
+                // HordeBenchMap<String, u64, CommonHasher>, // mutation requires &mut, cannot mutate through a shared reference
+                // ImmutableChunkMapBenchMap<String, u64, CommonHasher>, // mutation returns a new map; requires &mut or storing the result, cannot mutate through a shared reference
+                // ImblBenchMap<String, u64, CommonHasher>, // mutation requires &mut, cannot mutate through a shared reference
+                // IndexMapBenchMap<String, u64, CommonHasher>, // not concurrent
+                // IntMapBenchMap<String, u64, CommonHasher>, // keys require IntKey
+                // LeapfrogBenchMap<String, u64, CommonHasher>, // keys require Copy
+                PapayaBenchMap<String, u64, CommonHasher>,
+                // RpdsHashTrieMapBenchMap<String, u64, CommonHasher>, // mutation returns a new map; requires &mut or storing the result, cannot mutate through a shared reference
+                // RustCHashBenchMap<String, u64, CommonHasher>, // not concurrent
+                SccBenchMap<String, u64, CommonHasher>,
+                StarshardBenchMap<String, u64, CommonHasher>,
+                // StdBenchMap<String, u64, CommonHasher>, // not concurrent
+                TxMapBenchMap<String, u64, CommonHasher>,
             );
         }
     }

@@ -53,9 +53,8 @@ fn key_sensitivity(c: &mut Criterion) {
             missing_key_count as usize,
             sort_keys,
         );
-        let mut group = c.benchmark_group(format!(
-            "{KEY_SENSITIVITY_GROUP_NAME}/{COMMON_HASHER}/u64"
-        ));
+        let mut group =
+            c.benchmark_group(format!("{KEY_SENSITIVITY_GROUP_NAME}/{COMMON_HASHER}/u64"));
         group.warm_up_time(WARM_UP_TIME);
         group.measurement_time(MEASUREMENT_TIME);
         group.throughput(Throughput::Elements(existing_key_count));
