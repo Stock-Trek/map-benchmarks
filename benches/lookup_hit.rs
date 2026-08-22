@@ -81,7 +81,7 @@ fn lookup_hit(c: &mut Criterion) {
 
     // default hasher, u64 keys
     {
-        let mut group = c.benchmark_group(format!("lookup-hit/{OUT_OF_THE_BOX_GROUP_NAME}/u64"));
+        let mut group = c.benchmark_group(format!("lookup-hit/{DEFAULT_HASHER}/u64"));
         group.warm_up_time(WARM_UP_TIME);
         group.measurement_time(MEASUREMENT_TIME);
         group.throughput(Throughput::Elements(existing_key_count as u64));
@@ -114,7 +114,7 @@ fn lookup_hit(c: &mut Criterion) {
 
     // CommonHasher, u64 keys
     {
-        let mut group = c.benchmark_group(format!("lookup-hit/{SAME_HASHER_GROUP_NAME}/u64"));
+        let mut group = c.benchmark_group(format!("lookup-hit/{SAME_HASHER}/u64"));
         group.warm_up_time(WARM_UP_TIME);
         group.measurement_time(MEASUREMENT_TIME);
         group.throughput(Throughput::Elements(existing_key_count as u64));
@@ -148,7 +148,7 @@ fn lookup_hit(c: &mut Criterion) {
     // default hasher, String<32> keys
     {
         let mut group =
-            c.benchmark_group(format!("lookup-hit/{OUT_OF_THE_BOX_GROUP_NAME}/String<32>"));
+            c.benchmark_group(format!("lookup-hit/{DEFAULT_HASHER}/String<32>"));
         group.warm_up_time(WARM_UP_TIME);
         group.measurement_time(MEASUREMENT_TIME);
         group.throughput(Throughput::Elements(existing_key_count as u64));
@@ -182,7 +182,7 @@ fn lookup_hit(c: &mut Criterion) {
     // CommonHasher, String<32> keys
     {
         let mut group =
-            c.benchmark_group(format!("lookup-hit/{SAME_HASHER_GROUP_NAME}/String<32>"));
+            c.benchmark_group(format!("lookup-hit/{SAME_HASHER}/String<32>"));
         group.warm_up_time(WARM_UP_TIME);
         group.measurement_time(MEASUREMENT_TIME);
         group.throughput(Throughput::Elements(existing_key_count as u64));

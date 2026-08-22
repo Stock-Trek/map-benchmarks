@@ -193,7 +193,7 @@ fn throughput_concurrent(c: &mut Criterion) {
             // default hashers
             {
                 let mut group = c.benchmark_group(format!(
-                    "throughput-{}-threads/{OUT_OF_THE_BOX_GROUP_NAME}/{}",
+                    "throughput/threads-{}/{DEFAULT_HASHER}/{}",
                     thread_count, name
                 ));
                 group.warm_up_time(WARM_UP_TIME);
@@ -229,7 +229,7 @@ fn throughput_concurrent(c: &mut Criterion) {
             // CommonHasher
             {
                 let mut group = c.benchmark_group(format!(
-                    "throughput-{}-threads/{SAME_HASHER_GROUP_NAME}/{}",
+                    "throughput/threads-{}/{SAME_HASHER}/{}",
                     thread_count, name
                 ));
                 group.warm_up_time(WARM_UP_TIME);

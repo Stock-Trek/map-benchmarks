@@ -97,7 +97,7 @@ fn insert(c: &mut Criterion) {
 
     // default hasher, u64 keys
     {
-        let mut group = c.benchmark_group(format!("insert/{OUT_OF_THE_BOX_GROUP_NAME}/u64"));
+        let mut group = c.benchmark_group(format!("insert/{DEFAULT_HASHER}/u64"));
         group.warm_up_time(WARM_UP_TIME);
         group.measurement_time(MEASUREMENT_TIME);
         group.throughput(Throughput::Elements(missing_key_count as u64));
@@ -130,7 +130,7 @@ fn insert(c: &mut Criterion) {
 
     // CommonHasher, u64 keys
     {
-        let mut group = c.benchmark_group(format!("insert/{SAME_HASHER_GROUP_NAME}/u64"));
+        let mut group = c.benchmark_group(format!("insert/{SAME_HASHER}/u64"));
         group.warm_up_time(WARM_UP_TIME);
         group.measurement_time(MEASUREMENT_TIME);
         group.throughput(Throughput::Elements(missing_key_count as u64));
@@ -163,7 +163,7 @@ fn insert(c: &mut Criterion) {
 
     // default hasher, String<32> keys
     {
-        let mut group = c.benchmark_group(format!("insert/{OUT_OF_THE_BOX_GROUP_NAME}/String<32>"));
+        let mut group = c.benchmark_group(format!("insert/{DEFAULT_HASHER}/String<32>"));
         group.warm_up_time(WARM_UP_TIME);
         group.measurement_time(MEASUREMENT_TIME);
         group.throughput(Throughput::Elements(missing_key_count as u64));
@@ -196,7 +196,7 @@ fn insert(c: &mut Criterion) {
 
     // CommonHasher, String<32> keys
     {
-        let mut group = c.benchmark_group(format!("insert/{SAME_HASHER_GROUP_NAME}/String<32>"));
+        let mut group = c.benchmark_group(format!("insert/{SAME_HASHER}/String<32>"));
         group.warm_up_time(WARM_UP_TIME);
         group.measurement_time(MEASUREMENT_TIME);
         group.throughput(Throughput::Elements(missing_key_count as u64));

@@ -1,2 +1,2 @@
-pub const OUT_OF_THE_BOX_GROUP_NAME: &str = "out-of-the-box";
-pub const SAME_HASHER_GROUP_NAME: &str = "same-hasher";
+pub const DEFAULT_HASHER: &str = "default-hasher";
+pub const SAME_HASHER: &str = "same-hasher";

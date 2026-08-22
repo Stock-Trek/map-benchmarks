@@ -204,7 +204,7 @@ fn synchronization(c: &mut Criterion) {
         // default hashers
         {
             let mut group = c.benchmark_group(format!(
-                "synchronization-{DEFAULT_THREAD_COUNT}-threads/{OUT_OF_THE_BOX_GROUP_NAME}/{}",
+                "synchronization/threads-{DEFAULT_THREAD_COUNT}/{DEFAULT_HASHER}/{}",
                 name
             ));
             group.warm_up_time(WARM_UP_TIME);
@@ -240,7 +240,7 @@ fn synchronization(c: &mut Criterion) {
         // CommonHasher
         {
             let mut group = c.benchmark_group(format!(
-                "synchronization-{DEFAULT_THREAD_COUNT}-threads/{SAME_HASHER_GROUP_NAME}/{}",
+                "synchronization/threads-{DEFAULT_THREAD_COUNT}/{SAME_HASHER}/{}",
                 name
             ));
             group.warm_up_time(WARM_UP_TIME);

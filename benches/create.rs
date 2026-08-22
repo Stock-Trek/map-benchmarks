@@ -19,7 +19,7 @@ where
 }
 
 fn create(c: &mut Criterion) {
-    let mut group = c.benchmark_group(format!("create/{OUT_OF_THE_BOX_GROUP_NAME}"));
+    let mut group = c.benchmark_group(format!("create/{DEFAULT_HASHER}"));
     group.warm_up_time(WARM_UP_TIME);
     group.measurement_time(MEASUREMENT_TIME);
     group.throughput(Throughput::Elements(DEFAULT_OP_COUNT as u64));
