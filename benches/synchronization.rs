@@ -9,14 +9,14 @@ use criterion::{
     measurement::WallTime,
 };
 use rand::RngExt;
-use std::{cell::Cell, hint::black_box, sync::Arc};
+use std::{cell::Cell, hash::Hash, hint::black_box, sync::Arc};
 
 /// A single operation of the synchronization benchmark, performed on the one
 /// contended key.
 #[derive(Clone, Copy, Debug)]
-enum SyncOp {
-    Read,
-    Write,
+enum SyncOp<K> {
+    Read(K),
+    Write(K),
 }
 
 const SYNCHRONIZATION_HIT_KEY: u64 = 0;
@@ -37,57 +37,68 @@ const SYNC_WORKLOADS: &[(&str, f64)] = &[
 /// Generates one worker's operations: `op_count` operations on the single
 /// synchronization key, each a read with probability `read_ratio` and a write
 /// otherwise.
-fn generate_sync_workload(op_count: usize, read_ratio: f64, rng: &mut impl RngExt) -> Vec<SyncOp> {
+fn generate_sync_workload<K>(
+    op_count: usize,
+    read_ratio: f64,
+    rng: &mut impl RngExt,
+    hit_key: K,
+) -> Vec<SyncOp<K>>
+where
+    K: Clone,
+{
     let mut ops = Vec::with_capacity(op_count);
     for _ in 0..op_count {
         ops.push(if rng.random_bool(read_ratio) {
-            SyncOp::Read
+            SyncOp::Read(hit_key.clone())
         } else {
-            SyncOp::Write
+            SyncOp::Write(hit_key.clone())
         });
     }
     ops
 }
 
-fn run_sync_workload<M>(ops: &[SyncOp], map: &M)
+fn run_sync_workload<M, K>(ops: &[SyncOp<K>], map: &M)
 where
-    M: BenchMapGetCloned<u64, u64> + BenchMapInsert<u64, u64>,
+    M: BenchMapGetCloned<K, u64> + BenchMapInsert<K, u64>,
+    K: Clone,
 {
     for op in ops {
         match op {
-            SyncOp::Read => {
-                black_box(map.get_cloned(&SYNCHRONIZATION_HIT_KEY));
+            SyncOp::Read(hit_key) => {
+                black_box(map.get_cloned(&hit_key));
             }
-            SyncOp::Write => {
-                map.insert(SYNCHRONIZATION_HIT_KEY, 42u64);
+            SyncOp::Write(hit_key) => {
+                map.insert(hit_key.clone(), 42u64);
             }
         }
     }
 }
 
-fn bench_out_of_the_box<Map>(
+fn bench_out_of_the_box<Map, K>(
     name: &str,
     group: &mut BenchmarkGroup<WallTime>,
-    map_data: &MapData<u64, u64>,
+    map_data: &MapData<K, u64>,
     thread_count: usize,
-    workloads: &[Vec<SyncOp>],
+    workloads: &[Vec<SyncOp<K>>],
 ) where
-    Map: BenchMapNew<u64, u64>
-        + BenchMapMutInsert<u64, u64>
-        + BenchMapGetCloned<u64, u64>
-        + BenchMapInsert<u64, u64>
+    Map: BenchMapNew<K, u64>
+        + BenchMapMutInsert<K, u64>
+        + BenchMapGetCloned<K, u64>
+        + BenchMapInsert<K, u64>
         + Send
         + Sync
         + 'static,
+    K: Clone + Hash + Eq + Send + Sync + 'static,
 {
     group.bench_function(name, move |b| {
         // Spawn and pin the worker threads once per sample, outside the timed
         // region, so thread spawn/join and CPU-pinning costs are amortized
         // instead of being measured on every iteration.
-        let workers =
-            ConcurrentWorkers::<Vec<SyncOp>, Map>::new(thread_count, workloads, |ops, map| {
-                run_sync_workload(ops, map)
-            });
+        let workers = ConcurrentWorkers::<Vec<SyncOp<K>>, Map>::new(
+            thread_count,
+            workloads,
+            move |ops, map| run_sync_workload(ops, map),
+        );
         // 1-based index of the iteration about to be timed; used to derive the
         // cumulative `done` target for the worker pool.
         let iteration = Cell::new(0usize);
@@ -115,28 +126,29 @@ fn bench_out_of_the_box<Map>(
     });
 }
 
-fn bench_same_hasher<Map>(
+fn bench_same_hasher<Map, K>(
     name: &str,
     group: &mut BenchmarkGroup<WallTime>,
-    map_data: &MapData<u64, u64>,
+    map_data: &MapData<K, u64>,
     thread_count: usize,
-    workloads: &[Vec<SyncOp>],
+    workloads: &[Vec<SyncOp<K>>],
     hasher: CommonHasher,
 ) where
-    Map: BenchMapNewWithHasher<u64, u64, CommonHasher>
-        + BenchMapMutInsert<u64, u64>
-        + BenchMapGetCloned<u64, u64>
-        + BenchMapInsert<u64, u64>
+    Map: BenchMapNewWithHasher<K, u64, CommonHasher>
+        + BenchMapMutInsert<K, u64>
+        + BenchMapGetCloned<K, u64>
+        + BenchMapInsert<K, u64>
         + Send
         + Sync
         + 'static,
+    K: Clone + Hash + Eq + Send + Sync + 'static,
 {
     group.bench_function(name, move |b| {
         // Spawn and pin the worker threads once per sample, outside the timed
         // region, so thread spawn/join and CPU-pinning costs are amortized
         // instead of being measured on every iteration.
         let workers =
-            ConcurrentWorkers::<Vec<SyncOp>, Map>::new(thread_count, workloads, |ops, map| {
+            ConcurrentWorkers::<Vec<SyncOp<K>>, Map>::new(thread_count, workloads, |ops, map| {
                 run_sync_workload(ops, map)
             });
         // 1-based index of the iteration about to be timed; used to derive the
@@ -179,7 +191,14 @@ fn synchronization(c: &mut Criterion) {
     for &(name, read_ratio) in SYNC_WORKLOADS {
         let total_ops = DEFAULT_THREAD_COUNT * DEFAULT_OP_COUNT;
         let workloads = (0..DEFAULT_THREAD_COUNT)
-            .map(|_| generate_sync_workload(DEFAULT_OP_COUNT, read_ratio, &mut rng))
+            .map(|_| {
+                generate_sync_workload(
+                    DEFAULT_OP_COUNT,
+                    read_ratio,
+                    &mut rng,
+                    SYNCHRONIZATION_HIT_KEY,
+                )
+            })
             .collect::<Vec<_>>();
 
         // default hashers
@@ -192,7 +211,7 @@ fn synchronization(c: &mut Criterion) {
             group.measurement_time(MEASUREMENT_TIME);
             group.throughput(Throughput::Elements(total_ops as u64));
 
-            expand_bench_concurrent!(bench_out_of_the_box, &mut group, &map_data, DEFAULT_THREAD_COUNT, &workloads,
+            expand_bench_concurrent!(bench_out_of_the_box, u64, &mut group, &map_data, DEFAULT_THREAD_COUNT, &workloads,
                 // AhashBenchMap<u64, u64>, // not concurrent
                 // BTreeMapBenchMap<u64, u64>, // not concurrent
                 // ConcreadBenchMap<u64, u64>, // too slow
@@ -228,7 +247,7 @@ fn synchronization(c: &mut Criterion) {
             group.measurement_time(MEASUREMENT_TIME);
             group.throughput(Throughput::Elements(total_ops as u64));
 
-            expand_bench_concurrent_with_common_hasher!(bench_same_hasher, &mut group, &map_data, DEFAULT_THREAD_COUNT, &workloads,
+            expand_bench_concurrent_with_common_hasher!(bench_same_hasher, u64, &mut group, &map_data, DEFAULT_THREAD_COUNT, &workloads,
                 // AhashBenchMap<u64, u64, CommonHasher>, // not concurrent
                 // BTreeMapBenchMap<u64, u64, CommonHasher>, // not concurrent
                 // ConcreadBenchMap<u64, u64, CommonHasher>, // too slow

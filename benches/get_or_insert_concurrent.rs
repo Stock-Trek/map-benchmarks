@@ -9,64 +9,64 @@ use criterion::{
     measurement::WallTime,
 };
 use rand::RngExt;
-use std::{cell::Cell, hint::black_box, sync::Arc};
-
-/// The fraction of get-or-insert operations that hit keys already in the map;
-/// the remainder are missing keys that get inserted (the "get-or-create cache
-/// entry" pattern).
-const GET_OR_INSERT_HIT_RATIO: f64 = 0.90;
+use std::{cell::Cell, hash::Hash, hint::black_box, sync::Arc};
 
 /// Generates one worker's operations: `op_count` keys, each an existing key
 /// with probability `hit_ratio` and a missing key otherwise.
-fn generate_workload(
+fn generate_workload<K>(
     op_count: usize,
     hit_ratio: f64,
-    existing_keys: &[u64],
-    missing_keys: &[u64],
+    existing_keys: &[K],
+    missing_keys: &[K],
     rng: &mut impl RngExt,
-) -> Vec<u64> {
+) -> Vec<K>
+where
+    K: Clone,
+{
     let mut keys = Vec::with_capacity(op_count);
     for _ in 0..op_count {
         let key = if rng.random_bool(hit_ratio) {
-            existing_keys[rng.random_range(0..existing_keys.len())]
+            existing_keys[rng.random_range(0..existing_keys.len())].clone()
         } else {
-            missing_keys[rng.random_range(0..missing_keys.len())]
+            missing_keys[rng.random_range(0..missing_keys.len())].clone()
         };
         keys.push(key);
     }
     keys
 }
 
-fn run_get_or_insert<M>(keys: &[u64], map: &M)
+fn run_get_or_insert<M, K>(keys: &[K], map: &M)
 where
-    M: BenchMapGetOrInsert<u64, u64>,
+    M: BenchMapGetOrInsert<K, u64>,
+    K: Clone,
 {
     for key in keys {
         let key = black_box(key);
-        black_box(map.get_or_insert(*key, 42));
+        black_box(map.get_or_insert(key.clone(), 42));
     }
 }
 
-fn bench_out_of_the_box<Map>(
+fn bench_out_of_the_box<Map, K>(
     name: &str,
     group: &mut BenchmarkGroup<WallTime>,
-    map_data: &MapData<u64, u64>,
+    map_data: &MapData<K, u64>,
     thread_count: usize,
-    workloads: &[Vec<u64>],
+    workloads: &[Vec<K>],
 ) where
-    Map: BenchMapNew<u64, u64>
-        + BenchMapMutInsert<u64, u64>
-        + BenchMapGetOrInsert<u64, u64>
+    Map: BenchMapNew<K, u64>
+        + BenchMapMutInsert<K, u64>
+        + BenchMapGetOrInsert<K, u64>
         + Send
         + Sync
         + 'static,
+    K: Clone + Hash + Eq + Send + Sync + 'static,
 {
     group.bench_function(name, move |b| {
         // Spawn and pin the worker threads once per sample, outside the timed
         // region, so thread spawn/join and CPU-pinning costs are amortized
         // instead of being measured on every iteration.
         let workers =
-            ConcurrentWorkers::<Vec<u64>, Map>::new(thread_count, workloads, |keys, map| {
+            ConcurrentWorkers::<Vec<K>, Map>::new(thread_count, workloads, |keys, map| {
                 run_get_or_insert(keys, map)
             });
         // 1-based index of the iteration about to be timed; used to derive the
@@ -96,27 +96,28 @@ fn bench_out_of_the_box<Map>(
     });
 }
 
-fn bench_same_hasher<Map>(
+fn bench_same_hasher<Map, K>(
     name: &str,
     group: &mut BenchmarkGroup<WallTime>,
-    map_data: &MapData<u64, u64>,
+    map_data: &MapData<K, u64>,
     thread_count: usize,
-    workloads: &[Vec<u64>],
+    workloads: &[Vec<K>],
     hasher: CommonHasher,
 ) where
-    Map: BenchMapNewWithHasher<u64, u64, CommonHasher>
-        + BenchMapMutInsert<u64, u64>
-        + BenchMapGetOrInsert<u64, u64>
+    Map: BenchMapNewWithHasher<K, u64, CommonHasher>
+        + BenchMapMutInsert<K, u64>
+        + BenchMapGetOrInsert<K, u64>
         + Send
         + Sync
         + 'static,
+    K: Clone + Hash + Eq + Send + Sync + 'static,
 {
     group.bench_function(name, move |b| {
         // Spawn and pin the worker threads once per sample, outside the timed
         // region, so thread spawn/join and CPU-pinning costs are amortized
         // instead of being measured on every iteration.
         let workers =
-            ConcurrentWorkers::<Vec<u64>, Map>::new(thread_count, workloads, |keys, map| {
+            ConcurrentWorkers::<Vec<K>, Map>::new(thread_count, workloads, |keys, map| {
                 run_get_or_insert(keys, map)
             });
         // 1-based index of the iteration about to be timed; used to derive the
@@ -187,7 +188,7 @@ fn get_or_insert_concurrent(c: &mut Criterion) {
             group.measurement_time(MEASUREMENT_TIME);
             group.throughput(Throughput::Elements(total_ops as u64));
 
-            expand_bench_concurrent!(bench_out_of_the_box, &mut group, &map_data, thread_count, &workloads,
+            expand_bench_concurrent!(bench_out_of_the_box, u64, &mut group, &map_data, thread_count, &workloads,
                 // AhashBenchMap<u64, u64>, // not concurrent
                 // BTreeMapBenchMap<u64, u64>, // not concurrent
                 // ConcreadBenchMap<u64, u64>, // too slow
@@ -223,7 +224,7 @@ fn get_or_insert_concurrent(c: &mut Criterion) {
             group.measurement_time(MEASUREMENT_TIME);
             group.throughput(Throughput::Elements(total_ops as u64));
 
-            expand_bench_concurrent_with_common_hasher!(bench_same_hasher, &mut group, &map_data, thread_count, &workloads,
+            expand_bench_concurrent_with_common_hasher!(bench_same_hasher, u64, &mut group, &map_data, thread_count, &workloads,
                 // AhashBenchMap<u64, u64, CommonHasher>, // not concurrent
                 // BTreeMapBenchMap<u64, u64, CommonHasher>, // not concurrent
                 // ConcreadBenchMap<u64, u64, CommonHasher>, // too slow

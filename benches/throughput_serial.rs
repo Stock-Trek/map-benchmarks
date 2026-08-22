@@ -18,13 +18,14 @@ use criterion::{
     BatchSize, BenchmarkGroup, Criterion, Throughput, criterion_group, criterion_main,
     measurement::WallTime,
 };
-use std::hint::black_box;
+use std::{hash::Hash, hint::black_box};
 
-fn run_workload<M>(workload: &ThreadWorkload, map: &mut M)
+fn run_workload<M, K>(workload: &ThreadWorkload<K>, map: &mut M)
 where
-    M: BenchMapGetCloned<u64, u64>,
-    M: BenchMapMutInsert<u64, u64>,
-    M: BenchMapMutRemove<u64, u64>,
+    M: BenchMapGetCloned<K, u64>,
+    M: BenchMapMutInsert<K, u64>,
+    M: BenchMapMutRemove<K, u64>,
+    K: Clone,
 {
     for item in &workload.items {
         match item.op {
@@ -33,7 +34,7 @@ where
                 black_box(map.get_cloned(key));
             }
             WorkloadOp::Insert => {
-                let key = black_box(item.key);
+                let key = black_box(item.key.clone());
                 map.insert(key, 42u64);
             }
             WorkloadOp::Remove => {
@@ -44,17 +45,18 @@ where
     }
 }
 
-fn bench_out_of_the_box<Map>(
+fn bench_out_of_the_box<Map, K>(
     name: &str,
     group: &mut BenchmarkGroup<WallTime>,
-    map_data: &MapData<u64, u64>,
+    map_data: &MapData<K, u64>,
     _thread_count_1: usize,
-    workload: &ThreadWorkload,
+    workload: &ThreadWorkload<K>,
 ) where
-    Map: BenchMapNew<u64, u64>
-        + BenchMapMutInsert<u64, u64>
-        + BenchMapMutRemove<u64, u64>
-        + BenchMapGetCloned<u64, u64>,
+    Map: BenchMapNew<K, u64>
+        + BenchMapMutInsert<K, u64>
+        + BenchMapMutRemove<K, u64>
+        + BenchMapGetCloned<K, u64>,
+    K: Clone + Hash + Eq,
 {
     group.bench_function(name, move |b| {
         b.iter_batched(
@@ -67,18 +69,19 @@ fn bench_out_of_the_box<Map>(
     });
 }
 
-fn bench_same_hasher<Map>(
+fn bench_same_hasher<Map, K>(
     name: &str,
     group: &mut BenchmarkGroup<WallTime>,
-    map_data: &MapData<u64, u64>,
+    map_data: &MapData<K, u64>,
     _thread_count_1: usize,
-    workload: &ThreadWorkload,
+    workload: &ThreadWorkload<K>,
     hasher: CommonHasher,
 ) where
-    Map: BenchMapNewWithHasher<u64, u64, CommonHasher>
-        + BenchMapMutInsert<u64, u64>
-        + BenchMapMutRemove<u64, u64>
-        + BenchMapGetCloned<u64, u64>,
+    Map: BenchMapNewWithHasher<K, u64, CommonHasher>
+        + BenchMapMutInsert<K, u64>
+        + BenchMapMutRemove<K, u64>
+        + BenchMapGetCloned<K, u64>,
+    K: Clone + Hash + Eq,
 {
     group.bench_function(name, move |b| {
         b.iter_batched(
@@ -130,7 +133,7 @@ fn throughput_serial(c: &mut Criterion) {
             group.measurement_time(MEASUREMENT_TIME);
             group.throughput(Throughput::Elements(DEFAULT_OP_COUNT as u64));
 
-            expand_bench_concurrent!(bench_out_of_the_box, &mut group, &map_data, 1, &workload,
+            expand_bench_concurrent!(bench_out_of_the_box, u64, &mut group, &map_data, 1, &workload,
                 AhashBenchMap<u64, u64>,
                 BTreeMapBenchMap<u64, u64>,
                 // ConcreadBenchMap<u64, u64>, // too slow
@@ -166,7 +169,7 @@ fn throughput_serial(c: &mut Criterion) {
             group.measurement_time(MEASUREMENT_TIME);
             group.throughput(Throughput::Elements(DEFAULT_OP_COUNT as u64));
 
-            expand_bench_concurrent_with_common_hasher!(bench_same_hasher, &mut group, &map_data, 1, &workload,
+            expand_bench_concurrent_with_common_hasher!(bench_same_hasher, u64, &mut group, &map_data, 1, &workload,
                 AhashBenchMap<u64, u64, CommonHasher>,
                 // BTreeMapBenchMap<u64, u64, CommonHasher>, // doesn't allow setting hasher
                 // ConcreadBenchMap<u64, u64, CommonHasher>, // doesn't allow setting hasher
