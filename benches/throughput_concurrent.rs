@@ -153,7 +153,7 @@ fn throughput_concurrent(c: &mut Criterion) {
                 // IndexMapBenchMap<u64, u64>, // not concurrent
                 LeapfrogBenchMap<u64, u64>,
                 PapayaBenchMap<u64, u64>,
-                // RpdsHashTrieMapBenchMap<u64, u64>, // not concurrent
+                RpdsHashTrieMapSyncBenchMap<u64, u64>,
                 // RustCHashBenchMap<u64, u64>, // not concurrent
                 SccBenchMap<u64, u64>,
                 StarshardBenchMap<u64, u64>,

@@ -155,6 +155,17 @@ fn rpds_hash_trie_map() {
 }
 
 #[test]
+fn rpds_hash_trie_map_sync() {
+    assert_create_map_populates_existing_keys::<RpdsHashTrieMapSyncBenchMap<u64, u64>>();
+    assert_iterate::<RpdsHashTrieMapSyncBenchMap<u64, u64>>();
+    assert_mut_insert_remove::<RpdsHashTrieMapSyncBenchMap<u64, u64>>();
+    assert_mut_get_or_insert::<RpdsHashTrieMapSyncBenchMap<u64, u64>>();
+    // assert_clear::<RpdsHashTrieMapSyncBenchMap<u64, u64>>(); // no clear method
+    assert_shared_insert_remove::<RpdsHashTrieMapSyncBenchMap<u64, u64>>();
+    assert_shared_get_or_insert::<RpdsHashTrieMapSyncBenchMap<u64, u64>>();
+}
+
+#[test]
 fn rustc_hash() {
     assert_create_map_populates_existing_keys::<RustCHashBenchMap<u64, u64>>();
     assert_iterate::<RustCHashBenchMap<u64, u64>>();
@@ -372,6 +383,16 @@ fn rpds_hash_trie_map_with_hasher() {
         ahash::RandomState::new(),
     );
     assert_new_with_hasher::<RpdsHashTrieMapBenchMap<u64, u64, RandomState>, _>(RandomState::new());
+}
+
+#[test]
+fn rpds_hash_trie_map_sync_with_hasher() {
+    assert_new_with_hasher::<RpdsHashTrieMapSyncBenchMap<u64, u64, ahash::RandomState>, _>(
+        ahash::RandomState::new(),
+    );
+    assert_new_with_hasher::<RpdsHashTrieMapSyncBenchMap<u64, u64, RandomState>, _>(
+        RandomState::new(),
+    );
 }
 
 #[test]
