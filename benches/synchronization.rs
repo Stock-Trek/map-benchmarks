@@ -141,7 +141,7 @@ fn synchronization(c: &mut Criterion) {
             // AhashBenchMap<u64, u64>, // not concurrent
             // BTreeMapBenchMap<u64, u64>, // not concurrent
             // ConcreadBenchMap<u64, u64>, // too slow
-            // ConcurrentMapBenchMap<u64, u64>, // Send but not Sync; cannot share &ConcurrentMap across threads
+            ConcurrentMapBenchMap<u64, u64>,
             CrossbeamSkiplistBenchMap<u64, u64>,
             DashMapBenchMap<u64, u64>,
             // FlurryBenchMap<u64, u64>, // too slow
