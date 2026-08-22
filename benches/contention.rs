@@ -207,7 +207,7 @@ fn contention(c: &mut Criterion) {
         // default hashers, u64 keys
         {
             let mut group = c.benchmark_group(format!(
-                "contention/threads-{DEFAULT_THREAD_COUNT}/{DEFAULT_HASHER}/{}/u64",
+                "contention/threads-{DEFAULT_THREAD_COUNT}/{DEFAULT_HASHER}/u64/{}",
                 key_distribution
             ));
             group.warm_up_time(WARM_UP_TIME);
@@ -243,7 +243,7 @@ fn contention(c: &mut Criterion) {
         // default hashers, String<32> keys
         {
             let mut group = c.benchmark_group(format!(
-                "contention/threads-{DEFAULT_THREAD_COUNT}/{DEFAULT_HASHER}/{}/String<32>",
+                "contention/threads-{DEFAULT_THREAD_COUNT}/{DEFAULT_HASHER}/String<32>/{}",
                 key_distribution
             ));
             group.warm_up_time(WARM_UP_TIME);
@@ -279,7 +279,7 @@ fn contention(c: &mut Criterion) {
         // CommonHasher, u64 keys
         {
             let mut group = c.benchmark_group(format!(
-                "contention/threads-{DEFAULT_THREAD_COUNT}/{COMMON_HASHER}/{}/u64",
+                "contention/threads-{DEFAULT_THREAD_COUNT}/{COMMON_HASHER}/u64/{}",
                 key_distribution
             ));
             group.warm_up_time(WARM_UP_TIME);
@@ -315,7 +315,7 @@ fn contention(c: &mut Criterion) {
         // CommonHasher, String<32> keys
         {
             let mut group = c.benchmark_group(format!(
-                "contention/threads-{DEFAULT_THREAD_COUNT}/{COMMON_HASHER}/{}/String<32>",
+                "contention/threads-{DEFAULT_THREAD_COUNT}/{COMMON_HASHER}/String<32>/{}",
                 key_distribution
             ));
             group.warm_up_time(WARM_UP_TIME);
