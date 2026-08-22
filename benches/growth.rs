@@ -2,7 +2,6 @@
 use bench_map::{
     config::*, constants::*, data::u64_sparse::U64SparseDataGen, expand_bench_with_map_data,
     expand_bench_with_map_data_and_hasher, map_data::MapData, map_gen::MapGen, maps::*,
-    number_formatter::format_n,
 };
 use criterion::{
     BatchSize, BenchmarkGroup, Criterion, Throughput, criterion_group, criterion_main,
@@ -72,7 +71,7 @@ fn growth(c: &mut Criterion) {
     let entry_count = 0;
     let existing_key_count = 0;
     let sort_keys = false;
-    for missing_key_count in GROWTH_ENTRY_COUNTS {
+    for (missing_key_count, entry_count_name) in GROWTH_ENTRY_COUNTS {
         let map_data = MapGen::generate(
             U64SparseDataGen,
             U64SparseDataGen,
@@ -86,7 +85,7 @@ fn growth(c: &mut Criterion) {
         {
             let mut group = c.benchmark_group(format!(
                 "growth/map-size-{}/{OUT_OF_THE_BOX_GROUP_NAME}",
-                format_n(*missing_key_count)
+                entry_count_name
             ));
             group.warm_up_time(WARM_UP_TIME);
             group.measurement_time(MEASUREMENT_TIME);
@@ -123,7 +122,7 @@ fn growth(c: &mut Criterion) {
             let hasher = CommonHasher::new();
             let mut group = c.benchmark_group(format!(
                 "growth/map-size-{}/{SAME_HASHER_GROUP_NAME}",
-                format_n(*missing_key_count)
+                entry_count_name
             ));
             group.warm_up_time(WARM_UP_TIME);
             group.measurement_time(MEASUREMENT_TIME);

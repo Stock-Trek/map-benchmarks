@@ -1,7 +1,7 @@
 // Can copies be made cheaply and written to independently? Tests copy semantics, whether the design uses structural sharing (persistent data structure) or deep-copies, and the copy-on-write cost of mutating a clone.
 use bench_map::{
     config::*, data::u64_sparse::U64SparseDataGen, expand_bench_with_map_data, map_data::MapData,
-    map_gen::MapGen, maps::*, number_formatter::format_n,
+    map_gen::MapGen, maps::*,
 };
 use criterion::{
     BenchmarkGroup, Criterion, Throughput, criterion_group, criterion_main, measurement::WallTime,
@@ -45,7 +45,7 @@ fn clone(c: &mut Criterion) {
     let existing_key_count = 0;
     let missing_key_count = 0;
     let sort_keys = false;
-    for entry_count in DEFAULT_ENTRY_COUNTS {
+    for (entry_count, entry_count_name) in DEFAULT_ENTRY_COUNTS {
         let map_data = MapGen::generate(
             U64SparseDataGen,
             U64SparseDataGen,
@@ -54,7 +54,7 @@ fn clone(c: &mut Criterion) {
             missing_key_count,
             sort_keys,
         );
-        let mut group = c.benchmark_group(format!("clone/map-size-{}", format_n(*entry_count)));
+        let mut group = c.benchmark_group(format!("clone/map-size-{}", entry_count_name));
         group.warm_up_time(WARM_UP_TIME);
         group.measurement_time(MEASUREMENT_TIME);
         group.throughput(Throughput::Elements(*entry_count as u64));
@@ -89,7 +89,7 @@ fn clone(c: &mut Criterion) {
 fn clone_then_write(c: &mut Criterion) {
     let existing_key_count = 0;
     let sort_keys = false;
-    for entry_count in DEFAULT_ENTRY_COUNTS {
+    for (entry_count, entry_count_name) in DEFAULT_ENTRY_COUNTS {
         let missing_key_count = *entry_count / 10;
         let map_data = MapGen::generate(
             U64SparseDataGen,
@@ -99,10 +99,8 @@ fn clone_then_write(c: &mut Criterion) {
             missing_key_count,
             sort_keys,
         );
-        let mut group = c.benchmark_group(format!(
-            "clone-then-write/map-size-{}",
-            format_n(*entry_count)
-        ));
+        let mut group =
+            c.benchmark_group(format!("clone-then-write/map-size-{}", entry_count_name));
         group.warm_up_time(WARM_UP_TIME);
         group.measurement_time(MEASUREMENT_TIME);
         group.throughput(Throughput::Elements(*entry_count as u64));

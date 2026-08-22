@@ -2,7 +2,6 @@
 use bench_map::{
     config::*, constants::*, data::u64_sparse::U64SparseDataGen, expand_bench_with_map_data,
     expand_bench_with_map_data_and_hasher, map_data::MapData, map_gen::MapGen, maps::*,
-    number_formatter::format_n,
 };
 use criterion::{
     BatchSize, BenchmarkGroup, Criterion, Throughput, criterion_group, criterion_main,
@@ -79,7 +78,7 @@ fn bench_same_hasher<Map>(
 fn clear_and_reuse(c: &mut Criterion) {
     let existing_key_count = 0;
     let sort_keys = false;
-    for entry_count in DEFAULT_ENTRY_COUNTS {
+    for (entry_count, entry_count_name) in DEFAULT_ENTRY_COUNTS {
         let missing_key_count = *entry_count;
         let map_data = MapGen::generate(
             U64SparseDataGen,
@@ -94,7 +93,7 @@ fn clear_and_reuse(c: &mut Criterion) {
         {
             let mut group = c.benchmark_group(format!(
                 "clear-and-reuse/map-size-{}/{OUT_OF_THE_BOX_GROUP_NAME}",
-                format_n(*entry_count)
+                entry_count_name
             ));
             group.warm_up_time(WARM_UP_TIME);
             group.measurement_time(MEASUREMENT_TIME);
@@ -131,7 +130,7 @@ fn clear_and_reuse(c: &mut Criterion) {
             let hasher = CommonHasher::new();
             let mut group = c.benchmark_group(format!(
                 "clear-and-reuse/map-size-{}/{SAME_HASHER_GROUP_NAME}",
-                format_n(*entry_count)
+                entry_count_name
             ));
             group.warm_up_time(WARM_UP_TIME);
             group.measurement_time(MEASUREMENT_TIME);
