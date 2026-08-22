@@ -19,7 +19,7 @@ use criterion::{
 };
 use std::{cell::Cell, hash::Hash, hint::black_box, sync::Arc};
 
-fn run_workload<K, M>(workload: &ThreadWorkload<K>, map: &M)
+fn run_workload<M, K>(workload: &ThreadWorkload<K>, map: &M)
 where
     M: BenchMapGetCloned<K, u64>,
     M: BenchMapInsert<K, u64>,

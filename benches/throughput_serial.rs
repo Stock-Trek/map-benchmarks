@@ -18,7 +18,7 @@ use criterion::{
 };
 use std::{hash::Hash, hint::black_box};
 
-fn run_workload<K, M>(workload: &ThreadWorkload<K>, map: &mut M)
+fn run_workload<M, K>(workload: &ThreadWorkload<K>, map: &mut M)
 where
     M: BenchMapGetCloned<K, u64>,
     M: BenchMapMutInsert<K, u64>,

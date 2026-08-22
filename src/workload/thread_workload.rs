@@ -35,13 +35,16 @@ impl std::fmt::Display for KeyDistribution {
 
 impl KeyDistribution {
     /// Builds a thread workload whose keys are drawn from the provided key slices
-    pub fn thread_workload<K: Clone>(
+    pub fn thread_workload<K>(
         &self,
         design: &WorkloadDesign,
         existing_keys: &[K],
         missing_keys: &[K],
         rng: &mut impl RngExt,
-    ) -> ThreadWorkload<K> {
+    ) -> ThreadWorkload<K>
+    where
+        K: Clone,
+    {
         let total = design.total_ops();
         let mut items = Vec::with_capacity(total);
 
@@ -78,7 +81,10 @@ impl KeyDistribution {
         ThreadWorkload { items }
     }
 
-    fn pick_key<K: Clone>(&self, keys: &[K], rng: &mut impl RngExt) -> K {
+    fn pick_key<K>(&self, keys: &[K], rng: &mut impl RngExt) -> K
+    where
+        K: Clone,
+    {
         match self {
             Self::Uniform => keys[rng.random_range(0..keys.len())].clone(),
             Self::Zipfian(exponent) => {

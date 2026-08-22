@@ -18,19 +18,22 @@ const GET_OR_INSERT_HIT_RATIO: f64 = 0.90;
 
 /// Generates one worker's operations: `op_count` keys, each an existing key
 /// with probability `hit_ratio` and a missing key otherwise.
-fn generate_workload<K: Copy>(
+fn generate_workload<K>(
     op_count: usize,
     hit_ratio: f64,
     existing_keys: &[K],
     missing_keys: &[K],
     rng: &mut impl RngExt,
-) -> Vec<K> {
+) -> Vec<K>
+where
+    K: Clone,
+{
     let mut keys = Vec::with_capacity(op_count);
     for _ in 0..op_count {
         let key = if rng.random_bool(hit_ratio) {
-            existing_keys[rng.random_range(0..existing_keys.len())]
+            existing_keys[rng.random_range(0..existing_keys.len())].clone()
         } else {
-            missing_keys[rng.random_range(0..missing_keys.len())]
+            missing_keys[rng.random_range(0..missing_keys.len())].clone()
         };
         keys.push(key);
     }
@@ -40,11 +43,11 @@ fn generate_workload<K: Copy>(
 fn run_get_or_insert<M, K>(keys: &[K], map: &M)
 where
     M: BenchMapGetOrInsert<K, u64>,
-    K: Copy,
+    K: Clone,
 {
     for key in keys {
         let key = black_box(key);
-        black_box(map.get_or_insert(*key, 42));
+        black_box(map.get_or_insert(key.clone(), 42));
     }
 }
 
@@ -61,7 +64,7 @@ fn bench<Map, K>(
         + Send
         + Sync
         + 'static,
-    K: Clone + Copy + Hash + Eq + Send + Sync + 'static,
+    K: Clone + Hash + Eq + Send + Sync + 'static,
 {
     group.bench_function(name, move |b| {
         // Spawn and pin the worker threads once per sample, outside the timed
