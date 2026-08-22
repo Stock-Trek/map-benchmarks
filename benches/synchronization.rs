@@ -8,7 +8,7 @@ use criterion::{
     measurement::WallTime,
 };
 use rand::RngExt;
-use std::{cell::Cell, hint::black_box, sync::Arc};
+use std::{cell::Cell, hash::Hash, hint::black_box, sync::Arc};
 
 /// A single operation of the synchronization benchmark, performed on the one
 /// contended key.
@@ -48,44 +48,53 @@ fn generate_sync_workload(op_count: usize, read_ratio: f64, rng: &mut impl RngEx
     ops
 }
 
-fn run_sync_workload<M>(ops: &[SyncOp], map: &M)
+fn run_sync_workload<M, K>(ops: &[SyncOp], hit_key: &K, map: &M)
 where
-    M: BenchMapGetCloned<u64, u64> + BenchMapInsert<u64, u64>,
+    M: BenchMapGetCloned<K, u64> + BenchMapInsert<K, u64>,
+    K: Clone,
 {
     for op in ops {
         match op {
             SyncOp::Read => {
-                black_box(map.get_cloned(&SYNCHRONIZATION_HIT_KEY));
+                black_box(map.get_cloned(hit_key));
             }
             SyncOp::Write => {
-                map.insert(SYNCHRONIZATION_HIT_KEY, 42u64);
+                map.insert((*hit_key).clone(), 42u64);
             }
         }
     }
 }
 
-fn bench<Map>(
+fn bench<Map, K>(
     name: &str,
     group: &mut BenchmarkGroup<WallTime>,
-    map_data: &MapData<u64, u64>,
+    map_data: &MapData<K, u64>,
     thread_count: usize,
     workloads: &[Vec<SyncOp>],
 ) where
-    Map: BenchMapNew<u64, u64>
-        + BenchMapMutInsert<u64, u64>
-        + BenchMapGetCloned<u64, u64>
-        + BenchMapInsert<u64, u64>
+    Map: BenchMapNew<K, u64>
+        + BenchMapMutInsert<K, u64>
+        + BenchMapGetCloned<K, u64>
+        + BenchMapInsert<K, u64>
         + Send
         + Sync
         + 'static,
+    K: Clone + Hash + Eq + Send + Sync + 'static,
 {
     group.bench_function(name, move |b| {
+        // The single contended key all threads hammer; taken from the map data
+        // so the benchmark stays generic over the key type.
+        let hit_key = map_data
+            .existing_keys()
+            .first()
+            .expect("synchronization map must contain the contended key")
+            .clone();
         // Spawn and pin the worker threads once per sample, outside the timed
         // region, so thread spawn/join and CPU-pinning costs are amortized
         // instead of being measured on every iteration.
         let workers =
-            ConcurrentWorkers::<Vec<SyncOp>, Map>::new(thread_count, workloads, |ops, map| {
-                run_sync_workload(ops, map)
+            ConcurrentWorkers::<Vec<SyncOp>, Map>::new(thread_count, workloads, move |ops, map| {
+                run_sync_workload(ops, &hit_key, map)
             });
         // 1-based index of the iteration about to be timed; used to derive the
         // cumulative `done` target for the worker pool.
@@ -137,7 +146,7 @@ fn synchronization(c: &mut Criterion) {
         group.measurement_time(MEASUREMENT_TIME);
         group.throughput(Throughput::Elements(total_ops as u64));
 
-        expand_bench_concurrent!(bench, &mut group, &map_data, DEFAULT_THREAD_COUNT, &workloads,
+        expand_bench_concurrent!(bench, u64, &mut group, &map_data, DEFAULT_THREAD_COUNT, &workloads,
             // AhashBenchMap<u64, u64>, // not concurrent
             // BTreeMapBenchMap<u64, u64>, // not concurrent
             // ConcreadBenchMap<u64, u64>, // too slow

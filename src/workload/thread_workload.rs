@@ -5,8 +5,8 @@ use crate::{
 use rand::RngExt;
 
 #[derive(Clone)]
-pub struct ThreadWorkload {
-    pub items: Vec<WorkItem>,
+pub struct ThreadWorkload<K> {
+    pub items: Vec<WorkItem<K>>,
 }
 
 #[derive(Clone, Copy)]
@@ -35,13 +35,13 @@ impl std::fmt::Display for KeyDistribution {
 
 impl KeyDistribution {
     /// Builds a thread workload whose keys are drawn from the provided key slices
-    pub fn thread_workload(
+    pub fn thread_workload<K: Clone>(
         &self,
         design: &WorkloadDesign,
-        existing_keys: &[u64],
-        missing_keys: &[u64],
+        existing_keys: &[K],
+        missing_keys: &[K],
         rng: &mut impl RngExt,
-    ) -> ThreadWorkload {
+    ) -> ThreadWorkload<K> {
         let total = design.total_ops();
         let mut items = Vec::with_capacity(total);
 
@@ -78,15 +78,15 @@ impl KeyDistribution {
         ThreadWorkload { items }
     }
 
-    fn pick_key(&self, keys: &[u64], rng: &mut impl RngExt) -> u64 {
+    fn pick_key<K: Clone>(&self, keys: &[K], rng: &mut impl RngExt) -> K {
         match self {
-            Self::Uniform => keys[rng.random_range(0..keys.len())],
+            Self::Uniform => keys[rng.random_range(0..keys.len())].clone(),
             Self::Zipfian(exponent) => {
                 // Sample a Zipfian rank over the slice: index 0 (the hottest key
                 // when the slice is sorted ascending) is drawn far more often than
                 // the cold tail.
                 let zipf = U64ZipfianDataGen::new(keys.len() as u64, *exponent);
-                keys[zipf.sample_key(rng) as usize]
+                keys[zipf.sample_key(rng) as usize].clone()
             }
         }
     }

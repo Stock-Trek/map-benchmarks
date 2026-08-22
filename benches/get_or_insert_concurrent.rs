@@ -9,7 +9,7 @@ use criterion::{
     measurement::WallTime,
 };
 use rand::RngExt;
-use std::{cell::Cell, hint::black_box, sync::Arc};
+use std::{cell::Cell, hash::Hash, hint::black_box, sync::Arc};
 
 /// The fraction of get-or-insert operations that hit keys already in the map;
 /// the remainder are missing keys that get inserted (the "get-or-create cache
@@ -18,13 +18,13 @@ const GET_OR_INSERT_HIT_RATIO: f64 = 0.90;
 
 /// Generates one worker's operations: `op_count` keys, each an existing key
 /// with probability `hit_ratio` and a missing key otherwise.
-fn generate_workload(
+fn generate_workload<K: Copy>(
     op_count: usize,
     hit_ratio: f64,
-    existing_keys: &[u64],
-    missing_keys: &[u64],
+    existing_keys: &[K],
+    missing_keys: &[K],
     rng: &mut impl RngExt,
-) -> Vec<u64> {
+) -> Vec<K> {
     let mut keys = Vec::with_capacity(op_count);
     for _ in 0..op_count {
         let key = if rng.random_bool(hit_ratio) {
@@ -37,9 +37,10 @@ fn generate_workload(
     keys
 }
 
-fn run_get_or_insert<M>(keys: &[u64], map: &M)
+fn run_get_or_insert<M, K>(keys: &[K], map: &M)
 where
-    M: BenchMapGetOrInsert<u64, u64>,
+    M: BenchMapGetOrInsert<K, u64>,
+    K: Copy,
 {
     for key in keys {
         let key = black_box(key);
@@ -47,26 +48,27 @@ where
     }
 }
 
-fn bench<Map>(
+fn bench<Map, K>(
     name: &str,
     group: &mut BenchmarkGroup<WallTime>,
-    map_data: &MapData<u64, u64>,
+    map_data: &MapData<K, u64>,
     thread_count: usize,
-    workloads: &[Vec<u64>],
+    workloads: &[Vec<K>],
 ) where
-    Map: BenchMapNew<u64, u64>
-        + BenchMapMutInsert<u64, u64>
-        + BenchMapGetOrInsert<u64, u64>
+    Map: BenchMapNew<K, u64>
+        + BenchMapMutInsert<K, u64>
+        + BenchMapGetOrInsert<K, u64>
         + Send
         + Sync
         + 'static,
+    K: Clone + Copy + Hash + Eq + Send + Sync + 'static,
 {
     group.bench_function(name, move |b| {
         // Spawn and pin the worker threads once per sample, outside the timed
         // region, so thread spawn/join and CPU-pinning costs are amortized
         // instead of being measured on every iteration.
         let workers =
-            ConcurrentWorkers::<Vec<u64>, Map>::new(thread_count, workloads, |keys, map| {
+            ConcurrentWorkers::<Vec<K>, Map>::new(thread_count, workloads, |keys, map| {
                 run_get_or_insert(keys, map)
             });
         // 1-based index of the iteration about to be timed; used to derive the
@@ -134,7 +136,7 @@ fn get_or_insert_concurrent(c: &mut Criterion) {
         group.measurement_time(MEASUREMENT_TIME);
         group.throughput(Throughput::Elements(total_ops as u64));
 
-        expand_bench_concurrent!(bench, &mut group, &map_data, thread_count, &workloads,
+        expand_bench_concurrent!(bench, u64, &mut group, &map_data, thread_count, &workloads,
             // AhashBenchMap<u64, u64>, // not concurrent
             // BTreeMapBenchMap<u64, u64>, // not concurrent
             // ConcreadBenchMap<u64, u64>, // too slow
