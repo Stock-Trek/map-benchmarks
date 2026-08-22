@@ -160,7 +160,7 @@ fn throughput_serial(c: &mut Criterion) {
         // CommonHasher
         {
             let mut group =
-                c.benchmark_group(format!("throughput/threads-1/{SAME_HASHER}/{}", name));
+                c.benchmark_group(format!("throughput/threads-1/{COMMON_HASHER}/{}", name));
             group.warm_up_time(WARM_UP_TIME);
             group.measurement_time(MEASUREMENT_TIME);
             group.throughput(Throughput::Elements(DEFAULT_OP_COUNT as u64));

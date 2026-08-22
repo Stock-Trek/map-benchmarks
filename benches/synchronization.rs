@@ -240,7 +240,7 @@ fn synchronization(c: &mut Criterion) {
         // CommonHasher
         {
             let mut group = c.benchmark_group(format!(
-                "synchronization/threads-{DEFAULT_THREAD_COUNT}/{SAME_HASHER}/{}",
+                "synchronization/threads-{DEFAULT_THREAD_COUNT}/{COMMON_HASHER}/{}",
                 name
             ));
             group.warm_up_time(WARM_UP_TIME);

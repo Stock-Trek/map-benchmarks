@@ -225,7 +225,7 @@ fn contention(c: &mut Criterion) {
         // CommonHasher
         {
             let mut group = c.benchmark_group(format!(
-                "contention/threads-{DEFAULT_THREAD_COUNT}/{SAME_HASHER}/{}",
+                "contention/threads-{DEFAULT_THREAD_COUNT}/{COMMON_HASHER}/{}",
                 key_distribution
             ));
             group.warm_up_time(WARM_UP_TIME);

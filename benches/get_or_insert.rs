@@ -137,7 +137,7 @@ fn get_or_insert(c: &mut Criterion) {
 
     // CommonHasher, u64 keys
     {
-        let mut group = c.benchmark_group(format!("get-or-insert/{SAME_HASHER}/u64"));
+        let mut group = c.benchmark_group(format!("get-or-insert/{COMMON_HASHER}/u64"));
         group.warm_up_time(WARM_UP_TIME);
         group.measurement_time(MEASUREMENT_TIME);
         group.throughput(Throughput::Elements(op_count as u64));
@@ -206,7 +206,7 @@ fn get_or_insert(c: &mut Criterion) {
     // CommonHasher, String<32> keys
     {
         let mut group =
-            c.benchmark_group(format!("get-or-insert/{SAME_HASHER}/String<32>"));
+            c.benchmark_group(format!("get-or-insert/{COMMON_HASHER}/String<32>"));
         group.warm_up_time(WARM_UP_TIME);
         group.measurement_time(MEASUREMENT_TIME);
         group.throughput(Throughput::Elements(op_count as u64));

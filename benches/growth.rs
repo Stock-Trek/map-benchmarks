@@ -134,7 +134,7 @@ fn growth(c: &mut Criterion) {
         // CommonHasher, u64 keys
         {
             let mut group = c.benchmark_group(format!(
-                "growth/map-size-{}/{SAME_HASHER}/u64",
+                "growth/map-size-{}/{COMMON_HASHER}/u64",
                 entry_count_name
             ));
             group.warm_up_time(WARM_UP_TIME);
@@ -206,7 +206,7 @@ fn growth(c: &mut Criterion) {
         // CommonHasher, String<32> keys
         {
             let mut group = c.benchmark_group(format!(
-                "growth/map-size-{}/{SAME_HASHER}/String<32>",
+                "growth/map-size-{}/{COMMON_HASHER}/String<32>",
                 entry_count_name
             ));
             group.warm_up_time(WARM_UP_TIME);

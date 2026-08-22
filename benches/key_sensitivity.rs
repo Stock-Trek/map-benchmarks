@@ -54,7 +54,7 @@ fn key_sensitivity(c: &mut Criterion) {
             sort_keys,
         );
         let mut group = c.benchmark_group(format!(
-            "{KEY_SENSITIVITY_GROUP_NAME}/{SAME_HASHER}/u64"
+            "{KEY_SENSITIVITY_GROUP_NAME}/{COMMON_HASHER}/u64"
         ));
         group.warm_up_time(WARM_UP_TIME);
         group.measurement_time(MEASUREMENT_TIME);
@@ -96,7 +96,7 @@ fn key_sensitivity(c: &mut Criterion) {
             sort_keys,
         ));
         let mut group = c.benchmark_group(format!(
-            "{KEY_SENSITIVITY_GROUP_NAME}/{SAME_HASHER}/String<16>"
+            "{KEY_SENSITIVITY_GROUP_NAME}/{COMMON_HASHER}/String<16>"
         ));
         group.warm_up_time(WARM_UP_TIME);
         group.measurement_time(MEASUREMENT_TIME);
@@ -138,7 +138,7 @@ fn key_sensitivity(c: &mut Criterion) {
             sort_keys,
         ));
         let mut group = c.benchmark_group(format!(
-            "{KEY_SENSITIVITY_GROUP_NAME}/{SAME_HASHER}/String<128>"
+            "{KEY_SENSITIVITY_GROUP_NAME}/{COMMON_HASHER}/String<128>"
         ));
         group.warm_up_time(WARM_UP_TIME);
         group.measurement_time(MEASUREMENT_TIME);

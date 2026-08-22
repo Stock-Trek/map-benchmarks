@@ -129,7 +129,7 @@ fn clear_and_reuse(c: &mut Criterion) {
         // Every map that supports a custom hasher uses the same CommonHasher
         {
             let mut group = c.benchmark_group(format!(
-                "clear-and-reuse/map-size-{}/{SAME_HASHER}",
+                "clear-and-reuse/map-size-{}/{COMMON_HASHER}",
                 entry_count_name
             ));
             group.warm_up_time(WARM_UP_TIME);

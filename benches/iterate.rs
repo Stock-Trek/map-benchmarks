@@ -105,7 +105,7 @@ fn iterate(c: &mut Criterion) {
         // Every map that supports a custom hasher uses the same CommonHasher
         {
             let mut group = c.benchmark_group(format!(
-                "iterate/map-size-{}/{SAME_HASHER}",
+                "iterate/map-size-{}/{COMMON_HASHER}",
                 entry_count_name
             ));
             group.warm_up_time(WARM_UP_TIME);

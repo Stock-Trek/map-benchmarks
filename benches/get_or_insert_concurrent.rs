@@ -217,7 +217,7 @@ fn get_or_insert_concurrent(c: &mut Criterion) {
         // CommonHasher
         {
             let mut group = c.benchmark_group(format!(
-                "get-or-insert/threads-{}/{SAME_HASHER}",
+                "get-or-insert/threads-{}/{COMMON_HASHER}",
                 thread_count
             ));
             group.warm_up_time(WARM_UP_TIME);
