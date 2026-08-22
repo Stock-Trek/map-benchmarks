@@ -135,6 +135,8 @@ fn get_or_insert_concurrent(c: &mut Criterion) {
         group.throughput(Throughput::Elements(total_ops as u64));
 
         expand_bench_concurrent!(bench, &mut group, &map_data, thread_count, &workloads,
+            // AhashBenchMap<u64, u64>, // not concurrent
+            // BTreeMapBenchMap<u64, u64>, // not concurrent
             // ConcreadBenchMap<u64, u64>, // too slow
             ConcurrentMapBenchMap<u64, u64>,
             CrossbeamSkiplistBenchMap<u64, u64>,
@@ -146,6 +148,7 @@ fn get_or_insert_concurrent(c: &mut Criterion) {
             // ImmutableChunkMapBenchMap<u64, u64>, // mutation returns a new map; requires &mut or storing the result, cannot mutate through a shared reference
             // ImblBenchMap<u64, u64>, // mutation requires &mut, cannot mutate through a shared reference
             // IndexMapBenchMap<u64, u64>, // not concurrent
+            // IntMapBenchMap<u64, u64>, // mutation requires &mut, cannot mutate through a shared reference
             LeapfrogBenchMap<u64, u64>,
             PapayaBenchMap<u64, u64>,
             // RpdsHashTrieMapBenchMap<u64, u64>, // mutation returns a new map; requires &mut or storing the result, cannot mutate through a shared reference

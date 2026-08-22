@@ -74,6 +74,7 @@ fn key_sensitivity(c: &mut Criterion) {
             // ImmutableChunkMapBenchMap<u64, u64, CommonHasher>, // doesn't allow setting hasher
             ImblBenchMap<u64, u64, CommonHasher>,
             IndexMapBenchMap<u64, u64, CommonHasher>,
+            // IntMapBenchMap<u64, u64, CommonHasher>, // doesn't allow setting hasher
             LeapfrogBenchMap<u64, u64, CommonHasher>,
             PapayaBenchMap<u64, u64, CommonHasher>,
             RpdsHashTrieMapBenchMap<u64, u64, CommonHasher>,
@@ -115,7 +116,8 @@ fn key_sensitivity(c: &mut Criterion) {
             // ImmutableChunkMapBenchMap<String, u64, CommonHasher>, // doesn't allow setting hasher
             ImblBenchMap<String, u64, CommonHasher>,
             IndexMapBenchMap<String, u64, CommonHasher>,
-            // LeapfrogBenchMap<String, u64, CommonHasher>, // keys require be Copy
+            // IntMapBenchMap<String, u64, CommonHasher>, // keys require IntKey
+            // LeapfrogBenchMap<String, u64, CommonHasher>, // keys require Copy
             PapayaBenchMap<String, u64, CommonHasher>,
             RpdsHashTrieMapBenchMap<String, u64, CommonHasher>,
             // RustCHashBenchMap<String, u64, CommonHasher>, // doesn't allow setting hasher
@@ -156,7 +158,8 @@ fn key_sensitivity(c: &mut Criterion) {
             // ImmutableChunkMapBenchMap<String, u64, CommonHasher>, // doesn't allow setting hasher
             ImblBenchMap<String, u64, CommonHasher>,
             IndexMapBenchMap<String, u64, CommonHasher>,
-            // LeapfrogBenchMap<String, u64, CommonHasher>, // keys require be Copy
+            // IntMapBenchMap<String, u64, CommonHasher>, // keys require IntKey
+            // LeapfrogBenchMap<String, u64, CommonHasher>, // keys require Copy
             PapayaBenchMap<String, u64, CommonHasher>,
             RpdsHashTrieMapBenchMap<String, u64, CommonHasher>,
             // RustCHashBenchMap<String, u64, CommonHasher>, // doesn't allow setting hasher
