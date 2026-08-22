@@ -1,7 +1,7 @@
 // Can copies be made cheaply and written to independently? Tests copy semantics, whether the design uses structural sharing (persistent data structure) or deep-copies, and the copy-on-write cost of mutating a clone.
 use bench_map::{
-    config::*, data::u64_sparse::U64SparseDataGen, expand_bench_with_map_data, map_data::MapData,
-    map_gen::MapGen, maps::*,
+    config::*, constants::*, data::u64_sparse::U64SparseDataGen, expand_bench_with_map_data,
+    map_data::MapData, map_gen::MapGen, maps::*,
 };
 use criterion::{
     BenchmarkGroup, Criterion, Throughput, criterion_group, criterion_main, measurement::WallTime,
@@ -56,7 +56,10 @@ fn clone(c: &mut Criterion) {
             missing_key_count,
             sort_keys,
         );
-        let mut group = c.benchmark_group(format!("clone/map-size-{}", entry_count_name));
+        let mut group = c.benchmark_group(format!(
+            "clone/map-size-{}/{OUT_OF_THE_BOX_GROUP_NAME}",
+            entry_count_name
+        ));
         group.warm_up_time(WARM_UP_TIME);
         group.measurement_time(MEASUREMENT_TIME);
         group.throughput(Throughput::Elements(*entry_count as u64));
@@ -101,8 +104,10 @@ fn clone_then_write(c: &mut Criterion) {
             missing_key_count,
             sort_keys,
         );
-        let mut group =
-            c.benchmark_group(format!("clone-then-write/map-size-{}", entry_count_name));
+        let mut group = c.benchmark_group(format!(
+            "clone-then-write/map-size-{}/{OUT_OF_THE_BOX_GROUP_NAME}",
+            entry_count_name
+        ));
         group.warm_up_time(WARM_UP_TIME);
         group.measurement_time(MEASUREMENT_TIME);
         group.throughput(Throughput::Elements(*entry_count as u64));
