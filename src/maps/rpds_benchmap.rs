@@ -118,3 +118,18 @@ where
         value
     }
 }
+
+impl<K, V, H> BenchMapMutClear<K, V> for RpdsHashTrieMapBenchMap<K, V, H>
+where
+    K: Eq + Hash + Clone,
+    V: Clone,
+    H: BuildHasher + Clone,
+{
+    fn clear(&mut self) {
+        // rpds has no clear method, so remove every entry in place.
+        let keys: Vec<K> = self.map.iter().map(|(key, _)| key.clone()).collect();
+        for key in keys {
+            self.map.remove_mut(&key);
+        }
+    }
+}

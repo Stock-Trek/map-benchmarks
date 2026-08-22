@@ -16,6 +16,22 @@ impl<K, V> BenchMapNew<K, V> for CrossbeamSkiplistBenchMap<K, V> {
     }
 }
 
+impl<K, V> BenchMapClone<K, V> for CrossbeamSkiplistBenchMap<K, V>
+where
+    K: Ord + Clone + Send + 'static,
+    V: Clone + Send + 'static,
+{
+    fn clone_map(&self) -> Self {
+        // crossbeam_skiplist::SkipMap has no Clone impl, so rebuild a fresh
+        // map by re-inserting every entry.
+        let map = crossbeam_skiplist::SkipMap::new();
+        for entry in self.map.iter() {
+            map.insert(entry.key().clone(), entry.value().clone());
+        }
+        Self { map }
+    }
+}
+
 impl<K, V> BenchMapGetCloned<K, V> for CrossbeamSkiplistBenchMap<K, V>
 where
     K: Ord,

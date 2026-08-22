@@ -29,6 +29,25 @@ where
     }
 }
 
+impl<K, V> BenchMapClone<K, V> for ConcreadBenchMap<K, V>
+where
+    K: Clone + Debug + Hash + Eq + Send + Sync + 'static,
+    V: Clone + Send + Sync + 'static,
+{
+    fn clone_map(&self) -> Self {
+        // concread's HashMap has no Clone impl, so copy every entry into a
+        // fresh map through read/write transactions.
+        let map = concread::hashmap::HashMap::new();
+        let read = self.map.read();
+        let mut write = map.write();
+        for (key, value) in read.iter() {
+            write.insert(key.clone(), value.clone());
+        }
+        write.commit();
+        Self { map }
+    }
+}
+
 impl<K, V> BenchMapGetCloned<K, V> for ConcreadBenchMap<K, V>
 where
     K: Clone + Debug + Hash + Eq + Send + Sync + 'static,

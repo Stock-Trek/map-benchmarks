@@ -212,3 +212,21 @@ where
         self.master.get_mut().unwrap().remove(key)
     }
 }
+
+impl<K, V> BenchMapMutClear<K, V> for ConcurrentMapBenchMap<K, V>
+where
+    K: 'static + Clone + Minimum + Send + Sync,
+    V: 'static + Clone + Send + Sync,
+{
+    fn clear(&mut self) {
+        // concurrent-map's ConcurrentMap has no clear method, so remove
+        // entries one at a time until the master is empty.
+        let master = self.master.get_mut().unwrap();
+        while let Some((key, _)) = master.first() {
+            master.remove(&key);
+        }
+        // Bump the token so threads that cached a clone of the pre-clear
+        // master refresh their thread-local clone on the next access.
+        self.token = next_token();
+    }
+}

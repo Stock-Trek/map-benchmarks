@@ -91,3 +91,20 @@ where
         self.map.remove_cow(key)
     }
 }
+
+impl<K, V> BenchMapMutClear<K, V> for ImmutableChunkMapBenchMap<K, V>
+where
+    K: Clone + Ord,
+    V: Clone,
+{
+    fn clear(&mut self) {
+        // immutable_chunkmap has no clear method, so remove every entry.
+        let keys: Vec<K> = (&self.map)
+            .into_iter()
+            .map(|(key, _)| key.clone())
+            .collect();
+        for key in keys {
+            self.map.remove_cow(&key);
+        }
+    }
+}

@@ -104,20 +104,20 @@ fn clear_and_reuse(c: &mut Criterion) {
                 AhashBenchMap<u64, u64>,
                 BTreeMapBenchMap<u64, u64>,
                 // ConcreadBenchMap<u64, u64>, // too slow
-                // ConcurrentMapBenchMap<u64, u64>, // no clear
+                ConcurrentMapBenchMap<u64, u64>,
                 CrossbeamSkiplistBenchMap<u64, u64>,
                 DashMapBenchMap<u64, u64>,
                 // FlurryBenchMap<u64, u64>, // too slow
                 HashbrownBenchMap<u64, u64>,
                 HashlinkBenchMap<u64, u64>,
                 HordeBenchMap<u64, u64>,
-                // ImmutableChunkMapBenchMap<u64, u64>, // no clear
+                ImmutableChunkMapBenchMap<u64, u64>,
                 ImblBenchMap<u64, u64>,
                 IndexMapBenchMap<u64, u64>,
                 IntMapBenchMap<u64, u64>,
-                // LeapfrogBenchMap<u64, u64>, // no clear
+                LeapfrogBenchMap<u64, u64>,
                 PapayaBenchMap<u64, u64>,
-                // RpdsHashTrieMapBenchMap<u64, u64>, // no clear
+                RpdsHashTrieMapBenchMap<u64, u64>,
                 RustCHashBenchMap<u64, u64>,
                 SccBenchMap<u64, u64>,
                 StarshardBenchMap<u64, u64>,
@@ -151,9 +151,9 @@ fn clear_and_reuse(c: &mut Criterion) {
                 ImblBenchMap<u64, u64, CommonHasher>,
                 IndexMapBenchMap<u64, u64, CommonHasher>,
                 // IntMapBenchMap<u64, u64, CommonHasher>, // doesn't allow setting hasher
-                // LeapfrogBenchMap<u64, u64, CommonHasher>, // no clear
+                LeapfrogBenchMap<u64, u64, CommonHasher>,
                 PapayaBenchMap<u64, u64, CommonHasher>,
-                // RpdsHashTrieMapBenchMap<u64, u64, CommonHasher>, // no clear
+                RpdsHashTrieMapBenchMap<u64, u64, CommonHasher>,
                 // RustCHashBenchMap<u64, u64, CommonHasher>, // doesn't allow setting hasher
                 SccBenchMap<u64, u64, CommonHasher>,
                 StarshardBenchMap<u64, u64, CommonHasher>,

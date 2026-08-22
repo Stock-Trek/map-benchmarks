@@ -28,6 +28,7 @@ fn concread() {
     assert_mut_insert_remove::<ConcreadBenchMap<u64, u64>>();
     assert_mut_get_or_insert::<ConcreadBenchMap<u64, u64>>();
     assert_clear::<ConcreadBenchMap<u64, u64>>();
+    assert_clone::<ConcreadBenchMap<u64, u64>>();
     assert_shared_insert_remove::<ConcreadBenchMap<u64, u64>>();
     assert_shared_get_or_insert::<ConcreadBenchMap<u64, u64>>();
 }
@@ -38,9 +39,9 @@ fn concurrent_map() {
     assert_iterate::<ConcurrentMapBenchMap<u64, u64>>();
     assert_mut_insert_remove::<ConcurrentMapBenchMap<u64, u64>>();
     assert_mut_get_or_insert::<ConcurrentMapBenchMap<u64, u64>>();
+    assert_clear::<ConcurrentMapBenchMap<u64, u64>>();
     assert_shared_insert_remove::<ConcurrentMapBenchMap<u64, u64>>();
     assert_shared_get_or_insert::<ConcurrentMapBenchMap<u64, u64>>();
-    // assert_clear::<ConcurrentMapBenchMap<u64, u64>>(); // concurrent_map::ConcurrentMap has no clear method
 }
 
 /// concurrent-map's `ConcurrentMap` is `Send` but not `Sync` (its `ebr`
@@ -106,6 +107,7 @@ fn crossbeam_skiplist() {
     assert_mut_insert_remove::<CrossbeamSkiplistBenchMap<u64, u64>>();
     assert_mut_get_or_insert::<CrossbeamSkiplistBenchMap<u64, u64>>();
     assert_clear::<CrossbeamSkiplistBenchMap<u64, u64>>();
+    assert_clone::<CrossbeamSkiplistBenchMap<u64, u64>>();
     assert_shared_insert_remove::<CrossbeamSkiplistBenchMap<u64, u64>>();
     assert_shared_get_or_insert::<CrossbeamSkiplistBenchMap<u64, u64>>();
 }
@@ -167,6 +169,7 @@ fn immutable_chunkmap() {
     assert_iterate::<ImmutableChunkMapBenchMap<u64, u64>>();
     assert_mut_insert_remove::<ImmutableChunkMapBenchMap<u64, u64>>();
     assert_mut_get_or_insert::<ImmutableChunkMapBenchMap<u64, u64>>();
+    assert_clear::<ImmutableChunkMapBenchMap<u64, u64>>();
     // assert_shared_insert_remove::<ImmutableChunkMapBenchMap<u64, u64>>();
 }
 
@@ -206,7 +209,7 @@ fn rpds_hash_trie_map() {
     assert_iterate::<RpdsHashTrieMapBenchMap<u64, u64>>();
     assert_mut_insert_remove::<RpdsHashTrieMapBenchMap<u64, u64>>();
     assert_mut_get_or_insert::<RpdsHashTrieMapBenchMap<u64, u64>>();
-    // assert_clear::<RpdsHashTrieMapBenchMap<u64, u64>>(); // no clear method
+    assert_clear::<RpdsHashTrieMapBenchMap<u64, u64>>();
     // assert_shared_insert_remove::<RpdsHashTrieMapBenchMap<u64, u64>>(); // insert/remove return a new map; requires &mut or storing the result
 }
 
@@ -226,9 +229,10 @@ fn leapfrog() {
     assert_iterate::<LeapfrogBenchMap<u64, u64>>();
     assert_mut_insert_remove::<LeapfrogBenchMap<u64, u64>>();
     assert_mut_get_or_insert::<LeapfrogBenchMap<u64, u64>>();
+    assert_clear::<LeapfrogBenchMap<u64, u64>>();
+    assert_clone::<LeapfrogBenchMap<u64, u64>>();
     assert_shared_insert_remove::<LeapfrogBenchMap<u64, u64>>();
     assert_shared_get_or_insert::<LeapfrogBenchMap<u64, u64>>();
-    // assert_clear::<LeapfrogBenchMap<u64, u64>>(); // leapfrog::LeapMap has no clear method
 }
 
 #[test]
@@ -577,4 +581,26 @@ where
     assert_eq!(map.get_cloned(&2), Some(20));
     assert_eq!(map.get_or_insert(2, 999), 20);
     assert_eq!(map.get_cloned(&2), Some(20));
+}
+
+fn assert_clone<M>()
+where
+    M: BenchMapNew<u64, u64>
+        + BenchMapMutInsert<u64, u64>
+        + BenchMapClone<u64, u64>
+        + BenchMapGetCloned<u64, u64>,
+{
+    let mut map = M::new();
+    map.insert(1, 10);
+    map.insert(2, 20);
+
+    let mut cloned = map.clone_map();
+    // The clone contains every entry of the original.
+    assert_eq!(cloned.get_cloned(&1), Some(10));
+    assert_eq!(cloned.get_cloned(&2), Some(20));
+    // The clone is independent: writes to it don't affect the original.
+    cloned.insert(3, 30);
+    assert_eq!(cloned.get_cloned(&3), Some(30));
+    assert_eq!(map.get_cloned(&3), None);
+    assert_eq!(map.get_cloned(&1), Some(10));
 }

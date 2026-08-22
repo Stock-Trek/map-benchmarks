@@ -49,6 +49,25 @@ where
     }
 }
 
+impl<K, V, H> BenchMapClone<K, V> for LeapfrogBenchMap<K, V, H>
+where
+    K: Eq + Hash + Copy,
+    V: Value,
+    H: BuildHasher + Default,
+{
+    fn clone_map(&self) -> Self {
+        // leapfrog::LeapMap has no Clone impl, so rebuild a fresh map (sized
+        // to the same capacity) by re-inserting every entry.
+        let map = leapfrog::LeapMap::with_capacity_and_hasher(self.map.capacity(), H::default());
+        for mut entry in self.map.iter() {
+            if let Some((key, value)) = entry.key_value() {
+                map.insert(key, value);
+            }
+        }
+        Self { map }
+    }
+}
+
 impl<K, V, H> BenchMapGetCloned<K, V> for LeapfrogBenchMap<K, V, H>
 where
     K: Eq + Hash + Copy,
@@ -144,5 +163,24 @@ where
 {
     fn remove(&mut self, key: &K) -> Option<V> {
         self.map.remove(key)
+    }
+}
+
+impl<K, V, H> BenchMapMutClear<K, V> for LeapfrogBenchMap<K, V, H>
+where
+    K: Eq + Hash + Copy,
+    V: Value,
+    H: BuildHasher + Default,
+{
+    fn clear(&mut self) {
+        // leapfrog::LeapMap has no clear method, so remove every entry.
+        let keys: Vec<K> = self
+            .map
+            .iter()
+            .filter_map(|mut entry| entry.key())
+            .collect();
+        for key in keys {
+            self.map.remove(&key);
+        }
     }
 }

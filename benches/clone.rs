@@ -64,9 +64,9 @@ fn clone(c: &mut Criterion) {
         expand_bench_with_map_data!(bench_clone, u64, &mut group, &map_data,
             AhashBenchMap<u64, u64>,
             BTreeMapBenchMap<u64, u64>,
-            // ConcreadBenchMap<u64, u64>, // doesn't implement Clone
+            ConcreadBenchMap<u64, u64>,
             ConcurrentMapBenchMap<u64, u64>,
-            // CrossbeamSkiplistBenchMap<u64, u64>, // doesn't implement Clone
+            CrossbeamSkiplistBenchMap<u64, u64>,
             DashMapBenchMap<u64, u64>,
             // FlurryBenchMap<u64, u64>, // too slow
             HashbrownBenchMap<u64, u64>,
@@ -76,7 +76,7 @@ fn clone(c: &mut Criterion) {
             ImblBenchMap<u64, u64>,
             IndexMapBenchMap<u64, u64>,
             IntMapBenchMap<u64, u64>,
-            // LeapfrogBenchMap<u64, u64>, // doesn't implement Clone
+            LeapfrogBenchMap<u64, u64>,
             PapayaBenchMap<u64, u64>,
             RpdsHashTrieMapBenchMap<u64, u64>,
             RustCHashBenchMap<u64, u64>,
@@ -110,9 +110,9 @@ fn clone_then_write(c: &mut Criterion) {
         expand_bench_with_map_data!(bench_clone_then_write, u64, &mut group, &map_data,
             AhashBenchMap<u64, u64>,
             BTreeMapBenchMap<u64, u64>,
-            // ConcreadBenchMap<u64, u64>, // doesn't implement Clone
+            ConcreadBenchMap<u64, u64>,
             ConcurrentMapBenchMap<u64, u64>,
-            // CrossbeamSkiplistBenchMap<u64, u64>, // doesn't implement Clone
+            CrossbeamSkiplistBenchMap<u64, u64>,
             DashMapBenchMap<u64, u64>,
             // FlurryBenchMap<u64, u64>, // too slow
             HashbrownBenchMap<u64, u64>,
@@ -122,7 +122,7 @@ fn clone_then_write(c: &mut Criterion) {
             ImblBenchMap<u64, u64>,
             IndexMapBenchMap<u64, u64>,
             IntMapBenchMap<u64, u64>,
-            // LeapfrogBenchMap<u64, u64>, // doesn't implement Clone
+            LeapfrogBenchMap<u64, u64>,
             PapayaBenchMap<u64, u64>,
             RpdsHashTrieMapBenchMap<u64, u64>,
             RustCHashBenchMap<u64, u64>,
