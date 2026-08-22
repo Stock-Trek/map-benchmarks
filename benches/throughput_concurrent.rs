@@ -19,13 +19,14 @@ use criterion::{
     BatchSize, BenchmarkGroup, Criterion, Throughput, criterion_group, criterion_main,
     measurement::WallTime,
 };
-use std::{cell::Cell, hint::black_box, sync::Arc};
+use std::{cell::Cell, hash::Hash, hint::black_box, sync::Arc};
 
-fn run_workload<M>(workload: &ThreadWorkload, map: &M)
+fn run_workload<M, K>(workload: &ThreadWorkload<K>, map: &M)
 where
-    M: BenchMapGetCloned<u64, u64>,
-    M: BenchMapInsert<u64, u64>,
-    M: BenchMapRemove<u64, u64>,
+    M: BenchMapGetCloned<K, u64>,
+    M: BenchMapInsert<K, u64>,
+    M: BenchMapRemove<K, u64>,
+    K: Clone,
 {
     for item in &workload.items {
         match item.op {
@@ -34,7 +35,7 @@ where
                 black_box(map.get_cloned(key));
             }
             WorkloadOp::Insert => {
-                let key = black_box(item.key);
+                let key = black_box(item.key.clone());
                 map.insert(key, 42u64);
             }
             WorkloadOp::Remove => {
@@ -45,27 +46,28 @@ where
     }
 }
 
-fn bench_out_of_the_box<Map>(
+fn bench_out_of_the_box<Map, K>(
     name: &str,
     group: &mut BenchmarkGroup<WallTime>,
-    map_data: &MapData<u64, u64>,
+    map_data: &MapData<K, u64>,
     thread_count: usize,
-    workloads: &[ThreadWorkload],
+    workloads: &[ThreadWorkload<K>],
 ) where
-    Map: BenchMapNew<u64, u64>
-        + BenchMapMutInsert<u64, u64>
-        + BenchMapGetCloned<u64, u64>
-        + BenchMapInsert<u64, u64>
-        + BenchMapRemove<u64, u64>
+    Map: BenchMapNew<K, u64>
+        + BenchMapMutInsert<K, u64>
+        + BenchMapGetCloned<K, u64>
+        + BenchMapInsert<K, u64>
+        + BenchMapRemove<K, u64>
         + Send
         + Sync
         + 'static,
+    K: Clone + Hash + Eq + Send + Sync + 'static,
 {
     group.bench_function(name, move |b| {
         // Spawn and pin the worker threads once per sample, outside the timed
         // region, so thread spawn/join and CPU-pinning costs are amortized
         // instead of being measured on every iteration.
-        let workers = ConcurrentWorkers::<ThreadWorkload, Map>::new(
+        let workers = ConcurrentWorkers::<ThreadWorkload<K>, Map>::new(
             thread_count,
             workloads,
             |workload, map| run_workload(workload, map),
@@ -97,28 +99,29 @@ fn bench_out_of_the_box<Map>(
     });
 }
 
-fn bench_same_hasher<Map>(
+fn bench_same_hasher<Map, K>(
     name: &str,
     group: &mut BenchmarkGroup<WallTime>,
-    map_data: &MapData<u64, u64>,
+    map_data: &MapData<K, u64>,
     thread_count: usize,
-    workloads: &[ThreadWorkload],
+    workloads: &[ThreadWorkload<K>],
     hasher: CommonHasher,
 ) where
-    Map: BenchMapNewWithHasher<u64, u64, CommonHasher>
-        + BenchMapMutInsert<u64, u64>
-        + BenchMapGetCloned<u64, u64>
-        + BenchMapInsert<u64, u64>
-        + BenchMapRemove<u64, u64>
+    Map: BenchMapNewWithHasher<K, u64, CommonHasher>
+        + BenchMapMutInsert<K, u64>
+        + BenchMapGetCloned<K, u64>
+        + BenchMapInsert<K, u64>
+        + BenchMapRemove<K, u64>
         + Send
         + Sync
         + 'static,
+    K: Clone + Hash + Eq + Send + Sync + 'static,
 {
     group.bench_function(name, move |b| {
         // Spawn and pin the worker threads once per sample, outside the timed
         // region, so thread spawn/join and CPU-pinning costs are amortized
         // instead of being measured on every iteration.
-        let workers = ConcurrentWorkers::<ThreadWorkload, Map>::new(
+        let workers = ConcurrentWorkers::<ThreadWorkload<K>, Map>::new(
             thread_count,
             workloads,
             |workload, map| run_workload(workload, map),
@@ -197,7 +200,7 @@ fn throughput_concurrent(c: &mut Criterion) {
                 group.measurement_time(MEASUREMENT_TIME);
                 group.throughput(Throughput::Elements(total_ops as u64));
 
-                expand_bench_concurrent!(bench_out_of_the_box, &mut group, &map_data, thread_count, &workloads,
+                expand_bench_concurrent!(bench_out_of_the_box, u64, &mut group, &map_data, thread_count, &workloads,
                     // AhashBenchMap<u64, u64>, // not concurrent
                     // BTreeMapBenchMap<u64, u64>, // not concurrent
                     // ConcreadBenchMap<u64, u64>, // too slow
@@ -233,7 +236,7 @@ fn throughput_concurrent(c: &mut Criterion) {
                 group.measurement_time(MEASUREMENT_TIME);
                 group.throughput(Throughput::Elements(total_ops as u64));
 
-                expand_bench_concurrent_with_common_hasher!(bench_same_hasher, &mut group, &map_data, thread_count, &workloads,
+                expand_bench_concurrent_with_common_hasher!(bench_same_hasher, u64, &mut group, &map_data, thread_count, &workloads,
                     // AhashBenchMap<u64, u64, CommonHasher>, // not concurrent
                     // BTreeMapBenchMap<u64, u64, CommonHasher>, // not concurrent
                     // ConcreadBenchMap<u64, u64, CommonHasher>, // too slow
