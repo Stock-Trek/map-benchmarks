@@ -148,7 +148,7 @@ fn get_or_insert_concurrent(c: &mut Criterion) {
             // IndexMapBenchMap<u64, u64>, // not concurrent
             LeapfrogBenchMap<u64, u64>,
             PapayaBenchMap<u64, u64>,
-            // RpdsHashTrieMapBenchMap<u64, u64>, // mutation returns a new map; requires &mut or storing the result, cannot mutate through a shared reference (and the default Rc pointer is not Send/Sync)
+            // RpdsHashTrieMapBenchMap<u64, u64>, // mutation returns a new map; requires &mut or storing the result, cannot mutate through a shared reference
             // RustCHashBenchMap<u64, u64>, // not concurrent
             SccBenchMap<u64, u64>,
             StarshardBenchMap<u64, u64>,

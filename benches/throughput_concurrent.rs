@@ -148,12 +148,12 @@ fn throughput_concurrent(c: &mut Criterion) {
                 // HashbrownBenchMap<u64, u64>, // not concurrent
                 // HashlinkBenchMap<u64, u64>, // not concurrent
                 // HordeBenchMap<u64, u64>, // not concurrent
-                // ImmutableChunkMapBenchMap<u64, u64>, // not concurrent
+                // ImmutableChunkMapBenchMap<u64, u64>, // mutation returns a new map; requires &mut or storing the result, cannot mutate through a shared reference
                 // ImblBenchMap<u64, u64>, // not concurrent
                 // IndexMapBenchMap<u64, u64>, // not concurrent
                 LeapfrogBenchMap<u64, u64>,
                 PapayaBenchMap<u64, u64>,
-                // RpdsHashTrieMapBenchMap<u64, u64>, // not concurrent
+                // RpdsHashTrieMapBenchMap<u64, u64>, // mutation returns a new map; requires &mut or storing the result, cannot mutate through a shared reference
                 // RustCHashBenchMap<u64, u64>, // not concurrent
                 SccBenchMap<u64, u64>,
                 StarshardBenchMap<u64, u64>,
