@@ -109,6 +109,7 @@ fn get_or_insert(c: &mut Criterion) {
             ImmutableChunkMapBenchMap<u64, u64>,
             ImblBenchMap<u64, u64>,
             IndexMapBenchMap<u64, u64>,
+            IntMapBenchMap<u64, u64>,
             LeapfrogBenchMap<u64, u64>,
             PapayaBenchMap<u64, u64>,
             RpdsHashTrieMapBenchMap<u64, u64>,

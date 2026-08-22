@@ -135,6 +135,16 @@ fn indexmap() {
 }
 
 #[test]
+fn intmap() {
+    assert_create_map_populates_existing_keys::<IntMapBenchMap<u64, u64>>();
+    assert_iterate::<IntMapBenchMap<u64, u64>>();
+    assert_mut_insert_remove::<IntMapBenchMap<u64, u64>>();
+    assert_mut_get_or_insert::<IntMapBenchMap<u64, u64>>();
+    assert_clear::<IntMapBenchMap<u64, u64>>();
+    // assert_shared_insert_remove::<IntMapBenchMap<u64, u64>>(); // insert/remove require &mut self
+}
+
+#[test]
 fn rpds_hash_trie_map() {
     assert_create_map_populates_existing_keys::<RpdsHashTrieMapBenchMap<u64, u64>>();
     assert_iterate::<RpdsHashTrieMapBenchMap<u64, u64>>();
