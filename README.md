@@ -44,10 +44,10 @@ There are 3 groups of tests, `out-of-the-box` which uses each map's default impl
 
 - **Clone**: Clones maps containing 1K/10K/100K entries
 - **Clone then write**: Clones maps containing 1K/10K/100K entries, then inserts 10% new entries into the clone
-- **Create**: Creates 10K new empty maps. Measures the fixed cost of construction, eager vs lazy allocation and per-map setup overhead
-- **Workload**: Uses a map with 10K entries. Use cases: [write-heavy, balanced, read-heavy]. Thread counts: [1, 2, 3]. Threads for concurrent tests are pinned to reduce any effects from OS scheduling.
 - **Contention (concurrent)**: Uses a map with a dense 10K-key working set so the 3 threads repeatedly hit the same keys. 80% reads / 20% writes. Query key distributions drawn from the dense key set: [uniform, zipfian (exponent 1), zipfian (exponent 2)]. Threads are pinned to reduce any effects from OS scheduling.
+- **Create**: Creates 10K new empty maps. Measures the fixed cost of construction, eager vs lazy allocation and per-map setup overhead.
 - **Synchronization (concurrent)**: Uses a map with a single entry. All 3 threads contend on the same key. Workloads: [read-only, read-mostly (80/20), read-majority (60/40), write-majority (40/60), write-mostly (20/80), write-only]. Threads are pinned to reduce any effects from OS scheduling.
+- **Throughput**: Uses a map with 10K entries. Use cases: [write-heavy, balanced, read-heavy]. Thread counts: [1, 2, 3]. Threads for concurrent tests are pinned to reduce any effects from OS scheduling.
 
 ### Same hasher
 
@@ -56,10 +56,10 @@ There are 3 groups of tests, `out-of-the-box` which uses each map's default impl
 ### Both
 
 - **Clear and reuse**: Uses maps containing 1K/10K/100K entries. Clears the map but keeps it alive, then re-inserts the same number of entries. Measures capacity-retention semantics (map pooling)
+- **Get or insert**: Uses a map containing 10K entries. Performs 10K get-or-insert operations on extant keys (hit path) and 10K on missing keys (insert path)
 - **Growth**: Inserts 1K/10K/100K/1M entries into an empty map using u64 sparse keys on a single thread. Measures the cost of growing a map to the target size
 - **Insert**: Uses a map containing 10K entries. Inserts 10K new entries
 - **Iterate**: Uses maps containing 1K/10K/100K entries. Iterates through each entry
 - **Lookup hit**: Uses a map containing 10K entries. Finds 100 extant values, found values are cloned to ensure all maps are treated consistently
 - **Lookup miss**: Uses a map containing 10K entries. Finds 100 non-existent values
 - **Remove**: Uses a map containing 10K entries. Removes 100 entries
-- **Get or insert**: Uses a map containing 10K entries. Performs 10K get-or-insert operations on extant keys (hit path) and 10K on missing keys (insert path)
