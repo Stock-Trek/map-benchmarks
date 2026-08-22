@@ -122,41 +122,6 @@ where
     }
 }
 
-impl<K, V> BenchMapGetOrInsert<K, V> for ConcurrentMapBenchMap<K, V>
-where
-    K: 'static + Clone + Minimum + Send + Sync,
-    V: 'static + Clone + Send + Sync,
-{
-    fn get_or_insert(&self, key: K, default: V) -> V {
-        // concurrent-map has no entry API, so emulate get-or-insert as a get
-        // followed by an insert.
-        self.with_thread_map(|map| {
-            if let Some(value) = map.get(&key) {
-                value
-            } else {
-                map.insert(key, default.clone());
-                default
-            }
-        })
-    }
-}
-
-impl<K, V> BenchMapMutGetOrInsert<K, V> for ConcurrentMapBenchMap<K, V>
-where
-    K: 'static + Clone + Minimum + Send + Sync,
-    V: 'static + Clone + Send + Sync,
-{
-    fn get_or_insert(&mut self, key: K, default: V) -> V {
-        let map = self.master.get_mut().unwrap();
-        if let Some(value) = map.get(&key) {
-            value
-        } else {
-            map.insert(key, default.clone());
-            default
-        }
-    }
-}
-
 impl<K, V> BenchMapInsert<K, V> for ConcurrentMapBenchMap<K, V>
 where
     K: 'static + Clone + Minimum + Send + Sync,

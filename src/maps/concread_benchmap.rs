@@ -39,42 +39,6 @@ where
     }
 }
 
-impl<K, V> BenchMapGetOrInsert<K, V> for ConcreadBenchMap<K, V>
-where
-    K: Clone + Debug + Hash + Eq + Send + Sync + 'static,
-    V: Clone + Send + Sync + 'static,
-{
-    fn get_or_insert(&self, key: K, default: V) -> V {
-        let mut write = self.map.write();
-        match write.get(&key).cloned() {
-            Some(value) => value,
-            None => {
-                write.insert(key, default.clone());
-                write.commit();
-                default
-            }
-        }
-    }
-}
-
-impl<K, V> BenchMapMutGetOrInsert<K, V> for ConcreadBenchMap<K, V>
-where
-    K: Clone + Debug + Hash + Eq + Send + Sync + 'static,
-    V: Clone + Send + Sync + 'static,
-{
-    fn get_or_insert(&mut self, key: K, default: V) -> V {
-        let mut write = self.map.write();
-        match write.get(&key).cloned() {
-            Some(value) => value,
-            None => {
-                write.insert(key, default.clone());
-                write.commit();
-                default
-            }
-        }
-    }
-}
-
 impl<K, V> BenchMapInsert<K, V> for ConcreadBenchMap<K, V>
 where
     K: Clone + Debug + Hash + Eq + Send + Sync + 'static,
