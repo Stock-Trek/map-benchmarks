@@ -1,3 +1,4 @@
+pub mod common_hasher;
 pub mod concurrent_workers;
 pub mod config;
 pub mod constants;

@@ -1,5 +1,6 @@
 // How much does the choice of key type matter? Tests hashing and key-handling design, the cost of hashing/comparing keys of different sizes.
 use bench_map::{
+    common_hasher::CommonHasher,
     config::*,
     constants::*,
     data::{string::StringDataGen, u64_sparse::U64SparseDataGen},
@@ -12,8 +13,6 @@ use criterion::{
     BenchmarkGroup, Criterion, Throughput, criterion_group, criterion_main, measurement::WallTime,
 };
 use std::{hash::Hash, hint::black_box, rc::Rc};
-
-type CommonHasher = ahash::RandomState;
 
 fn bench<Map, K, V>(
     name: &str,

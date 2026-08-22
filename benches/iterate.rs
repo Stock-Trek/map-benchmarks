@@ -1,14 +1,13 @@
 // How cache-friendly is its storage layout? Tests iteration cost, how entries are arranged in memory and how cheaply the full contents can be walked.
 use bench_map::{
-    config::*, constants::*, data::u64_sparse::U64SparseDataGen, expand_bench_with_map_data,
-    expand_bench_with_map_data_and_hasher, map_data::MapData, map_gen::MapGen, maps::*,
+    common_hasher::CommonHasher, config::*, constants::*, data::u64_sparse::U64SparseDataGen,
+    expand_bench_with_map_data, expand_bench_with_map_data_and_hasher, map_data::MapData,
+    map_gen::MapGen, maps::*,
 };
 use criterion::{
     BenchmarkGroup, Criterion, Throughput, criterion_group, criterion_main, measurement::WallTime,
 };
 use std::hint::black_box;
-
-type CommonHasher = ahash::RandomState;
 
 fn bench_out_of_the_box<Map>(
     name: &str,
