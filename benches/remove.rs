@@ -143,6 +143,7 @@ fn remove(c: &mut Criterion) {
             // BTreeMapBenchMap<u64, u64, CommonHasher>, // doesn't allow setting hasher
             // ConcreadBenchMap<u64, u64, CommonHasher>, // doesn't allow setting hasher
             // ConcurrentMapBenchMap<u64, u64, CommonHasher>, // doesn't allow setting hasher
+            // CrossbeamSkiplistBenchMap<u64, u64, CommonHasher>, // doesn't allow setting hasher
             DashMapBenchMap<u64, u64, CommonHasher>,
             // FlurryBenchMap<u64, u64, CommonHasher>, // too slow
             HashbrownBenchMap<u64, u64, CommonHasher>,
@@ -151,6 +152,7 @@ fn remove(c: &mut Criterion) {
             // ImmutableChunkMapBenchMap<u64, u64, CommonHasher>, // doesn't allow setting hasher
             ImblBenchMap<u64, u64, CommonHasher>,
             IndexMapBenchMap<u64, u64, CommonHasher>,
+            // IntMapBenchMap<u64, u64, CommonHasher>, // doesn't allow setting hasher
             LeapfrogBenchMap<u64, u64, CommonHasher>,
             PapayaBenchMap<u64, u64, CommonHasher>,
             RpdsHashTrieMapBenchMap<u64, u64, CommonHasher>,
@@ -207,6 +209,7 @@ fn remove(c: &mut Criterion) {
             // BTreeMapBenchMap<String, u64, CommonHasher>, // doesn't allow setting hasher
             // ConcreadBenchMap<String, u64, CommonHasher>, // doesn't allow setting hasher
             // ConcurrentMapBenchMap<String, u64, CommonHasher>, // doesn't allow setting hasher
+            // CrossbeamSkiplistBenchMap<String, u64, CommonHasher>, // doesn't allow setting hasher
             DashMapBenchMap<String, u64, CommonHasher>,
             // FlurryBenchMap<String, u64, CommonHasher>, // too slow
             HashbrownBenchMap<String, u64, CommonHasher>,
@@ -215,6 +218,7 @@ fn remove(c: &mut Criterion) {
             // ImmutableChunkMapBenchMap<String, u64, CommonHasher>, // doesn't allow setting hasher
             ImblBenchMap<String, u64, CommonHasher>,
             IndexMapBenchMap<String, u64, CommonHasher>,
+            // IntMapBenchMap<String, u64, CommonHasher>, // keys require IntKey
             // LeapfrogBenchMap<String, u64, CommonHasher>, // keys require Copy
             PapayaBenchMap<String, u64, CommonHasher>,
             RpdsHashTrieMapBenchMap<String, u64, CommonHasher>,
