@@ -1,10 +1,8 @@
 // How does it perform on realistic single-threaded use? Tests the combined read/write/remove design, the interplay of all operations in one pass without concurrency overhead.
 use bench_map::{
-    common_hasher::CommonHasher,
     config::*,
-    constants::*,
-    data::u64_sparse::U64SparseDataGen,
-    expand_bench_concurrent, expand_bench_concurrent_with_common_hasher,
+    data::{string::StringDataGen, u64_sparse::U64SparseDataGen},
+    expand_bench_concurrent,
     map_data::MapData,
     map_gen::MapGen,
     maps::*,
@@ -45,7 +43,7 @@ where
     }
 }
 
-fn bench_out_of_the_box<Map, K>(
+fn bench<Map, K>(
     name: &str,
     group: &mut BenchmarkGroup<WallTime>,
     map_data: &MapData<K, u64>,
@@ -69,38 +67,21 @@ fn bench_out_of_the_box<Map, K>(
     });
 }
 
-fn bench_same_hasher<Map, K>(
-    name: &str,
-    group: &mut BenchmarkGroup<WallTime>,
-    map_data: &MapData<K, u64>,
-    _thread_count_1: usize,
-    workload: &ThreadWorkload<K>,
-    hasher: CommonHasher,
-) where
-    Map: BenchMapNewWithHasher<K, u64, CommonHasher>
-        + BenchMapMutInsert<K, u64>
-        + BenchMapMutRemove<K, u64>
-        + BenchMapGetCloned<K, u64>,
-    K: Clone + Hash + Eq,
-{
-    group.bench_function(name, move |b| {
-        b.iter_batched(
-            || map_data.create_map_with_hasher::<Map, CommonHasher>(hasher.clone()),
-            |mut map| {
-                run_workload(workload, &mut map);
-            },
-            BatchSize::PerIteration,
-        );
-    });
-}
-
 fn throughput_serial(c: &mut Criterion) {
     let entry_count = DEFAULT_ENTRY_COUNT;
     let existing_key_count = entry_count;
     let missing_key_count = DEFAULT_OP_COUNT;
     let sort_keys = false;
-    let map_data = MapGen::generate(
+    let map_data_u64 = MapGen::generate(
         U64SparseDataGen,
+        U64SparseDataGen,
+        entry_count,
+        existing_key_count,
+        missing_key_count,
+        sort_keys,
+    );
+    let map_data_string_32 = MapGen::generate(
+        StringDataGen::<32>,
         U64SparseDataGen,
         entry_count,
         existing_key_count,
@@ -116,22 +97,27 @@ fn throughput_serial(c: &mut Criterion) {
     ];
 
     for &(name, design) in designs {
-        let workload = KeyDistribution::Uniform.thread_workload(
+        let workload_u64 = KeyDistribution::Uniform.thread_workload(
             &design,
-            map_data.existing_keys(),
-            map_data.missing_keys(),
+            map_data_u64.existing_keys(),
+            map_data_u64.missing_keys(),
+            &mut rng,
+        );
+        let workload_string_32 = KeyDistribution::Uniform.thread_workload(
+            &design,
+            map_data_string_32.existing_keys(),
+            map_data_string_32.missing_keys(),
             &mut rng,
         );
 
-        // default hashers
+        // u64 keys
         {
-            let mut group =
-                c.benchmark_group(format!("throughput/threads-1/{DEFAULT_HASHER}/{}", name));
+            let mut group = c.benchmark_group(format!("throughput/threads-1/u64/{name}"));
             group.warm_up_time(WARM_UP_TIME);
             group.measurement_time(MEASUREMENT_TIME);
             group.throughput(Throughput::Elements(DEFAULT_OP_COUNT as u64));
 
-            expand_bench_concurrent!(bench_out_of_the_box, u64, &mut group, &map_data, 1, &workload,
+            expand_bench_concurrent!(bench, u64, &mut group, &map_data_u64, 1, &workload_u64,
                 AhashBenchMap<u64, u64>,
                 BTreeMapBenchMap<u64, u64>,
                 // ConcreadBenchMap<u64, u64>, // too slow
@@ -157,37 +143,36 @@ fn throughput_serial(c: &mut Criterion) {
             );
         }
 
-        // CommonHasher
+        // String<32> keys
         {
-            let mut group =
-                c.benchmark_group(format!("throughput/threads-1/{COMMON_HASHER}/{}", name));
+            let mut group = c.benchmark_group(format!("throughput/threads-1/String<32>/{name}"));
             group.warm_up_time(WARM_UP_TIME);
             group.measurement_time(MEASUREMENT_TIME);
             group.throughput(Throughput::Elements(DEFAULT_OP_COUNT as u64));
 
-            expand_bench_concurrent_with_common_hasher!(bench_same_hasher, u64, &mut group, &map_data, 1, &workload,
-                AhashBenchMap<u64, u64, CommonHasher>,
-                // BTreeMapBenchMap<u64, u64, CommonHasher>, // doesn't allow setting hasher
-                // ConcreadBenchMap<u64, u64, CommonHasher>, // doesn't allow setting hasher
-                // ConcurrentMapBenchMap<u64, u64, CommonHasher>, // doesn't allow setting hasher
-                // CrossbeamSkiplistBenchMap<u64, u64, CommonHasher>, // doesn't allow setting hasher
-                DashMapBenchMap<u64, u64, CommonHasher>,
-                // FlurryBenchMap<u64, u64, CommonHasher>, // too slow
-                HashbrownBenchMap<u64, u64, CommonHasher>,
-                HashlinkBenchMap<u64, u64, CommonHasher>,
-                HordeBenchMap<u64, u64, CommonHasher>,
-                // ImmutableChunkMapBenchMap<u64, u64, CommonHasher>, // doesn't allow setting hasher
-                ImblBenchMap<u64, u64, CommonHasher>,
-                IndexMapBenchMap<u64, u64, CommonHasher>,
-                // IntMapBenchMap<u64, u64, CommonHasher>, // doesn't allow setting hasher
-                LeapfrogBenchMap<u64, u64, CommonHasher>,
-                PapayaBenchMap<u64, u64, CommonHasher>,
-                RpdsHashTrieMapBenchMap<u64, u64, CommonHasher>,
-                // RustCHashBenchMap<u64, u64, CommonHasher>, // doesn't allow setting hasher
-                SccBenchMap<u64, u64, CommonHasher>,
-                StarshardBenchMap<u64, u64, CommonHasher>,
-                StdBenchMap<u64, u64, CommonHasher>,
-                TxMapBenchMap<u64, u64, CommonHasher>,
+            expand_bench_concurrent!(bench, String, &mut group, &map_data_string_32, 1, &workload_string_32,
+                AhashBenchMap<String, u64>,
+                BTreeMapBenchMap<String, u64>,
+                // ConcreadBenchMap<String, u64>, // too slow
+                ConcurrentMapBenchMap<String, u64>,
+                CrossbeamSkiplistBenchMap<String, u64>,
+                DashMapBenchMap<String, u64>,
+                // FlurryBenchMap<String, u64>, // too slow
+                HashbrownBenchMap<String, u64>,
+                HashlinkBenchMap<String, u64>,
+                HordeBenchMap<String, u64>,
+                ImmutableChunkMapBenchMap<String, u64>,
+                ImblBenchMap<String, u64>,
+                IndexMapBenchMap<String, u64>,
+                // IntMapBenchMap<String, u64>, // keys require IntKey
+                // LeapfrogBenchMap<String, u64>, // keys require Copy
+                PapayaBenchMap<String, u64>,
+                RpdsHashTrieMapBenchMap<String, u64>,
+                RustCHashBenchMap<String, u64>,
+                SccBenchMap<String, u64>,
+                StarshardBenchMap<String, u64>,
+                StdBenchMap<String, u64>,
+                TxMapBenchMap<String, u64>,
             );
         }
     }

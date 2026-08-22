@@ -57,8 +57,7 @@ fn clone(c: &mut Criterion) {
             sort_keys,
         );
         let mut group = c.benchmark_group(format!(
-            "clone/map-size-{}/{DEFAULT_HASHER}",
-            entry_count_name
+            "clone/map-size-{entry_count_name}/{OUT_OF_THE_BOX}"
         ));
         group.warm_up_time(WARM_UP_TIME);
         group.measurement_time(MEASUREMENT_TIME);
@@ -105,8 +104,7 @@ fn clone_then_write(c: &mut Criterion) {
             sort_keys,
         );
         let mut group = c.benchmark_group(format!(
-            "clone-then-write/map-size-{}/{DEFAULT_HASHER}",
-            entry_count_name
+            "clone-then-write/map-size-{entry_count_name}/{OUT_OF_THE_BOX}"
         ));
         group.warm_up_time(WARM_UP_TIME);
         group.measurement_time(MEASUREMENT_TIME);

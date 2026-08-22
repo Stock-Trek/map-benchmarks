@@ -15,21 +15,19 @@ use criterion::{
 };
 use std::{hash::Hash, hint::black_box};
 
-fn bench_same_hasher<Map, K>(
+fn bench_out_of_the_box<Map, K>(
     name: &str,
     group: &mut BenchmarkGroup<WallTime>,
     map_data: &MapData<K, u64>,
-    hasher: CommonHasher,
 ) where
-    Map: BenchMapNewWithHasher<K, u64, CommonHasher> + BenchMapMutInsert<K, u64>,
+    Map: BenchMapNew<K, u64> + BenchMapMutInsert<K, u64>,
     K: Clone + Hash + Eq,
 {
     group.bench_function(name, move |b| {
         let map_data_ref = &map_data;
-        let hasher = hasher.clone();
         b.iter_batched(
             move || {
-                let map = map_data_ref.create_map_with_hasher::<Map, CommonHasher>(hasher.clone());
+                let map = map_data_ref.create_map::<Map>();
                 let keys = map_data_ref.missing_keys().clone();
                 (map, keys)
             },
@@ -45,19 +43,21 @@ fn bench_same_hasher<Map, K>(
     });
 }
 
-fn bench_out_of_the_box<Map, K>(
+fn bench_same_hasher<Map, K>(
     name: &str,
     group: &mut BenchmarkGroup<WallTime>,
     map_data: &MapData<K, u64>,
+    hasher: CommonHasher,
 ) where
-    Map: BenchMapNew<K, u64> + BenchMapMutInsert<K, u64>,
+    Map: BenchMapNewWithHasher<K, u64, CommonHasher> + BenchMapMutInsert<K, u64>,
     K: Clone + Hash + Eq,
 {
     group.bench_function(name, move |b| {
         let map_data_ref = &map_data;
+        let hasher = hasher.clone();
         b.iter_batched(
             move || {
-                let map = map_data_ref.create_map::<Map>();
+                let map = map_data_ref.create_map_with_hasher::<Map, CommonHasher>(hasher.clone());
                 let keys = map_data_ref.missing_keys().clone();
                 (map, keys)
             },
@@ -95,9 +95,9 @@ fn insert(c: &mut Criterion) {
         sort_keys,
     );
 
-    // default hasher, u64 keys
+    // out of the box, u64 keys
     {
-        let mut group = c.benchmark_group(format!("insert/{DEFAULT_HASHER}/u64"));
+        let mut group = c.benchmark_group(format!("insert/{OUT_OF_THE_BOX}/u64"));
         group.warm_up_time(WARM_UP_TIME);
         group.measurement_time(MEASUREMENT_TIME);
         group.throughput(Throughput::Elements(missing_key_count as u64));
@@ -130,7 +130,7 @@ fn insert(c: &mut Criterion) {
 
     // CommonHasher, u64 keys
     {
-        let mut group = c.benchmark_group(format!("insert/{COMMON_HASHER}/u64"));
+        let mut group = c.benchmark_group(format!("insert/{SAME_HASHER}/u64"));
         group.warm_up_time(WARM_UP_TIME);
         group.measurement_time(MEASUREMENT_TIME);
         group.throughput(Throughput::Elements(missing_key_count as u64));
@@ -161,9 +161,9 @@ fn insert(c: &mut Criterion) {
         );
     }
 
-    // default hasher, String<32> keys
+    // out of the box, String<32> keys
     {
-        let mut group = c.benchmark_group(format!("insert/{DEFAULT_HASHER}/String<32>"));
+        let mut group = c.benchmark_group(format!("insert/{OUT_OF_THE_BOX}/String<32>"));
         group.warm_up_time(WARM_UP_TIME);
         group.measurement_time(MEASUREMENT_TIME);
         group.throughput(Throughput::Elements(missing_key_count as u64));
@@ -196,7 +196,7 @@ fn insert(c: &mut Criterion) {
 
     // CommonHasher, String<32> keys
     {
-        let mut group = c.benchmark_group(format!("insert/{COMMON_HASHER}/String<32>"));
+        let mut group = c.benchmark_group(format!("insert/{SAME_HASHER}/String<32>"));
         group.warm_up_time(WARM_UP_TIME);
         group.measurement_time(MEASUREMENT_TIME);
         group.throughput(Throughput::Elements(missing_key_count as u64));

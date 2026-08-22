@@ -93,8 +93,7 @@ fn clear_and_reuse(c: &mut Criterion) {
         // Each map uses its default hasher
         {
             let mut group = c.benchmark_group(format!(
-                "clear-and-reuse/map-size-{}/{DEFAULT_HASHER}",
-                entry_count_name
+                "clear-and-reuse/map-size-{entry_count_name}/{OUT_OF_THE_BOX}"
             ));
             group.warm_up_time(WARM_UP_TIME);
             group.measurement_time(MEASUREMENT_TIME);
@@ -129,8 +128,7 @@ fn clear_and_reuse(c: &mut Criterion) {
         // Every map that supports a custom hasher uses the same CommonHasher
         {
             let mut group = c.benchmark_group(format!(
-                "clear-and-reuse/map-size-{}/{COMMON_HASHER}",
-                entry_count_name
+                "clear-and-reuse/map-size-{entry_count_name}/{SAME_HASHER}"
             ));
             group.warm_up_time(WARM_UP_TIME);
             group.measurement_time(MEASUREMENT_TIME);

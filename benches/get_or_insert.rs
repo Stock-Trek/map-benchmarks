@@ -102,9 +102,9 @@ fn get_or_insert(c: &mut Criterion) {
     );
     let op_count = existing_key_count + missing_key_count;
 
-    // default hasher, u64 keys
+    // out of the box, u64 keys
     {
-        let mut group = c.benchmark_group(format!("get-or-insert/{DEFAULT_HASHER}/u64"));
+        let mut group = c.benchmark_group(format!("get-or-insert/{OUT_OF_THE_BOX}/u64"));
         group.warm_up_time(WARM_UP_TIME);
         group.measurement_time(MEASUREMENT_TIME);
         group.throughput(Throughput::Elements(op_count as u64));
@@ -135,9 +135,9 @@ fn get_or_insert(c: &mut Criterion) {
         );
     }
 
-    // CommonHasher, u64 keys
+    // same hasher, u64 keys
     {
-        let mut group = c.benchmark_group(format!("get-or-insert/{COMMON_HASHER}/u64"));
+        let mut group = c.benchmark_group(format!("get-or-insert/{SAME_HASHER}/u64"));
         group.warm_up_time(WARM_UP_TIME);
         group.measurement_time(MEASUREMENT_TIME);
         group.throughput(Throughput::Elements(op_count as u64));
@@ -168,9 +168,9 @@ fn get_or_insert(c: &mut Criterion) {
         );
     }
 
-    // default hasher, String<32> keys
+    // out of the box, String<32> keys
     {
-        let mut group = c.benchmark_group(format!("get-or-insert/{DEFAULT_HASHER}/String<32>"));
+        let mut group = c.benchmark_group(format!("get-or-insert/{OUT_OF_THE_BOX}/String<32>"));
         group.warm_up_time(WARM_UP_TIME);
         group.measurement_time(MEASUREMENT_TIME);
         group.throughput(Throughput::Elements(op_count as u64));
@@ -201,9 +201,9 @@ fn get_or_insert(c: &mut Criterion) {
         );
     }
 
-    // CommonHasher, String<32> keys
+    // same hasher, String<32> keys
     {
-        let mut group = c.benchmark_group(format!("get-or-insert/{COMMON_HASHER}/String<32>"));
+        let mut group = c.benchmark_group(format!("get-or-insert/{SAME_HASHER}/String<32>"));
         group.warm_up_time(WARM_UP_TIME);
         group.measurement_time(MEASUREMENT_TIME);
         group.throughput(Throughput::Elements(op_count as u64));

@@ -52,10 +52,6 @@ name = "get_or_insert"
 harness = false
 
 [[bench]]
-name = "get_or_insert_concurrent"
-harness = false
-
-[[bench]]
 name = "growth"
 harness = false
 

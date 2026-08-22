@@ -95,11 +95,10 @@ fn growth(c: &mut Criterion) {
             sort_keys,
         );
 
-        // default hasher, u64 keys
+        // out of the box, u64 keys
         {
             let mut group = c.benchmark_group(format!(
-                "growth/map-size-{}/{DEFAULT_HASHER}/u64",
-                entry_count_name
+                "growth/map-size-{entry_count_name}/{OUT_OF_THE_BOX}/u64"
             ));
             group.warm_up_time(WARM_UP_TIME);
             group.measurement_time(MEASUREMENT_TIME);
@@ -134,8 +133,7 @@ fn growth(c: &mut Criterion) {
         // CommonHasher, u64 keys
         {
             let mut group = c.benchmark_group(format!(
-                "growth/map-size-{}/{COMMON_HASHER}/u64",
-                entry_count_name
+                "growth/map-size-{entry_count_name}/{SAME_HASHER}/u64"
             ));
             group.warm_up_time(WARM_UP_TIME);
             group.measurement_time(MEASUREMENT_TIME);
@@ -167,11 +165,10 @@ fn growth(c: &mut Criterion) {
             );
         }
 
-        // default hasher, String<32> keys
+        // out of the box, String<32> keys
         {
             let mut group = c.benchmark_group(format!(
-                "growth/map-size-{}/{DEFAULT_HASHER}/String<32>",
-                entry_count_name
+                "growth/map-size-{entry_count_name}/{OUT_OF_THE_BOX}/String<32>"
             ));
             group.warm_up_time(WARM_UP_TIME);
             group.measurement_time(MEASUREMENT_TIME);
@@ -206,8 +203,7 @@ fn growth(c: &mut Criterion) {
         // CommonHasher, String<32> keys
         {
             let mut group = c.benchmark_group(format!(
-                "growth/map-size-{}/{COMMON_HASHER}/String<32>",
-                entry_count_name
+                "growth/map-size-{entry_count_name}/{SAME_HASHER}/String<32>"
             ));
             group.warm_up_time(WARM_UP_TIME);
             group.measurement_time(MEASUREMENT_TIME);
