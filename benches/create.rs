@@ -5,9 +5,9 @@ use criterion::{
 };
 use std::hint::black_box;
 
-fn bench<Map>(name: &str, group: &mut BenchmarkGroup<WallTime>)
+fn bench<Map, K>(name: &str, group: &mut BenchmarkGroup<WallTime>)
 where
-    Map: BenchMapNew<u64, u64>,
+    Map: BenchMapNew<K, u64>,
 {
     group.bench_function(name, move |b| {
         b.iter(|| {
@@ -24,7 +24,7 @@ fn create(c: &mut Criterion) {
     group.measurement_time(MEASUREMENT_TIME);
     group.throughput(Throughput::Elements(DEFAULT_OP_COUNT as u64));
 
-    expand_bench!(bench, &mut group,
+    expand_bench!(bench, u64, &mut group,
         AhashBenchMap<u64, u64>,
         BTreeMapBenchMap<u64, u64>,
         // ConcreadBenchMap<u64, u64>, // too slow
