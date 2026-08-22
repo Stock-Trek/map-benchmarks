@@ -9,7 +9,9 @@ Include:
 
 1. **Scope**
    - Which map implementations were benchmarked.
+   - [table: implementation, crate (structure), internal mutability (✅/❌), configurable hasher (✅/❌), String keys (✅/❌)]
    - Which distinct benchmark operations/workloads were used.
+   - [table: operation, variants, measured]
 
 2. **Per-Operation Comparison**
 
