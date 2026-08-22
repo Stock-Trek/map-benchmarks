@@ -2,7 +2,7 @@
 use bench_map::{
     concurrent_workers::ConcurrentWorkers, config::*, constants::*,
     data::u64_sparse::U64SparseDataGen, expand_bench_concurrent, map_data::MapData,
-    map_gen::MapGen, maps::*, number_formatter::format_n,
+    map_gen::MapGen, maps::*,
 };
 use criterion::{
     BatchSize, BenchmarkGroup, Criterion, Throughput, criterion_group, criterion_main,
@@ -98,65 +98,63 @@ fn bench<Map>(
 
 fn get_or_insert_concurrent(c: &mut Criterion) {
     let max_threads = DEFAULT_THREAD_COUNTS.last().unwrap();
-    for &entry_count in DEFAULT_ENTRY_COUNTS {
-        let existing_key_count = entry_count;
-        let missing_key_count = max_threads * DEFAULT_OP_COUNT;
-        let sort_keys = false;
-        let map_data = MapGen::generate(
-            U64SparseDataGen,
-            U64SparseDataGen,
-            entry_count,
-            existing_key_count,
-            missing_key_count,
-            sort_keys,
+    let entry_count = DEFAULT_ENTRY_COUNT;
+    let existing_key_count = entry_count;
+    let missing_key_count = max_threads * DEFAULT_OP_COUNT;
+    let sort_keys = false;
+    let map_data = MapGen::generate(
+        U64SparseDataGen,
+        U64SparseDataGen,
+        entry_count,
+        existing_key_count,
+        missing_key_count,
+        sort_keys,
+    );
+
+    let mut rng = rand::rng();
+    for &thread_count in DEFAULT_THREAD_COUNTS {
+        let total_ops = thread_count * DEFAULT_OP_COUNT;
+        let workloads = (0..thread_count)
+            .map(|_| {
+                generate_workload(
+                    DEFAULT_OP_COUNT,
+                    GET_OR_INSERT_HIT_RATIO,
+                    map_data.existing_keys(),
+                    map_data.missing_keys(),
+                    &mut rng,
+                )
+            })
+            .collect::<Vec<_>>();
+
+        let mut group = c.benchmark_group(format!(
+            "get-or-insert/{OUT_OF_THE_BOX_GROUP_NAME}/threads-{}",
+            thread_count
+        ));
+        group.warm_up_time(WARM_UP_TIME);
+        group.measurement_time(MEASUREMENT_TIME);
+        group.throughput(Throughput::Elements(total_ops as u64));
+
+        expand_bench_concurrent!(bench, &mut group, &map_data, thread_count, &workloads,
+            // ConcreadBenchMap<u64, u64>, // too slow
+            // ConcurrentMapBenchMap<u64, u64>, // Send but not Sync; cannot share &ConcurrentMap across threads
+            CrossbeamSkiplistBenchMap<u64, u64>,
+            DashMapBenchMap<u64, u64>,
+            // FlurryBenchMap<u64, u64>, // too slow
+            // HashbrownBenchMap<u64, u64>, // not concurrent
+            // HashlinkBenchMap<u64, u64>, // mutation requires &mut, cannot mutate through a shared reference
+            // HordeBenchMap<u64, u64>, // mutation requires &mut, cannot mutate through a shared reference
+            // ImmutableChunkMapBenchMap<u64, u64>, // mutation returns a new map; requires &mut or storing the result, cannot mutate through a shared reference
+            // ImblBenchMap<u64, u64>, // mutation requires &mut, cannot mutate through a shared reference
+            // IndexMapBenchMap<u64, u64>, // not concurrent
+            LeapfrogBenchMap<u64, u64>,
+            PapayaBenchMap<u64, u64>,
+            // RpdsHashTrieMapBenchMap<u64, u64>, // mutation returns a new map; requires &mut or storing the result, cannot mutate through a shared reference (and the default Rc pointer is not Send/Sync)
+            // RustCHashBenchMap<u64, u64>, // not concurrent
+            SccBenchMap<u64, u64>,
+            StarshardBenchMap<u64, u64>,
+            // StdBenchMap<u64, u64>, // not concurrent
+            TxMapBenchMap<u64, u64>,
         );
-
-        let mut rng = rand::rng();
-        for &thread_count in DEFAULT_THREAD_COUNTS {
-            let total_ops = thread_count * DEFAULT_OP_COUNT;
-            let workloads = (0..thread_count)
-                .map(|_| {
-                    generate_workload(
-                        DEFAULT_OP_COUNT,
-                        GET_OR_INSERT_HIT_RATIO,
-                        map_data.existing_keys(),
-                        map_data.missing_keys(),
-                        &mut rng,
-                    )
-                })
-                .collect::<Vec<_>>();
-
-            let mut group = c.benchmark_group(format!(
-                "get-or-insert/{OUT_OF_THE_BOX_GROUP_NAME}/map-size-{}/threads-{}",
-                format_n(entry_count),
-                thread_count
-            ));
-            group.warm_up_time(WARM_UP_TIME);
-            group.measurement_time(MEASUREMENT_TIME);
-            group.throughput(Throughput::Elements(total_ops as u64));
-
-            expand_bench_concurrent!(bench, &mut group, &map_data, thread_count, &workloads,
-                // ConcreadBenchMap<u64, u64>, // too slow
-                // ConcurrentMapBenchMap<u64, u64>, // Send but not Sync; cannot share &ConcurrentMap across threads
-                CrossbeamSkiplistBenchMap<u64, u64>,
-                DashMapBenchMap<u64, u64>,
-                // FlurryBenchMap<u64, u64>, // too slow
-                // HashbrownBenchMap<u64, u64>, // not concurrent
-                // HashlinkBenchMap<u64, u64>, // mutation requires &mut, cannot mutate through a shared reference
-                // HordeBenchMap<u64, u64>, // mutation requires &mut, cannot mutate through a shared reference
-                // ImmutableChunkMapBenchMap<u64, u64>, // mutation returns a new map; requires &mut or storing the result, cannot mutate through a shared reference
-                // ImblBenchMap<u64, u64>, // mutation requires &mut, cannot mutate through a shared reference
-                // IndexMapBenchMap<u64, u64>, // not concurrent
-                LeapfrogBenchMap<u64, u64>,
-                PapayaBenchMap<u64, u64>,
-                // RpdsHashTrieMapBenchMap<u64, u64>, // mutation returns a new map; requires &mut or storing the result, cannot mutate through a shared reference (and the default Rc pointer is not Send/Sync)
-                // RustCHashBenchMap<u64, u64>, // not concurrent
-                SccBenchMap<u64, u64>,
-                StarshardBenchMap<u64, u64>,
-                // StdBenchMap<u64, u64>, // not concurrent
-                TxMapBenchMap<u64, u64>,
-            );
-        }
     }
 }
 

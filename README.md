@@ -46,7 +46,7 @@ There are 3 groups of tests, `out-of-the-box` which uses each map's default impl
 - **Clone then write**: Clones maps containing 1K/10K/100K entries, then inserts 10% new entries into the clone
 - **Contention (concurrent)**: Uses a map with 10K entries. Performs 80% reads / 20% writes on 3 threads using query key distributions of: [uniform, zipfian (exponent 1), zipfian (exponent 2)]. Threads are pinned to reduce any effects from OS scheduling.
 - **Create**: Creates 10K new empty maps. Measures the fixed cost of construction, eager vs lazy allocation and per-map setup overhead.
-- **Get or insert (concurrent)**: Uses maps with 1K/10K/100K entries. The "get-or-create cache entry" pattern: 90% of operations hit existing keys, 10% insert missing keys. Thread counts: [2, 3]. Threads are pinned to reduce any effects from OS scheduling.
+- **Get or insert (concurrent)**: Uses a map with 10K entries. The "get-or-create cache entry" pattern: 90% of operations hit existing keys, 10% insert missing keys. Thread counts: [2, 3]. Threads are pinned to reduce any effects from OS scheduling.
 - **Synchronization (concurrent)**: Uses a map with a single entry. Performs workloads on 3 threads targeting the same key. Workloads: [read-only, read-mostly (80/20), read-majority (60/40), write-majority (40/60), write-mostly (20/80), write-only]. Threads are pinned to reduce any effects from OS scheduling.
 - **Throughput (serial and concurrent)**: Uses a map with 10K entries. Use cases: [write-heavy, balanced, read-heavy]. Thread counts: [1, 2, 3]. Threads for concurrent tests are pinned to reduce any effects from OS scheduling.
 
