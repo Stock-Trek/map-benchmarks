@@ -1,7 +1,7 @@
 // How cache-friendly is its storage layout? Tests iteration cost, how entries are arranged in memory and how cheaply the full contents can be walked.
 use bench_map::{
     common_hasher::CommonHasher, config::*, constants::*, data::u64_sparse::U64SparseDataGen,
-    expand_bench_with_map_data, expand_bench_with_map_data_and_hasher, map_data::MapData,
+    expand_bench_with_map_data, expand_bench_with_map_data_and_common_hasher, map_data::MapData,
     map_gen::MapGen, maps::*,
 };
 use criterion::{
@@ -102,7 +102,6 @@ fn iterate(c: &mut Criterion) {
 
         // Every map that supports a custom hasher uses the same CommonHasher
         {
-            let hasher = CommonHasher::new();
             let mut group = c.benchmark_group(format!(
                 "iterate/map-size-{}/{SAME_HASHER_GROUP_NAME}",
                 entry_count_name
@@ -111,11 +110,10 @@ fn iterate(c: &mut Criterion) {
             group.measurement_time(MEASUREMENT_TIME);
             group.throughput(Throughput::Elements(*entry_count as u64));
 
-            expand_bench_with_map_data_and_hasher!(
+            expand_bench_with_map_data_and_common_hasher!(
                 bench_same_hasher,
                 &mut group,
                 &map_data,
-                hasher,
                 AhashBenchMap<u64, u64, CommonHasher>,
                 // BTreeMapBenchMap<u64, u64, CommonHasher>, // doesn't allow setting hasher
                 // ConcreadBenchMap<u64, u64, CommonHasher>, // doesn't allow setting hasher
