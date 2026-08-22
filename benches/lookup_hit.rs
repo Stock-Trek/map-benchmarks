@@ -29,15 +29,16 @@ fn bench_out_of_the_box<Map, K>(
     });
 }
 
-fn bench_same_hasher<Map>(
+fn bench_same_hasher<Map, K>(
     name: &str,
     group: &mut BenchmarkGroup<WallTime>,
-    map_data: &MapData<u64, u64>,
+    map_data: &MapData<K, u64>,
     hasher: CommonHasher,
 ) where
-    Map: BenchMapNewWithHasher<u64, u64, CommonHasher>
-        + BenchMapMutInsert<u64, u64>
-        + BenchMapGetCloned<u64, u64>,
+    Map: BenchMapNewWithHasher<K, u64, CommonHasher>
+        + BenchMapMutInsert<K, u64>
+        + BenchMapGetCloned<K, u64>,
+    K: Clone + Hash + Eq,
 {
     group.bench_function(name, move |b| {
         let map = map_data.create_map_with_hasher::<Map, CommonHasher>(hasher.clone());
@@ -105,10 +106,7 @@ fn lookup_hit(c: &mut Criterion) {
         group.measurement_time(MEASUREMENT_TIME);
         group.throughput(Throughput::Elements(existing_key_count as u64));
 
-        expand_bench_with_map_data_and_common_hasher!(
-            bench_same_hasher,
-            &mut group,
-            &map_data,
+        expand_bench_with_map_data_and_common_hasher!(bench_same_hasher, u64, &mut group, &map_data,
             AhashBenchMap<u64, u64, CommonHasher>,
             // BTreeMapBenchMap<u64, u64, CommonHasher>, // doesn't allow setting hasher
             // ConcreadBenchMap<u64, u64, CommonHasher>, // doesn't allow setting hasher
