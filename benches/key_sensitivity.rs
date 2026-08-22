@@ -4,7 +4,7 @@ use bench_map::{
     config::*,
     constants::*,
     data::{string::StringDataGen, u64_sparse::U64SparseDataGen},
-    expand_bench_with_kv_map_data_and_hasher,
+    expand_bench_with_map_data_and_common_hasher,
     map_data::MapData,
     map_gen::MapGen,
     maps::*,
@@ -14,17 +14,16 @@ use criterion::{
 };
 use std::{hash::Hash, hint::black_box, rc::Rc};
 
-fn bench<Map, K, V>(
+fn bench<Map, K>(
     name: &str,
     group: &mut BenchmarkGroup<WallTime>,
-    map_data: &MapData<K, V>,
+    map_data: &MapData<K, u64>,
     hasher: CommonHasher,
 ) where
-    Map: BenchMapNewWithHasher<K, V, CommonHasher>
-        + BenchMapMutInsert<K, V>
-        + BenchMapGetCloned<K, V>,
+    Map: BenchMapNewWithHasher<K, u64, CommonHasher>
+        + BenchMapMutInsert<K, u64>
+        + BenchMapGetCloned<K, u64>,
     K: Clone + Hash + Eq,
-    V: Clone,
 {
     group.bench_function(name, move |b| {
         let map = map_data.create_map_with_hasher::<Map, CommonHasher>(hasher.clone());
@@ -46,7 +45,6 @@ fn key_sensitivity(c: &mut Criterion) {
     let sort_keys = false;
     // u64 keys
     {
-        let hasher = CommonHasher::new();
         let map_data = MapGen::generate(
             U64SparseDataGen,
             U64SparseDataGen,
@@ -62,7 +60,7 @@ fn key_sensitivity(c: &mut Criterion) {
         group.measurement_time(MEASUREMENT_TIME);
         group.throughput(Throughput::Elements(existing_key_count));
 
-        expand_bench_with_kv_map_data_and_hasher!(bench, u64, u64, &mut group, &map_data, &hasher,
+        expand_bench_with_map_data_and_common_hasher!(bench, u64, &mut group, &map_data,
             AhashBenchMap<u64, u64, CommonHasher>,
             // BTreeMapBenchMap<u64, u64, CommonHasher>, // doesn't allow setting hasher
             // ConcreadBenchMap<u64, u64, CommonHasher>, // too slow
@@ -88,7 +86,6 @@ fn key_sensitivity(c: &mut Criterion) {
     }
     // String<16> keys
     {
-        let hasher = CommonHasher::new();
         let map_data = Rc::new(MapGen::generate(
             StringDataGen::<16>,
             U64SparseDataGen,
@@ -104,7 +101,7 @@ fn key_sensitivity(c: &mut Criterion) {
         group.measurement_time(MEASUREMENT_TIME);
         group.throughput(Throughput::Elements(existing_key_count));
 
-        expand_bench_with_kv_map_data_and_hasher!(bench, String, u64, &mut group, &map_data, &hasher,
+        expand_bench_with_map_data_and_common_hasher!(bench, String, &mut group, &map_data,
             AhashBenchMap<String, u64, CommonHasher>,
             // BTreeMapBenchMap<String, u64, CommonHasher>, // doesn't allow setting hasher
             // ConcreadBenchMap<String, u64, CommonHasher>, // too slow
@@ -130,7 +127,6 @@ fn key_sensitivity(c: &mut Criterion) {
     }
     // String<128> keys
     {
-        let hasher = CommonHasher::new();
         let map_data = Rc::new(MapGen::generate(
             StringDataGen::<128>,
             U64SparseDataGen,
@@ -146,7 +142,7 @@ fn key_sensitivity(c: &mut Criterion) {
         group.measurement_time(MEASUREMENT_TIME);
         group.throughput(Throughput::Elements(existing_key_count));
 
-        expand_bench_with_kv_map_data_and_hasher!(bench, String, u64, &mut group, &map_data, &hasher,
+        expand_bench_with_map_data_and_common_hasher!(bench, String, &mut group, &map_data,
             AhashBenchMap<String, u64, CommonHasher>,
             // BTreeMapBenchMap<String, u64, CommonHasher>, // doesn't allow setting hasher
             // ConcreadBenchMap<String, u64, CommonHasher>, // too slow
