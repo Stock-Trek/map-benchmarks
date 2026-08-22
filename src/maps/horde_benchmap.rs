@@ -60,29 +60,6 @@ where
     }
 }
 
-impl<K, V, H> BenchMapMutGetOrInsert<K, V> for HordeBenchMap<K, V, H>
-where
-    K: Clone + Hash + Eq,
-    V: Clone,
-    H: BuildHasher,
-{
-    fn get_or_insert(&mut self, key: K, default: V) -> V {
-        let existing = horde::collect::pin(|pin| {
-            self.map
-                .read(pin)
-                .get(&key, None)
-                .map(|(_key, value)| value.clone())
-        });
-        match existing {
-            Some(value) => value,
-            None => {
-                self.map.write().insert(key, default.clone(), None);
-                default
-            }
-        }
-    }
-}
-
 impl<K, V, H> BenchMapMutInsert<K, V> for HordeBenchMap<K, V, H>
 where
     K: Clone + Hash + Eq,

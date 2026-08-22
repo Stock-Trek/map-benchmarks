@@ -55,22 +55,6 @@ where
     }
 }
 
-impl<K, V, H> BenchMapGetOrInsert<K, V> for FlurryBenchMap<K, V, H>
-where
-    K: Sync + Send + Clone + Hash + Ord,
-    V: Sync + Send + Clone,
-    H: BuildHasher,
-{
-    fn get_or_insert(&self, key: K, default: V) -> V {
-        if let Some(value) = self.map.pin().get(&key).cloned() {
-            value
-        } else {
-            self.map.pin().insert(key, default.clone());
-            default
-        }
-    }
-}
-
 impl<K, V, H> BenchMapInsert<K, V> for FlurryBenchMap<K, V, H>
 where
     K: Sync + Send + Clone + Hash + Ord,
@@ -90,22 +74,6 @@ where
 {
     fn insert(&mut self, key: K, value: V) {
         self.map.pin().insert(key, value);
-    }
-}
-
-impl<K, V, H> BenchMapMutGetOrInsert<K, V> for FlurryBenchMap<K, V, H>
-where
-    K: Sync + Send + Clone + Hash + Ord,
-    V: Sync + Send + Clone,
-    H: BuildHasher,
-{
-    fn get_or_insert(&mut self, key: K, default: V) -> V {
-        if let Some(value) = self.map.pin().get(&key).cloned() {
-            value
-        } else {
-            self.map.pin().insert(key, default.clone());
-            default
-        }
     }
 }
 

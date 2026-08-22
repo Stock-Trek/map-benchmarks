@@ -112,21 +112,21 @@ fn get_or_insert(c: &mut Criterion) {
         expand_bench_with_map_data!(bench_out_of_the_box, u64, &mut group, &map_data_u64,
             AhashBenchMap<u64, u64>,
             BTreeMapBenchMap<u64, u64>,
-            // ConcreadBenchMap<u64, u64>, // too slow
-            ConcurrentMapBenchMap<u64, u64>,
+            // ConcreadBenchMap<u64, u64>, // too slow; no entry/get-or-insert API
+            // ConcurrentMapBenchMap<u64, u64>, // no entry/get-or-insert API
             CrossbeamSkiplistBenchMap<u64, u64>,
             DashMapBenchMap<u64, u64>,
-            // FlurryBenchMap<u64, u64>, // too slow
+            // FlurryBenchMap<u64, u64>, // too slow; no entry/get-or-insert API
             HashbrownBenchMap<u64, u64>,
             HashlinkBenchMap<u64, u64>,
-            HordeBenchMap<u64, u64>,
+            // HordeBenchMap<u64, u64>, // no entry/get-or-insert API
             ImmutableChunkMapBenchMap<u64, u64>,
             ImblBenchMap<u64, u64>,
             IndexMapBenchMap<u64, u64>,
             IntMapBenchMap<u64, u64>,
             LeapfrogBenchMap<u64, u64>,
             PapayaBenchMap<u64, u64>,
-            RpdsHashTrieMapBenchMap<u64, u64>,
+            // RpdsHashTrieMapBenchMap<u64, u64>, // no entry/get-or-insert API
             RustCHashBenchMap<u64, u64>,
             SccBenchMap<u64, u64>,
             StarshardBenchMap<u64, u64>,
@@ -149,17 +149,17 @@ fn get_or_insert(c: &mut Criterion) {
             // ConcurrentMapBenchMap<u64, u64, CommonHasher>, // doesn't allow setting hasher
             // CrossbeamSkiplistBenchMap<u64, u64, CommonHasher>, // doesn't allow setting hasher
             DashMapBenchMap<u64, u64, CommonHasher>,
-            // FlurryBenchMap<u64, u64, CommonHasher>, // too slow
+            // FlurryBenchMap<u64, u64, CommonHasher>, // too slow; no entry/get-or-insert API
             HashbrownBenchMap<u64, u64, CommonHasher>,
             HashlinkBenchMap<u64, u64, CommonHasher>,
-            HordeBenchMap<u64, u64, CommonHasher>,
+            // HordeBenchMap<u64, u64, CommonHasher>, // no entry/get-or-insert API
             // ImmutableChunkMapBenchMap<u64, u64, CommonHasher>, // doesn't allow setting hasher
             ImblBenchMap<u64, u64, CommonHasher>,
             IndexMapBenchMap<u64, u64, CommonHasher>,
             // IntMapBenchMap<u64, u64, CommonHasher>, // doesn't allow setting hasher
             LeapfrogBenchMap<u64, u64, CommonHasher>,
             PapayaBenchMap<u64, u64, CommonHasher>,
-            RpdsHashTrieMapBenchMap<u64, u64, CommonHasher>,
+            // RpdsHashTrieMapBenchMap<u64, u64, CommonHasher>, // no entry/get-or-insert API
             // RustCHashBenchMap<u64, u64, CommonHasher>, // doesn't allow setting hasher
             SccBenchMap<u64, u64, CommonHasher>,
             StarshardBenchMap<u64, u64, CommonHasher>,
@@ -180,21 +180,21 @@ fn get_or_insert(c: &mut Criterion) {
         expand_bench_with_map_data!(bench_out_of_the_box, String, &mut group, &map_data_string_32,
             AhashBenchMap<String, u64>,
             BTreeMapBenchMap<String, u64>,
-            // ConcreadBenchMap<String, u64>, // too slow
-            ConcurrentMapBenchMap<String, u64>,
+            // ConcreadBenchMap<String, u64>, // too slow; no entry/get-or-insert API
+            // ConcurrentMapBenchMap<String, u64>, // no entry/get-or-insert API
             CrossbeamSkiplistBenchMap<String, u64>,
             DashMapBenchMap<String, u64>,
-            // FlurryBenchMap<String, u64>, // too slow
+            // FlurryBenchMap<String, u64>, // too slow; no entry/get-or-insert API
             HashbrownBenchMap<String, u64>,
             HashlinkBenchMap<String, u64>,
-            HordeBenchMap<String, u64>,
+            // HordeBenchMap<String, u64>, // no entry/get-or-insert API
             ImmutableChunkMapBenchMap<String, u64>,
             ImblBenchMap<String, u64>,
             IndexMapBenchMap<String, u64>,
             // IntMapBenchMap<String, u64>, // keys require IntKey
             // LeapfrogBenchMap<String, u64>, // keys require Copy
             PapayaBenchMap<String, u64>,
-            RpdsHashTrieMapBenchMap<String, u64>,
+            // RpdsHashTrieMapBenchMap<String, u64>, // no entry/get-or-insert API
             RustCHashBenchMap<String, u64>,
             SccBenchMap<String, u64>,
             StarshardBenchMap<String, u64>,
@@ -218,17 +218,17 @@ fn get_or_insert(c: &mut Criterion) {
             // ConcurrentMapBenchMap<String, u64, CommonHasher>, // doesn't allow setting hasher
             // CrossbeamSkiplistBenchMap<String, u64, CommonHasher>, // doesn't allow setting hasher
             DashMapBenchMap<String, u64, CommonHasher>,
-            // FlurryBenchMap<String, u64, CommonHasher>, // too slow
+            // FlurryBenchMap<String, u64, CommonHasher>, // too slow; no entry/get-or-insert API
             HashbrownBenchMap<String, u64, CommonHasher>,
             HashlinkBenchMap<String, u64, CommonHasher>,
-            HordeBenchMap<String, u64, CommonHasher>,
+            // HordeBenchMap<String, u64, CommonHasher>, // no entry/get-or-insert API
             // ImmutableChunkMapBenchMap<String, u64, CommonHasher>, // doesn't allow setting hasher
             ImblBenchMap<String, u64, CommonHasher>,
             IndexMapBenchMap<String, u64, CommonHasher>,
             // IntMapBenchMap<String, u64, CommonHasher>, // keys require IntKey
             // LeapfrogBenchMap<String, u64, CommonHasher>, // keys require Copy
             PapayaBenchMap<String, u64, CommonHasher>,
-            RpdsHashTrieMapBenchMap<String, u64, CommonHasher>,
+            // RpdsHashTrieMapBenchMap<String, u64, CommonHasher>, // no entry/get-or-insert API
             // RustCHashBenchMap<String, u64, CommonHasher>, // doesn't allow setting hasher
             SccBenchMap<String, u64, CommonHasher>,
             StarshardBenchMap<String, u64, CommonHasher>,

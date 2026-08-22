@@ -191,11 +191,11 @@ fn get_or_insert_concurrent(c: &mut Criterion) {
             expand_bench_concurrent!(bench_out_of_the_box, u64, &mut group, &map_data, thread_count, &workloads,
                 // AhashBenchMap<u64, u64>, // not concurrent
                 // BTreeMapBenchMap<u64, u64>, // not concurrent
-                // ConcreadBenchMap<u64, u64>, // too slow
-                ConcurrentMapBenchMap<u64, u64>,
+                // ConcreadBenchMap<u64, u64>, // too slow; no entry/get-or-insert API
+                // ConcurrentMapBenchMap<u64, u64>, // no entry/get-or-insert API
                 CrossbeamSkiplistBenchMap<u64, u64>,
                 DashMapBenchMap<u64, u64>,
-                // FlurryBenchMap<u64, u64>, // too slow
+                // FlurryBenchMap<u64, u64>, // too slow; no entry/get-or-insert API
                 // HashbrownBenchMap<u64, u64>, // not concurrent
                 // HashlinkBenchMap<u64, u64>, // mutation requires &mut, cannot mutate through a shared reference
                 // HordeBenchMap<u64, u64>, // mutation requires &mut, cannot mutate through a shared reference
@@ -227,11 +227,11 @@ fn get_or_insert_concurrent(c: &mut Criterion) {
             expand_bench_concurrent_with_common_hasher!(bench_same_hasher, u64, &mut group, &map_data, thread_count, &workloads,
                 // AhashBenchMap<u64, u64, CommonHasher>, // not concurrent
                 // BTreeMapBenchMap<u64, u64, CommonHasher>, // not concurrent
-                // ConcreadBenchMap<u64, u64, CommonHasher>, // too slow
+                // ConcreadBenchMap<u64, u64, CommonHasher>, // too slow; no entry/get-or-insert API
                 // ConcurrentMapBenchMap<u64, u64, CommonHasher>, // doesn't allow setting hasher
                 // CrossbeamSkiplistBenchMap<u64, u64, CommonHasher>, // doesn't allow setting hasher
                 DashMapBenchMap<u64, u64, CommonHasher>,
-                // FlurryBenchMap<u64, u64, CommonHasher>, // too slow
+                // FlurryBenchMap<u64, u64, CommonHasher>, // too slow; no entry/get-or-insert API
                 // HashbrownBenchMap<u64, u64, CommonHasher>, // not concurrent
                 // HashlinkBenchMap<u64, u64, CommonHasher>, // mutation requires &mut, cannot mutate through a shared reference
                 // HordeBenchMap<u64, u64, CommonHasher>, // mutation requires &mut, cannot mutate through a shared reference
