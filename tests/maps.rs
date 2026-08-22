@@ -1,5 +1,5 @@
 use bench_map::{data::u64_sparse::U64SparseDataGen, map_gen::MapGen, maps::*};
-use std::{collections::hash_map::RandomState, hash::BuildHasher, rc::Rc};
+use std::{collections::hash_map::RandomState, hash::BuildHasher, rc::Rc, sync::Arc};
 
 #[test]
 fn ahash() {
@@ -41,6 +41,62 @@ fn concurrent_map() {
     assert_shared_insert_remove::<ConcurrentMapBenchMap<u64, u64>>();
     assert_shared_get_or_insert::<ConcurrentMapBenchMap<u64, u64>>();
     // assert_clear::<ConcurrentMapBenchMap<u64, u64>>(); // concurrent_map::ConcurrentMap has no clear method
+}
+
+/// concurrent-map's `ConcurrentMap` is `Send` but not `Sync` (its `ebr`
+/// dependency keeps reclamation state in a `RefCell`), so the wrapper shares
+/// it across threads by giving each thread its own clone. This test exercises
+/// that path: several threads hammer one wrapper shared through an `Arc`, then
+/// a *fresh* wrapper is published to force the threads' cached clones to be
+/// refreshed on the next iteration.
+#[test]
+fn concurrent_map_shared_across_threads() {
+    const KEYS: u64 = 10_000;
+    const THREADS: u64 = 8;
+
+    let run = |map: &Arc<ConcurrentMapBenchMap<u64, u64>>| {
+        let threads: Vec<_> = (0..THREADS)
+            .map(|t| {
+                let map = map.clone();
+                std::thread::spawn(move || {
+                    // Disjoint key range per thread keeps assertions deterministic.
+                    for i in 0..5_000u64 {
+                        let k = t * (KEYS / THREADS) + (i % (KEYS / THREADS));
+                        assert_eq!(map.get_cloned(&k), Some(k));
+                        map.insert(k, k + 1);
+                        assert_eq!(map.get_cloned(&k), Some(k + 1));
+                        map.remove(&k);
+                        assert_eq!(map.get_cloned(&k), None);
+                        map.insert(k, k);
+                    }
+                })
+            })
+            .collect();
+        for thread in threads {
+            thread.join().unwrap();
+        }
+    };
+
+    // Iteration 1: populate a map and hammer it from all threads.
+    let map1 = Arc::new(ConcurrentMapBenchMap::<u64, u64>::new());
+    for k in 0..KEYS {
+        map1.insert(k, k);
+    }
+    run(&map1);
+    for k in 0..KEYS {
+        assert_eq!(map1.get_cloned(&k), Some(k));
+    }
+
+    // Iteration 2: a fresh map (new wrapper instance) must cause every thread
+    // to refresh its cached clone instead of operating on the stale one.
+    let map2 = Arc::new(ConcurrentMapBenchMap::<u64, u64>::new());
+    for k in 0..KEYS {
+        map2.insert(k, k);
+    }
+    run(&map2);
+    for k in 0..KEYS {
+        assert_eq!(map2.get_cloned(&k), Some(k));
+    }
 }
 
 #[test]
