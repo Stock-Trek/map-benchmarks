@@ -1,8 +1,10 @@
 // How does it perform on realistic single-threaded use? Tests the combined read/write/remove design, the interplay of all operations in one pass without concurrency overhead.
 use bench_map::{
+    common_hasher::CommonHasher,
     config::*,
+    constants::*,
     data::u64_sparse::U64SparseDataGen,
-    expand_bench_concurrent,
+    expand_bench_concurrent, expand_bench_concurrent_with_common_hasher,
     map_data::MapData,
     map_gen::MapGen,
     maps::*,
@@ -43,7 +45,7 @@ where
     }
 }
 
-fn bench<Map, K>(
+fn bench_out_of_the_box<Map, K>(
     name: &str,
     group: &mut BenchmarkGroup<WallTime>,
     map_data: &MapData<K, u64>,
@@ -59,6 +61,31 @@ fn bench<Map, K>(
     group.bench_function(name, move |b| {
         b.iter_batched(
             || map_data.create_map::<Map>(),
+            |mut map| {
+                run_workload(workload, &mut map);
+            },
+            BatchSize::PerIteration,
+        );
+    });
+}
+
+fn bench_same_hasher<Map, K>(
+    name: &str,
+    group: &mut BenchmarkGroup<WallTime>,
+    map_data: &MapData<K, u64>,
+    _thread_count_1: usize,
+    workload: &ThreadWorkload<K>,
+    hasher: CommonHasher,
+) where
+    Map: BenchMapNewWithHasher<K, u64, CommonHasher>
+        + BenchMapMutInsert<K, u64>
+        + BenchMapMutRemove<K, u64>
+        + BenchMapGetCloned<K, u64>,
+    K: Clone + Hash + Eq,
+{
+    group.bench_function(name, move |b| {
+        b.iter_batched(
+            || map_data.create_map_with_hasher::<Map, CommonHasher>(hasher.clone()),
             |mut map| {
                 run_workload(workload, &mut map);
             },
@@ -96,35 +123,77 @@ fn throughput_serial(c: &mut Criterion) {
             &mut rng,
         );
 
-        let mut group = c.benchmark_group(format!("throughput-1-thread/{}", name));
-        group.warm_up_time(WARM_UP_TIME);
-        group.measurement_time(MEASUREMENT_TIME);
-        group.throughput(Throughput::Elements(DEFAULT_OP_COUNT as u64));
+        // default hashers
+        {
+            let mut group = c.benchmark_group(format!(
+                "throughput-1-thread/{OUT_OF_THE_BOX_GROUP_NAME}/{}",
+                name
+            ));
+            group.warm_up_time(WARM_UP_TIME);
+            group.measurement_time(MEASUREMENT_TIME);
+            group.throughput(Throughput::Elements(DEFAULT_OP_COUNT as u64));
 
-        expand_bench_concurrent!(bench, u64, &mut group, &map_data, 1, &workload,
-            AhashBenchMap<u64, u64>,
-            BTreeMapBenchMap<u64, u64>,
-            // ConcreadBenchMap<u64, u64>, // too slow
-            ConcurrentMapBenchMap<u64, u64>,
-            CrossbeamSkiplistBenchMap<u64, u64>,
-            DashMapBenchMap<u64, u64>,
-            // FlurryBenchMap<u64, u64>, // too slow
-            HashbrownBenchMap<u64, u64>,
-            HashlinkBenchMap<u64, u64>,
-            HordeBenchMap<u64, u64>,
-            ImmutableChunkMapBenchMap<u64, u64>,
-            ImblBenchMap<u64, u64>,
-            IndexMapBenchMap<u64, u64>,
-            IntMapBenchMap<u64, u64>,
-            LeapfrogBenchMap<u64, u64>,
-            PapayaBenchMap<u64, u64>,
-            RpdsHashTrieMapBenchMap<u64, u64>,
-            RustCHashBenchMap<u64, u64>,
-            SccBenchMap<u64, u64>,
-            StarshardBenchMap<u64, u64>,
-            StdBenchMap<u64, u64>,
-            TxMapBenchMap<u64, u64>,
-        );
+            expand_bench_concurrent!(bench_out_of_the_box, u64, &mut group, &map_data, 1, &workload,
+                AhashBenchMap<u64, u64>,
+                BTreeMapBenchMap<u64, u64>,
+                // ConcreadBenchMap<u64, u64>, // too slow
+                ConcurrentMapBenchMap<u64, u64>,
+                CrossbeamSkiplistBenchMap<u64, u64>,
+                DashMapBenchMap<u64, u64>,
+                // FlurryBenchMap<u64, u64>, // too slow
+                HashbrownBenchMap<u64, u64>,
+                HashlinkBenchMap<u64, u64>,
+                HordeBenchMap<u64, u64>,
+                ImmutableChunkMapBenchMap<u64, u64>,
+                ImblBenchMap<u64, u64>,
+                IndexMapBenchMap<u64, u64>,
+                IntMapBenchMap<u64, u64>,
+                LeapfrogBenchMap<u64, u64>,
+                PapayaBenchMap<u64, u64>,
+                RpdsHashTrieMapBenchMap<u64, u64>,
+                RustCHashBenchMap<u64, u64>,
+                SccBenchMap<u64, u64>,
+                StarshardBenchMap<u64, u64>,
+                StdBenchMap<u64, u64>,
+                TxMapBenchMap<u64, u64>,
+            );
+        }
+
+        // CommonHasher
+        {
+            let mut group = c.benchmark_group(format!(
+                "throughput-1-thread/{SAME_HASHER_GROUP_NAME}/{}",
+                name
+            ));
+            group.warm_up_time(WARM_UP_TIME);
+            group.measurement_time(MEASUREMENT_TIME);
+            group.throughput(Throughput::Elements(DEFAULT_OP_COUNT as u64));
+
+            expand_bench_concurrent_with_common_hasher!(bench_same_hasher, u64, &mut group, &map_data, 1, &workload,
+                AhashBenchMap<u64, u64, CommonHasher>,
+                // BTreeMapBenchMap<u64, u64, CommonHasher>, // doesn't allow setting hasher
+                // ConcreadBenchMap<u64, u64, CommonHasher>, // doesn't allow setting hasher
+                // ConcurrentMapBenchMap<u64, u64, CommonHasher>, // doesn't allow setting hasher
+                // CrossbeamSkiplistBenchMap<u64, u64, CommonHasher>, // doesn't allow setting hasher
+                DashMapBenchMap<u64, u64, CommonHasher>,
+                // FlurryBenchMap<u64, u64, CommonHasher>, // too slow
+                HashbrownBenchMap<u64, u64, CommonHasher>,
+                HashlinkBenchMap<u64, u64, CommonHasher>,
+                HordeBenchMap<u64, u64, CommonHasher>,
+                // ImmutableChunkMapBenchMap<u64, u64, CommonHasher>, // doesn't allow setting hasher
+                ImblBenchMap<u64, u64, CommonHasher>,
+                IndexMapBenchMap<u64, u64, CommonHasher>,
+                // IntMapBenchMap<u64, u64, CommonHasher>, // doesn't allow setting hasher
+                LeapfrogBenchMap<u64, u64, CommonHasher>,
+                PapayaBenchMap<u64, u64, CommonHasher>,
+                RpdsHashTrieMapBenchMap<u64, u64, CommonHasher>,
+                // RustCHashBenchMap<u64, u64, CommonHasher>, // doesn't allow setting hasher
+                SccBenchMap<u64, u64, CommonHasher>,
+                StarshardBenchMap<u64, u64, CommonHasher>,
+                StdBenchMap<u64, u64, CommonHasher>,
+                TxMapBenchMap<u64, u64, CommonHasher>,
+            );
+        }
     }
 }
 
