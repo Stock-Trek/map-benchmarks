@@ -1,8 +1,13 @@
 // How efficiently can it absorb new keys? Tests the write path, key placement and collision handling when inserting into an already-populated map.
 use bench_map::{
-    common_hasher::CommonHasher, config::*, constants::*, data::u64_sparse::U64SparseDataGen,
-    expand_bench_with_map_data, expand_bench_with_map_data_and_common_hasher, map_data::MapData,
-    map_gen::MapGen, maps::*,
+    common_hasher::CommonHasher,
+    config::*,
+    constants::*,
+    data::{string::StringDataGen, u64_sparse::U64SparseDataGen},
+    expand_bench_with_map_data, expand_bench_with_map_data_and_common_hasher,
+    map_data::MapData,
+    map_gen::MapGen,
+    maps::*,
 };
 use criterion::{
     BatchSize, BenchmarkGroup, Criterion, Throughput, criterion_group, criterion_main,
@@ -73,7 +78,7 @@ fn insert(c: &mut Criterion) {
     let existing_key_count = 0;
     let missing_key_count = DEFAULT_OP_COUNT;
     let sort_keys = false;
-    let map_data = MapGen::generate(
+    let map_data_u64 = MapGen::generate(
         U64SparseDataGen,
         U64SparseDataGen,
         entry_count,
@@ -81,15 +86,23 @@ fn insert(c: &mut Criterion) {
         missing_key_count,
         sort_keys,
     );
+    let map_data_string_32 = MapGen::generate(
+        StringDataGen::<32>,
+        U64SparseDataGen,
+        entry_count,
+        existing_key_count,
+        missing_key_count,
+        sort_keys,
+    );
 
-    // Each map uses its default hasher
+    // default hasher, u64 keys
     {
-        let mut group = c.benchmark_group(format!("insert/{OUT_OF_THE_BOX_GROUP_NAME}"));
+        let mut group = c.benchmark_group(format!("insert/{OUT_OF_THE_BOX_GROUP_NAME}/u64"));
         group.warm_up_time(WARM_UP_TIME);
         group.measurement_time(MEASUREMENT_TIME);
         group.throughput(Throughput::Elements(missing_key_count as u64));
 
-        expand_bench_with_map_data!(bench_out_of_the_box, u64, &mut group, &map_data,
+        expand_bench_with_map_data!(bench_out_of_the_box, u64, &mut group, &map_data_u64,
             AhashBenchMap<u64, u64>,
             BTreeMapBenchMap<u64, u64>,
             // ConcreadBenchMap<u64, u64>, // too slow
@@ -115,14 +128,14 @@ fn insert(c: &mut Criterion) {
         );
     }
 
-    // Every map that supports a custom hasher uses the same CommonHasher
+    // CommonHasher, u64 keys
     {
-        let mut group = c.benchmark_group(format!("insert/{SAME_HASHER_GROUP_NAME}"));
+        let mut group = c.benchmark_group(format!("insert/{SAME_HASHER_GROUP_NAME}/u64"));
         group.warm_up_time(WARM_UP_TIME);
         group.measurement_time(MEASUREMENT_TIME);
         group.throughput(Throughput::Elements(missing_key_count as u64));
 
-        expand_bench_with_map_data_and_common_hasher!(bench_same_hasher, u64, &mut group, &map_data,
+        expand_bench_with_map_data_and_common_hasher!(bench_same_hasher, u64, &mut group, &map_data_u64,
             AhashBenchMap<u64, u64, CommonHasher>,
             // BTreeMapBenchMap<u64, u64, CommonHasher>, // doesn't allow setting hasher
             // ConcreadBenchMap<u64, u64, CommonHasher>, // doesn't allow setting hasher
@@ -143,6 +156,70 @@ fn insert(c: &mut Criterion) {
             StarshardBenchMap<u64, u64, CommonHasher>,
             StdBenchMap<u64, u64, CommonHasher>,
             TxMapBenchMap<u64, u64, CommonHasher>,
+        );
+    }
+
+    // default hasher, String<32> keys
+    {
+        let mut group = c.benchmark_group(format!("insert/{OUT_OF_THE_BOX_GROUP_NAME}/String<32>"));
+        group.warm_up_time(WARM_UP_TIME);
+        group.measurement_time(MEASUREMENT_TIME);
+        group.throughput(Throughput::Elements(missing_key_count as u64));
+
+        expand_bench_with_map_data!(bench_out_of_the_box, String, &mut group, &map_data_string_32,
+            AhashBenchMap<String, u64>,
+            BTreeMapBenchMap<String, u64>,
+            // ConcreadBenchMap<String, u64>, // too slow
+            ConcurrentMapBenchMap<String, u64>,
+            CrossbeamSkiplistBenchMap<String, u64>,
+            DashMapBenchMap<String, u64>,
+            // FlurryBenchMap<String, u64>, // too slow
+            HashbrownBenchMap<String, u64>,
+            HashlinkBenchMap<String, u64>,
+            HordeBenchMap<String, u64>,
+            ImmutableChunkMapBenchMap<String, u64>,
+            ImblBenchMap<String, u64>,
+            IndexMapBenchMap<String, u64>,
+            // IntMapBenchMap<String, u64>, // keys require IntKey
+            // LeapfrogBenchMap<String, u64>, // keys require Copy
+            PapayaBenchMap<String, u64>,
+            RpdsHashTrieMapBenchMap<String, u64>,
+            RustCHashBenchMap<String, u64>,
+            SccBenchMap<String, u64>,
+            StarshardBenchMap<String, u64>,
+            StdBenchMap<String, u64>,
+            TxMapBenchMap<String, u64>,
+        );
+    }
+
+    // CommonHasher, String<32> keys
+    {
+        let mut group = c.benchmark_group(format!("insert/{SAME_HASHER_GROUP_NAME}/String<32>"));
+        group.warm_up_time(WARM_UP_TIME);
+        group.measurement_time(MEASUREMENT_TIME);
+        group.throughput(Throughput::Elements(missing_key_count as u64));
+
+        expand_bench_with_map_data_and_common_hasher!(bench_same_hasher, String, &mut group, &map_data_string_32,
+            AhashBenchMap<String, u64, CommonHasher>,
+            // BTreeMapBenchMap<String, u64, CommonHasher>, // doesn't allow setting hasher
+            // ConcreadBenchMap<String, u64, CommonHasher>, // doesn't allow setting hasher
+            // ConcurrentMapBenchMap<String, u64, CommonHasher>, // doesn't allow setting hasher
+            DashMapBenchMap<String, u64, CommonHasher>,
+            // FlurryBenchMap<String, u64, CommonHasher>, // too slow
+            HashbrownBenchMap<String, u64, CommonHasher>,
+            HashlinkBenchMap<String, u64, CommonHasher>,
+            HordeBenchMap<String, u64, CommonHasher>,
+            // ImmutableChunkMapBenchMap<String, u64, CommonHasher>, // doesn't allow setting hasher
+            ImblBenchMap<String, u64, CommonHasher>,
+            IndexMapBenchMap<String, u64, CommonHasher>,
+            // LeapfrogBenchMap<String, u64, CommonHasher>, // keys require Copy
+            PapayaBenchMap<String, u64, CommonHasher>,
+            RpdsHashTrieMapBenchMap<String, u64, CommonHasher>,
+            // RustCHashBenchMap<String, u64, CommonHasher>, // doesn't allow setting hasher
+            SccBenchMap<String, u64, CommonHasher>,
+            StarshardBenchMap<String, u64, CommonHasher>,
+            StdBenchMap<String, u64, CommonHasher>,
+            TxMapBenchMap<String, u64, CommonHasher>,
         );
     }
 }
