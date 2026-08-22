@@ -154,7 +154,7 @@ fn contention(c: &mut Criterion) {
                     "contention/threads-{thread_count}/u64/{key_distribution}",
                 ));
                 group.warm_up_time(WARM_UP_TIME);
-                group.measurement_time(MEASUREMENT_TIME);
+                group.measurement_time(CONCURRENT_MEASUREMENT_TIME);
                 group.throughput(Throughput::Elements(total_ops as u64));
 
                 expand_bench_concurrent!(bench, u64, &mut group, &map_data_u64, thread_count, &workloads,
@@ -189,7 +189,7 @@ fn contention(c: &mut Criterion) {
                     "contention/threads-{thread_count}/String<32>/{key_distribution}",
                 ));
                 group.warm_up_time(WARM_UP_TIME);
-                group.measurement_time(MEASUREMENT_TIME);
+                group.measurement_time(CONCURRENT_MEASUREMENT_TIME);
                 group.throughput(Throughput::Elements(total_ops as u64));
 
                 expand_bench_concurrent!(bench, String, &mut group, &map_data_string_32, thread_count, &workloads_string_32,

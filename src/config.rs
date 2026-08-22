@@ -2,6 +2,7 @@ use std::time::Duration;
 
 pub const WARM_UP_TIME: Duration = Duration::from_secs(1);
 pub const MEASUREMENT_TIME: Duration = Duration::from_secs(2);
+pub const CONCURRENT_MEASUREMENT_TIME: Duration = Duration::from_secs(3);
 
 pub const DEFAULT_ENTRY_COUNT: usize = 10_000;
 pub const DEFAULT_ENTRY_COUNTS: &[(usize, &str)] =
