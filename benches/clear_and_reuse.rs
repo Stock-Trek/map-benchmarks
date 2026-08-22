@@ -114,6 +114,7 @@ fn clear_and_reuse(c: &mut Criterion) {
                 // ImmutableChunkMapBenchMap<u64, u64>, // no clear
                 ImblBenchMap<u64, u64>,
                 IndexMapBenchMap<u64, u64>,
+                IntMapBenchMap<u64, u64>,
                 // LeapfrogBenchMap<u64, u64>, // no clear
                 PapayaBenchMap<u64, u64>,
                 // RpdsHashTrieMapBenchMap<u64, u64>, // no clear
