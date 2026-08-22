@@ -6,11 +6,12 @@ use bench_map::{
 use criterion::{
     BenchmarkGroup, Criterion, Throughput, criterion_group, criterion_main, measurement::WallTime,
 };
-use std::hint::black_box;
+use std::{hash::Hash, hint::black_box};
 
-fn bench_clone<Map>(name: &str, group: &mut BenchmarkGroup<WallTime>, map_data: &MapData<u64, u64>)
+fn bench_clone<Map, K>(name: &str, group: &mut BenchmarkGroup<WallTime>, map_data: &MapData<K, u64>)
 where
-    Map: BenchMapNew<u64, u64> + BenchMapMutInsert<u64, u64> + BenchMapClone<u64, u64>,
+    Map: BenchMapNew<K, u64> + BenchMapMutInsert<K, u64> + BenchMapClone<K, u64>,
+    K: Clone + Hash + Eq,
 {
     group.bench_function(name, move |b| {
         let map = map_data.create_map::<Map>();
@@ -20,12 +21,13 @@ where
     });
 }
 
-fn bench_clone_then_write<Map>(
+fn bench_clone_then_write<Map, K>(
     name: &str,
     group: &mut BenchmarkGroup<WallTime>,
-    map_data: &MapData<u64, u64>,
+    map_data: &MapData<K, u64>,
 ) where
-    Map: BenchMapNew<u64, u64> + BenchMapMutInsert<u64, u64> + BenchMapClone<u64, u64>,
+    Map: BenchMapNew<K, u64> + BenchMapMutInsert<K, u64> + BenchMapClone<K, u64>,
+    K: Clone + Hash + Eq,
 {
     group.bench_function(name, move |b| {
         let map = map_data.create_map::<Map>();
@@ -33,7 +35,7 @@ fn bench_clone_then_write<Map>(
         b.iter(|| {
             let mut cloned = map.clone_map();
             for key in &keys {
-                let key = black_box(*key);
+                let key = black_box(key.clone());
                 cloned.insert(key, 42);
             }
             black_box(cloned);
@@ -59,7 +61,7 @@ fn clone(c: &mut Criterion) {
         group.measurement_time(MEASUREMENT_TIME);
         group.throughput(Throughput::Elements(*entry_count as u64));
 
-        expand_bench_with_map_data!(bench_clone, &mut group, &map_data,
+        expand_bench_with_map_data!(bench_clone, u64, &mut group, &map_data,
             AhashBenchMap<u64, u64>,
             BTreeMapBenchMap<u64, u64>,
             // ConcreadBenchMap<u64, u64>, // doesn't implement Clone
@@ -105,7 +107,7 @@ fn clone_then_write(c: &mut Criterion) {
         group.measurement_time(MEASUREMENT_TIME);
         group.throughput(Throughput::Elements(*entry_count as u64));
 
-        expand_bench_with_map_data!(bench_clone_then_write, &mut group, &map_data,
+        expand_bench_with_map_data!(bench_clone_then_write, u64, &mut group, &map_data,
             AhashBenchMap<u64, u64>,
             BTreeMapBenchMap<u64, u64>,
             // ConcreadBenchMap<u64, u64>, // doesn't implement Clone

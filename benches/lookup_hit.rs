@@ -7,14 +7,15 @@ use bench_map::{
 use criterion::{
     BenchmarkGroup, Criterion, Throughput, criterion_group, criterion_main, measurement::WallTime,
 };
-use std::hint::black_box;
+use std::{hash::Hash, hint::black_box};
 
-fn bench_out_of_the_box<Map>(
+fn bench_out_of_the_box<Map, K>(
     name: &str,
     group: &mut BenchmarkGroup<WallTime>,
-    map_data: &MapData<u64, u64>,
+    map_data: &MapData<K, u64>,
 ) where
-    Map: BenchMapNew<u64, u64> + BenchMapMutInsert<u64, u64> + BenchMapGetCloned<u64, u64>,
+    Map: BenchMapNew<K, u64> + BenchMapMutInsert<K, u64> + BenchMapGetCloned<K, u64>,
+    K: Clone + Hash + Eq,
 {
     group.bench_function(name, move |b| {
         let map = map_data.create_map::<Map>();
@@ -71,7 +72,7 @@ fn lookup_hit(c: &mut Criterion) {
         group.measurement_time(MEASUREMENT_TIME);
         group.throughput(Throughput::Elements(existing_key_count as u64));
 
-        expand_bench_with_map_data!(bench_out_of_the_box, &mut group, &map_data,
+        expand_bench_with_map_data!(bench_out_of_the_box, u64, &mut group, &map_data,
             AhashBenchMap<u64, u64>,
             BTreeMapBenchMap<u64, u64>,
             // ConcreadBenchMap<u64, u64>, // too slow
