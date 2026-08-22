@@ -42,18 +42,6 @@ jobs:
       - name: Run benchmarks
         run: cargo bench
 
-      - name: Copy redirect
-        run: cp redirect.html target/criterion/index.html
-
-      - name: Upload artifacts
-        uses: actions/upload-pages-artifact@v3
-        with:
-          path: './target/criterion'
-
-      - name: Deploy to GitHub Pages
-        id: deployment
-        uses: actions/deploy-pages@v5
-
       - name: Set up DeepSeek via pi
         uses: ./.github/actions/set-up-deepseek-via-pi
         env:
@@ -124,3 +112,15 @@ jobs:
           base: master
           token: ${{ steps.app-token.outputs.token }}
           branch-token: ${{ steps.app-token.outputs.token }}
+
+      - name: Copy redirect
+        run: cp redirect.html target/criterion/index.html
+
+      - name: Upload artifacts
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: './target/criterion'
+
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v5
