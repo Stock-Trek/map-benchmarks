@@ -158,9 +158,9 @@ checksum = "9330f8b2ff13f34540b44e946ef35111825727b38d33286ef986142615121801"
 
 [[package]]
 name = "chacha20"
-version = "0.10.1"
+version = "0.10.2"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "d524456ba66e72eb8b115ff89e01e497f8e6d11d78b70b1aa13c0fbd97540a81"
+checksum = "65c35e4b699c7e15ccbe7ee35c005e4fc0a278d22238a2857e6ce2dadeda1b06"
 dependencies = [
  "cfg-if",
  "cpufeatures",
@@ -268,9 +268,9 @@ dependencies = [
 
 [[package]]
 name = "cpufeatures"
-version = "0.3.0"
+version = "0.3.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "8b2a41393f66f16b0823bb79094d54ac5fbd34ab292ddafb9a0456ac9f87d201"
+checksum = "5ca28b0ae3115b884660db4118d803791fd6756b6e88f39c0f3f7859060d7566"
 dependencies = [
  "libc",
 ]
@@ -631,9 +631,9 @@ dependencies = [
 
 [[package]]
 name = "indexmap"
-version = "2.14.0"
+version = "2.14.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "d466e9454f08e4a911e14806c24e16fba1b4c121d1ea474396f396069cf949d9"
+checksum = "07aa2048142242915a31d35844fb311e0e53fcca590c3a0a40dcf1b841fa09eb"
 dependencies = [
  "equivalent",
  "hashbrown 0.17.1",
@@ -1002,9 +1002,9 @@ dependencies = [
 
 [[package]]
 name = "scc"
-version = "3.8.6"
+version = "3.8.7"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "f8af0b99483d1c3e59471d4f0cb58b244169436a8979c889a91a3f697075ea01"
+checksum = "b61e66d981128945ef7253d1dcaff636423acfebdee22cd2d8dfd4eb89e4d134"
 dependencies = [
  "saa",
  "sdd",
@@ -1018,9 +1018,9 @@ checksum = "94143f37725109f92c262ed2cf5e59bce7498c01bcc1502d7b9afe439a4e9f49"
 
 [[package]]
 name = "sdd"
-version = "4.8.9"
+version = "4.8.10"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "d6c0f6aa664d1a2a4d4a9d894bac41e27d518cb2ea90a00d68e9c77d02519116"
+checksum = "f95d4cc3459db1e608946153c95cf20158af0b86131ae4ae451f90f54549e7d1"
 dependencies = [
  "saa",
 ]
@@ -1068,7 +1068,7 @@ checksum = "e7a5d71263a5a7d47b41f6b3f06ba276f10cc18b0931f1799f710578e2309348"
 dependencies = [
  "proc-macro2",
  "quote",
- "syn 3.0.3",
+ "syn 3.0.4",
 ]
 
 [[package]]
@@ -1125,9 +1125,9 @@ checksum = "b49d6d36fee60faad91e23603db2356677b58ec2429237b39d5c60c26868f37c"
 
 [[package]]
 name = "starshard"
-version = "2.2.2"
+version = "2.3.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "5d298eb1bb81d6e5ddf447f3d26698d6ac5e5b9502b03004dbc2a2e2f8b572b6"
+checksum = "4155f6127729fef4a7b2aff334e9f05e697f52b67a8512e789b640e036195544"
 dependencies = [
  "hashbrown 0.17.1",
  "rayon",
@@ -1148,9 +1148,9 @@ dependencies = [
 
 [[package]]
 name = "syn"
-version = "3.0.3"
+version = "3.0.4"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "53e9bae58849f64dfa4f5d5ae372c8341f7305f82a3868709269343628b659a3"
+checksum = "e6275cddf4610d1775e6d1fe9469b2e77d0f39fd98fb7450901b821e0c53649f"
 dependencies = [
  "proc-macro2",
  "quote",
@@ -1224,9 +1224,9 @@ checksum = "b40688ea6389c8171614b25491f71d4a27946e0c7ce2da1c6de27e25abf1a0ae"
 
 [[package]]
 name = "txmap"
-version = "3.6.0"
+version = "3.7.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "035185eff6ca792056ad2a94c43af6b4344d3f4c3db6b15a667362a4603efe8c"
+checksum = "c3d32c3549aa2bdca6f9f5573ac00c3e4cd0cda6f888aa9890402964e2db4ff0"
 dependencies = [
  "crossbeam-utils",
  "hashbrown 0.17.1",
@@ -1243,9 +1243,9 @@ checksum = "e6e4313cd5fcd3dad5cafa179702e2b244f760991f45397d14d4ebf38247da75"
 
 [[package]]
 name = "uuid"
-version = "1.25.0"
+version = "1.26.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "f053576934f05a761a402421fbbe3d425d9366f75f978806a037b3ca481abecc"
+checksum = "b5772d71c9be8a8a6ac2117d949c5b224c1b72241bb611d9a3012edcf8af7812"
 dependencies = [
  "getrandom 0.4.3",
  "js-sys",
