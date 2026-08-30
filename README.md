@@ -56,7 +56,7 @@ There are 3 groups of tests, `out-of-the-box` which uses each map's default impl
 
 - **Clear and reuse**: Uses maps containing 1K/10K/100K entries. Clears the map but keeps it alive, then re-inserts the same number of entries. Measures capacity-retention semantics (map pooling)
 - **Contention (concurrent)**: Uses a map with 10K entries. Performs 80% reads / 20% writes on 3 threads using query key distributions of: [uniform, zipfian (exponent 1), zipfian (exponent 2)]. Threads are pinned to reduce any effects from OS scheduling.
-- **Get or insert**: Uses a map containing 10K entries. Performs 10K get-or-insert operations on extant keys (hit path) and 10K on missing keys (insert path). Also concurrent: the "get-or-create cache entry" pattern with 90% of operations hitting existing keys and 10% inserting missing keys on threads [2, 3]. Threads are pinned to reduce any effects from OS scheduling.
+- **Get or insert**: Uses a map containing 10K entries. Performs 10K get-or-insert operations on extant keys (hit path) and 10K on missing keys (insert path).
 - **Growth**: Inserts 1K/10K/100K/1M entries into an empty map using u64 sparse keys on a single thread. Measures the cost of growing a map to the target size
 - **Insert**: Uses a map containing 10K entries. Inserts 10K new entries
 - **Iterate**: Uses maps containing 1K/10K/100K entries. Iterates through each entry
