@@ -116,6 +116,7 @@ fn throughput_serial(c: &mut Criterion) {
             group.warm_up_time(WARM_UP_TIME);
             group.measurement_time(MEASUREMENT_TIME);
             group.throughput(Throughput::Elements(DEFAULT_OP_COUNT as u64));
+            group.sampling_mode(SAMPLING_MODE);
 
             expand_bench_concurrent!(bench, u64, &mut group, &map_data_u64, 1, &workload_u64,
                 AhashBenchMap<u64, u64>,
@@ -149,6 +150,7 @@ fn throughput_serial(c: &mut Criterion) {
             group.warm_up_time(WARM_UP_TIME);
             group.measurement_time(MEASUREMENT_TIME);
             group.throughput(Throughput::Elements(DEFAULT_OP_COUNT as u64));
+            group.sampling_mode(SAMPLING_MODE);
 
             expand_bench_concurrent!(bench, String, &mut group, &map_data_string_32, 1, &workload_string_32,
                 AhashBenchMap<String, u64>,

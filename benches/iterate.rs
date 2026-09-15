@@ -75,6 +75,7 @@ fn iterate(c: &mut Criterion) {
             group.warm_up_time(WARM_UP_TIME);
             group.measurement_time(MEASUREMENT_TIME);
             group.throughput(Throughput::Elements(*entry_count as u64));
+            group.sampling_mode(SAMPLING_MODE);
 
             expand_bench_with_map_data!(bench_out_of_the_box, u64, &mut group, &map_data,
                 AhashBenchMap<u64, u64>,
@@ -111,6 +112,7 @@ fn iterate(c: &mut Criterion) {
             group.warm_up_time(WARM_UP_TIME);
             group.measurement_time(MEASUREMENT_TIME);
             group.throughput(Throughput::Elements(*entry_count as u64));
+            group.sampling_mode(SAMPLING_MODE);
 
             expand_bench_with_map_data_and_common_hasher!(bench_same_hasher, u64, &mut group, &map_data,
                 AhashBenchMap<u64, u64, CommonHasher>,

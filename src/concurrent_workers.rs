@@ -94,22 +94,25 @@ impl<W, M> ConcurrentWorkers<W, M> {
                         PinThread::try_pin(thread_id).expect("failed to pin thread to CPU");
                         let workload = &state.workloads[thread_id];
                         loop {
-                            // Wait for the timed region to release us (or for
-                            // the pool to shut down).
+                            // 1. Wait for the timed region to release us (or shutdown).
                             while !state.start.load(Ordering::Acquire) {
                                 if state.shutdown.load(Ordering::Acquire) {
                                     return;
                                 }
                                 std::hint::spin_loop();
                             }
-                            // The setup closure publishes the current map
-                            // before raising `start`, so the slot is normally
-                            // populated already; spin briefly in case the flag
-                            // races ahead of the publish.
+
+                            // 2. Acquire the map for this iteration. Bail out if `start`
+                            //    is cleared (iteration ended) before we get one.
                             let map = loop {
+                                if !state.start.load(Ordering::Acquire) {
+                                    // Iteration ended before we got a map; go back and wait
+                                    // for the next `start`.
+                                    break None;
+                                }
                                 let mut slot = state.slots[thread_id].lock().unwrap();
                                 if let Some(map) = slot.take() {
-                                    break map;
+                                    break Some(map);
                                 }
                                 drop(slot);
                                 if state.shutdown.load(Ordering::Acquire) {
@@ -117,9 +120,23 @@ impl<W, M> ConcurrentWorkers<W, M> {
                                 }
                                 std::hint::spin_loop();
                             };
-                            (state.run)(workload, &*map);
-                            *state.done.lock().unwrap() += 1;
-                            state.done_cond.notify_one();
+
+                            if let Some(map) = map {
+                                (state.run)(workload, &*map);
+                                *state.done.lock().unwrap() += 1;
+                                state.done_cond.notify_one();
+                            }
+
+                            // 3. Wait for the main thread to clear `start` before looping.
+                            //    This prevents a fast worker from picking up the *next*
+                            //    iteration's map while the current `run` is still waiting
+                            //    for slower workers to finish.
+                            while state.start.load(Ordering::Acquire) {
+                                if state.shutdown.load(Ordering::Acquire) {
+                                    return;
+                                }
+                                std::hint::spin_loop();
+                            }
                         }
                     }));
                     if let Err(payload) = result {

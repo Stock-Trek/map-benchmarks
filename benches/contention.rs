@@ -156,6 +156,7 @@ fn contention(c: &mut Criterion) {
                 group.warm_up_time(WARM_UP_TIME);
                 group.measurement_time(CONCURRENT_MEASUREMENT_TIME);
                 group.throughput(Throughput::Elements(total_ops as u64));
+                group.sampling_mode(SAMPLING_MODE);
 
                 expand_bench_concurrent!(bench, u64, &mut group, &map_data_u64, thread_count, &workloads,
                     // AhashBenchMap<u64, u64>, // not concurrent
@@ -191,6 +192,7 @@ fn contention(c: &mut Criterion) {
                 group.warm_up_time(WARM_UP_TIME);
                 group.measurement_time(CONCURRENT_MEASUREMENT_TIME);
                 group.throughput(Throughput::Elements(total_ops as u64));
+                group.sampling_mode(SAMPLING_MODE);
 
                 expand_bench_concurrent!(bench, String, &mut group, &map_data_string_32, thread_count, &workloads_string_32,
                     // AhashBenchMap<String, u64>, // not concurrent

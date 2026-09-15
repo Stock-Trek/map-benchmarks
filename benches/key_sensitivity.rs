@@ -58,6 +58,7 @@ fn key_sensitivity(c: &mut Criterion) {
         group.warm_up_time(WARM_UP_TIME);
         group.measurement_time(MEASUREMENT_TIME);
         group.throughput(Throughput::Elements(existing_key_count));
+        group.sampling_mode(SAMPLING_MODE);
 
         expand_bench_with_map_data_and_common_hasher!(bench, u64, &mut group, &map_data,
             AhashBenchMap<u64, u64, CommonHasher>,
@@ -100,6 +101,7 @@ fn key_sensitivity(c: &mut Criterion) {
         group.warm_up_time(WARM_UP_TIME);
         group.measurement_time(MEASUREMENT_TIME);
         group.throughput(Throughput::Elements(existing_key_count));
+        group.sampling_mode(SAMPLING_MODE);
 
         expand_bench_with_map_data_and_common_hasher!(bench, String, &mut group, &map_data,
             AhashBenchMap<String, u64, CommonHasher>,
@@ -142,6 +144,7 @@ fn key_sensitivity(c: &mut Criterion) {
         group.warm_up_time(WARM_UP_TIME);
         group.measurement_time(MEASUREMENT_TIME);
         group.throughput(Throughput::Elements(existing_key_count));
+        group.sampling_mode(SAMPLING_MODE);
 
         expand_bench_with_map_data_and_common_hasher!(bench, String, &mut group, &map_data,
             AhashBenchMap<String, u64, CommonHasher>,

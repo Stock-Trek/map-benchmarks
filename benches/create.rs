@@ -23,6 +23,7 @@ fn create(c: &mut Criterion) {
     group.warm_up_time(WARM_UP_TIME);
     group.measurement_time(MEASUREMENT_TIME);
     group.throughput(Throughput::Elements(DEFAULT_OP_COUNT as u64));
+    group.sampling_mode(SAMPLING_MODE);
 
     expand_bench!(bench, u64, &mut group,
         AhashBenchMap<u64, u64>,

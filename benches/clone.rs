@@ -62,6 +62,7 @@ fn clone(c: &mut Criterion) {
         group.warm_up_time(WARM_UP_TIME);
         group.measurement_time(MEASUREMENT_TIME);
         group.throughput(Throughput::Elements(*entry_count as u64));
+        group.sampling_mode(SAMPLING_MODE);
 
         expand_bench_with_map_data!(bench_clone, u64, &mut group, &map_data,
             AhashBenchMap<u64, u64>,
@@ -109,6 +110,7 @@ fn clone_then_write(c: &mut Criterion) {
         group.warm_up_time(WARM_UP_TIME);
         group.measurement_time(MEASUREMENT_TIME);
         group.throughput(Throughput::Elements(*entry_count as u64));
+        group.sampling_mode(SAMPLING_MODE);
 
         expand_bench_with_map_data!(bench_clone_then_write, u64, &mut group, &map_data,
             AhashBenchMap<u64, u64>,
