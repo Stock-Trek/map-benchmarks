@@ -108,17 +108,17 @@ fn remove(c: &mut Criterion) {
 
         expand_bench_with_map_data!(bench_out_of_the_box, u64, &mut group, &map_data_u64,
             AhashBenchMap<u64, u64>,
-            BTreeMapBenchMap<u64, u64>,
+            // BTreeMapBenchMap<u64, u64>,
             // ConcreadBenchMap<u64, u64>, // too slow
-            ConcurrentMapBenchMap<u64, u64>,
-            CrossbeamSkiplistBenchMap<u64, u64>,
+            // ConcurrentMapBenchMap<u64, u64>,
+            // CrossbeamSkiplistBenchMap<u64, u64>,
             DashMapBenchMap<u64, u64>,
             // FlurryBenchMap<u64, u64>, // too slow
             HashbrownBenchMap<u64, u64>,
             HashlinkBenchMap<u64, u64>,
             HordeBenchMap<u64, u64>,
             ImmutableChunkMapBenchMap<u64, u64>,
-            ImblBenchMap<u64, u64>,
+            // ImblBenchMap<u64, u64>,
             IndexMapBenchMap<u64, u64>,
             IntMapBenchMap<u64, u64>,
             LeapfrogBenchMap<u64, u64>,
@@ -126,7 +126,7 @@ fn remove(c: &mut Criterion) {
             RpdsHashTrieMapBenchMap<u64, u64>,
             RustCHashBenchMap<u64, u64>,
             SccBenchMap<u64, u64>,
-            StarshardBenchMap<u64, u64>,
+            // StarshardBenchMap<u64, u64>,
             StdBenchMap<u64, u64>,
             TxMapBenchMap<u64, u64>,
         );
@@ -152,7 +152,7 @@ fn remove(c: &mut Criterion) {
             HashlinkBenchMap<u64, u64, CommonHasher>,
             HordeBenchMap<u64, u64, CommonHasher>,
             // ImmutableChunkMapBenchMap<u64, u64, CommonHasher>, // doesn't allow setting hasher
-            ImblBenchMap<u64, u64, CommonHasher>,
+            // ImblBenchMap<u64, u64, CommonHasher>,
             IndexMapBenchMap<u64, u64, CommonHasher>,
             // IntMapBenchMap<u64, u64, CommonHasher>, // doesn't allow setting hasher
             LeapfrogBenchMap<u64, u64, CommonHasher>,
@@ -160,7 +160,7 @@ fn remove(c: &mut Criterion) {
             RpdsHashTrieMapBenchMap<u64, u64, CommonHasher>,
             // RustCHashBenchMap<u64, u64, CommonHasher>, // doesn't allow setting hasher
             SccBenchMap<u64, u64, CommonHasher>,
-            StarshardBenchMap<u64, u64, CommonHasher>,
+            // StarshardBenchMap<u64, u64, CommonHasher>,
             StdBenchMap<u64, u64, CommonHasher>,
             TxMapBenchMap<u64, u64, CommonHasher>,
         );
@@ -176,17 +176,17 @@ fn remove(c: &mut Criterion) {
 
         expand_bench_with_map_data!(bench_out_of_the_box, String, &mut group, &map_data_string_32,
             AhashBenchMap<String, u64>,
-            BTreeMapBenchMap<String, u64>,
+            // BTreeMapBenchMap<String, u64>,
             // ConcreadBenchMap<String, u64>, // too slow
-            ConcurrentMapBenchMap<String, u64>,
-            CrossbeamSkiplistBenchMap<String, u64>,
+            // ConcurrentMapBenchMap<String, u64>,
+            // CrossbeamSkiplistBenchMap<String, u64>,
             DashMapBenchMap<String, u64>,
             // FlurryBenchMap<String, u64>, // too slow
             HashbrownBenchMap<String, u64>,
             HashlinkBenchMap<String, u64>,
             HordeBenchMap<String, u64>,
             ImmutableChunkMapBenchMap<String, u64>,
-            ImblBenchMap<String, u64>,
+            // ImblBenchMap<String, u64>,
             IndexMapBenchMap<String, u64>,
             // IntMapBenchMap<String, u64>, // keys require IntKey
             // LeapfrogBenchMap<String, u64>, // keys require Copy
@@ -194,7 +194,7 @@ fn remove(c: &mut Criterion) {
             RpdsHashTrieMapBenchMap<String, u64>,
             RustCHashBenchMap<String, u64>,
             SccBenchMap<String, u64>,
-            StarshardBenchMap<String, u64>,
+            // StarshardBenchMap<String, u64>,
             StdBenchMap<String, u64>,
             TxMapBenchMap<String, u64>,
         );
@@ -220,7 +220,7 @@ fn remove(c: &mut Criterion) {
             HashlinkBenchMap<String, u64, CommonHasher>,
             HordeBenchMap<String, u64, CommonHasher>,
             // ImmutableChunkMapBenchMap<String, u64, CommonHasher>, // doesn't allow setting hasher
-            ImblBenchMap<String, u64, CommonHasher>,
+            // ImblBenchMap<String, u64, CommonHasher>,
             IndexMapBenchMap<String, u64, CommonHasher>,
             // IntMapBenchMap<String, u64, CommonHasher>, // keys require IntKey
             // LeapfrogBenchMap<String, u64, CommonHasher>, // keys require Copy
@@ -228,7 +228,7 @@ fn remove(c: &mut Criterion) {
             RpdsHashTrieMapBenchMap<String, u64, CommonHasher>,
             // RustCHashBenchMap<String, u64, CommonHasher>, // doesn't allow setting hasher
             SccBenchMap<String, u64, CommonHasher>,
-            StarshardBenchMap<String, u64, CommonHasher>,
+            // StarshardBenchMap<String, u64, CommonHasher>,
             StdBenchMap<String, u64, CommonHasher>,
             TxMapBenchMap<String, u64, CommonHasher>,
         );
