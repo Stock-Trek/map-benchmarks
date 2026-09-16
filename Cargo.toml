@@ -4,6 +4,7 @@ version = "1.0.0"
 edition = "2024"
 
 [dependencies]
+chrono = "0.4"
 criterion = { version = "0.8.2", features = ["async_futures", "html_reports"] }
 rand = "0.10.2"
 uuid = { version = "1.24.0", features = ["v4"] }
