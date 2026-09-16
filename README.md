@@ -1,6 +1,6 @@
 # Map benchmarks
 
-Benchmarks 15 of 22* map implementations
+Benchmarks 20 of 22* map implementations
 
 [AI generated executive summary can be found here](./EXECUTIVE_SUMMARY.md)
 
@@ -12,20 +12,20 @@ Benchmarks 15 of 22* map implementations
 
 All benchmarks use blackbox to avoid any overly aggressive compiler optimisations.
 
-15 of 22* map implementations are benchmarked:
+20 of 22* map implementations are benchmarked:
 
 - [ahash::AHashMap](https://crates.io/crates/ahash)
-- ~~[std::collections::btreemap](https://doc.rust-lang.org/std/collections/struct.BTreeMap.html)~~
+- [std::collections::btreemap](https://doc.rust-lang.org/std/collections/struct.BTreeMap.html)
 - ~~[concread::hashmap::HashMap](https://crates.io/crates/concread)~~
-- ~~[concurrent_map::ConcurrentMap](https://crates.io/crates/concurrent-map)~~
-- ~~[crossbeam_skiplist::SkipMap](https://crates.io/crates/crossbeam-skiplist)~~
+- [concurrent_map::ConcurrentMap](https://crates.io/crates/concurrent-map)
+- [crossbeam_skiplist::SkipMap](https://crates.io/crates/crossbeam-skiplist)
 - [dashmap::DashMap](https://crates.io/crates/dashmap)
 - ~~[flurry::HashMap](https://crates.io/crates/flurry)~~
 - [hashbrown::HashMap](https://crates.io/crates/hashbrown)
 - [hashlink::LinkedHashMap](https://crates.io/crates/hashlink)
 - [horde::SyncTable](https://crates.io/crates/horde)
 - [immutable_chunkmap::map::MapM](https://crates.io/crates/immutable-chunkmap)
-- ~~[imbl::HashMap](https://crates.io/crates/imbl)~~
+- [imbl::HashMap](https://crates.io/crates/imbl)
 - [indexmap::IndexMap](https://crates.io/crates/indexmap)
 - [intmap::IntMap](https://crates.io/crates/intmap)
 - [leapfrog::LeapMap](https://crates.io/crates/leapfrog)
@@ -33,7 +33,7 @@ All benchmarks use blackbox to avoid any overly aggressive compiler optimisation
 - [rustc_hash::FxHashMap](https://crates.io/crates/rustc-hash)
 - [rpds::HashTrieMap](https://crates.io/crates/rpds)
 - [scc::HashMap](https://crates.io/crates/scc)
-- ~~[starshard::ShardedHashMap](https://crates.io/crates/starshard)~~
+- [starshard::ShardedHashMap](https://crates.io/crates/starshard)
 - [std::collections::HashMap](https://doc.rust-lang.org/std/collections/struct.HashMap.html)
 - [txmap::TxMap](https://crates.io/crates/txmap)
 
