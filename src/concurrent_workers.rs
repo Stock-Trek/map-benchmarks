@@ -1,7 +1,7 @@
 use crate::pin_thread::PinThread;
 use std::sync::{
     Arc, Condvar, Mutex,
-    atomic::{AtomicBool, Ordering},
+    atomic::{AtomicBool, AtomicUsize, Ordering},
 };
 
 /// A pool of pinned worker threads reused across all timed iterations of one
@@ -10,7 +10,7 @@ use std::sync::{
 /// The threads are spawned and pinned to dedicated CPUs once per sample,
 /// outside the timed region, so the per-iteration time measured by Criterion
 /// contains only the parallel workload execution plus nanosecond-scale
-/// start/done signalling - not thread spawn/join or CPU-pinning overhead.
+/// epoch/done signalling - not thread spawn/join or CPU-pinning overhead.
 ///
 /// `W` is the immutable per-worker workload type and `M` the shared map type;
 /// the per-iteration work is supplied as a `run(&workload, &map)` closure.
@@ -24,12 +24,13 @@ pub struct ConcurrentWorkers<W, M> {
 type WorkerRunner<W, M> = dyn Fn(&W, &M) + Send + Sync;
 
 /// State shared between the benchmark thread and the worker pool: the
-/// start/done signalling, panic propagation, per-worker map slots, and
+/// epoch/done signalling, panic propagation, per-worker map slots, and
 /// immutable per-worker workloads.
 struct WorkerPoolState<W, M> {
-    /// Raised by the timed region to release the workers; cleared once all
-    /// workers have reported done for the current iteration.
-    start: AtomicBool,
+    /// Monotonically increasing iteration counter. The benchmark thread bumps
+    /// it once per timed region to release the workers; a worker only runs
+    /// when it observes an epoch newer than the one it last processed.
+    epoch: AtomicUsize,
     /// Cumulative number of completed work items (monotonic across
     /// iterations, so no per-iteration reset is needed). Each worker adds one
     /// per iteration, so after the Nth iteration the counter equals
@@ -48,7 +49,7 @@ struct WorkerPoolState<W, M> {
     /// Set when the pool is dropped so idle workers exit and can be joined.
     shutdown: AtomicBool,
     /// Per-worker slot holding the current iteration's map. The (untimed)
-    /// setup closure publishes a fresh map here before raising `start`.
+    /// setup closure publishes a fresh map here before bumping `epoch`.
     slots: Vec<Mutex<Option<Arc<M>>>>,
     /// Immutable per-worker workloads.
     workloads: Vec<W>,
@@ -72,7 +73,7 @@ impl<W, M> ConcurrentWorkers<W, M> {
             .collect::<Vec<_>>();
         let slots = (0..thread_count).map(|_| Mutex::new(None)).collect();
         let state = Arc::new(WorkerPoolState {
-            start: AtomicBool::new(false),
+            epoch: AtomicUsize::new(0),
             done: Mutex::new(0),
             done_cond: Condvar::new(),
             panicked: AtomicBool::new(false),
@@ -93,26 +94,27 @@ impl<W, M> ConcurrentWorkers<W, M> {
                     let result = std::panic::catch_unwind(std::panic::AssertUnwindSafe(|| {
                         PinThread::try_pin(thread_id).expect("failed to pin thread to CPU");
                         let workload = &state.workloads[thread_id];
+                        let mut last_epoch = 0usize;
                         loop {
-                            // 1. Wait for the timed region to release us (or shutdown).
-                            while !state.start.load(Ordering::Acquire) {
+                            // 1. Wait for a new iteration to be released (or shutdown).
+                            let epoch = loop {
+                                let epoch = state.epoch.load(Ordering::Acquire);
+                                if epoch != last_epoch {
+                                    break epoch;
+                                }
                                 if state.shutdown.load(Ordering::Acquire) {
                                     return;
                                 }
                                 std::hint::spin_loop();
-                            }
+                            };
 
-                            // 2. Acquire the map for this iteration. Bail out if `start`
-                            //    is cleared (iteration ended) before we get one.
+                            // 2. Acquire the map published for this iteration. Setup
+                            //    publishes the map before bumping `epoch`, so it must be
+                            //    present once a new epoch is observed.
                             let map = loop {
-                                if !state.start.load(Ordering::Acquire) {
-                                    // Iteration ended before we got a map; go back and wait
-                                    // for the next `start`.
-                                    break None;
-                                }
                                 let mut slot = state.slots[thread_id].lock().unwrap();
                                 if let Some(map) = slot.take() {
-                                    break Some(map);
+                                    break map;
                                 }
                                 drop(slot);
                                 if state.shutdown.load(Ordering::Acquire) {
@@ -121,22 +123,13 @@ impl<W, M> ConcurrentWorkers<W, M> {
                                 std::hint::spin_loop();
                             };
 
-                            if let Some(map) = map {
-                                (state.run)(workload, &*map);
-                                *state.done.lock().unwrap() += 1;
-                                state.done_cond.notify_one();
-                            }
+                            (state.run)(workload, &*map);
+                            *state.done.lock().unwrap() += 1;
+                            state.done_cond.notify_one();
 
-                            // 3. Wait for the main thread to clear `start` before looping.
-                            //    This prevents a fast worker from picking up the *next*
-                            //    iteration's map while the current `run` is still waiting
-                            //    for slower workers to finish.
-                            while state.start.load(Ordering::Acquire) {
-                                if state.shutdown.load(Ordering::Acquire) {
-                                    return;
-                                }
-                                std::hint::spin_loop();
-                            }
+                            // 3. Record the processed epoch so the next wait targets a
+                            //    newer iteration instead of re-running this one.
+                            last_epoch = epoch;
                         }
                     }));
                     if let Err(payload) = result {
@@ -163,7 +156,7 @@ impl<W, M> ConcurrentWorkers<W, M> {
     /// current work item. `target` is the cumulative number of completed work
     /// items expected after this iteration (iteration_index * thread_count).
     pub fn run(&self, target: usize) {
-        self.state.start.store(true, Ordering::Release);
+        self.state.epoch.fetch_add(1, Ordering::SeqCst);
         let mut done = self.state.done.lock().unwrap();
         while *done < target {
             if self.state.panicked.load(Ordering::SeqCst) {
@@ -176,7 +169,6 @@ impl<W, M> ConcurrentWorkers<W, M> {
         if self.state.panicked.load(Ordering::SeqCst) {
             self.resume_worker_panic();
         }
-        self.state.start.store(false, Ordering::SeqCst);
     }
 
     /// Per-worker slots into which the (untimed) setup closure publishes the
