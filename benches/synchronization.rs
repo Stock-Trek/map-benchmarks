@@ -65,7 +65,7 @@ where
     for op in ops {
         match op {
             SyncOp::Read(hit_key) => {
-                black_box(map.get_cloned(&hit_key));
+                black_box(map.get_cloned(hit_key));
             }
             SyncOp::Write(hit_key) => {
                 map.insert(hit_key.clone(), 42u64);
