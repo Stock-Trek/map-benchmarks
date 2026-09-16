@@ -1,5 +1,6 @@
 // How does it perform on realistic single-threaded use? Tests the combined read/write/remove design, the interplay of all operations in one pass without concurrency overhead.
 use bench_map::{
+    bench_group,
     config::*,
     data::{string::StringDataGen, u64_sparse::U64SparseDataGen},
     expand_bench_concurrent,
@@ -112,11 +113,8 @@ fn throughput_serial(c: &mut Criterion) {
 
         // u64 keys
         {
-            let mut group = c.benchmark_group(format!("throughput/threads-1/u64/{name}"));
-            group.warm_up_time(WARM_UP_TIME);
-            group.measurement_time(MEASUREMENT_TIME);
+            let mut group = bench_group!(c, format!("throughput/threads-1/u64/{name}"));
             group.throughput(Throughput::Elements(DEFAULT_OP_COUNT as u64));
-            group.sampling_mode(SAMPLING_MODE);
 
             expand_bench_concurrent!(bench, u64, &mut group, &map_data_u64, 1, &workload_u64,
                 AhashBenchMap<u64, u64>,
@@ -146,11 +144,8 @@ fn throughput_serial(c: &mut Criterion) {
 
         // String<32> keys
         {
-            let mut group = c.benchmark_group(format!("throughput/threads-1/String<32>/{name}"));
-            group.warm_up_time(WARM_UP_TIME);
-            group.measurement_time(MEASUREMENT_TIME);
+            let mut group = bench_group!(c, format!("throughput/threads-1/String<32>/{name}"));
             group.throughput(Throughput::Elements(DEFAULT_OP_COUNT as u64));
-            group.sampling_mode(SAMPLING_MODE);
 
             expand_bench_concurrent!(bench, String, &mut group, &map_data_string_32, 1, &workload_string_32,
                 AhashBenchMap<String, u64>,

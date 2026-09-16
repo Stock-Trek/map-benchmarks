@@ -1,5 +1,6 @@
 // How much does the choice of key type matter? Tests hashing and key-handling design, the cost of hashing/comparing keys of different sizes.
 use bench_map::{
+    bench_group,
     common_hasher::CommonHasher,
     config::*,
     constants::*,
@@ -53,12 +54,8 @@ fn key_sensitivity(c: &mut Criterion) {
             missing_key_count as usize,
             sort_keys,
         );
-        let mut group =
-            c.benchmark_group(format!("{KEY_SENSITIVITY_GROUP_NAME}/{SAME_HASHER}/u64"));
-        group.warm_up_time(WARM_UP_TIME);
-        group.measurement_time(MEASUREMENT_TIME);
+        let mut group = bench_group!(c, format!("{KEY_SENSITIVITY_GROUP_NAME}/{SAME_HASHER}/u64"));
         group.throughput(Throughput::Elements(existing_key_count));
-        group.sampling_mode(SAMPLING_MODE);
 
         expand_bench_with_map_data_and_common_hasher!(bench, u64, &mut group, &map_data,
             AhashBenchMap<u64, u64, CommonHasher>,
@@ -95,13 +92,11 @@ fn key_sensitivity(c: &mut Criterion) {
             missing_key_count as usize,
             sort_keys,
         ));
-        let mut group = c.benchmark_group(format!(
-            "{KEY_SENSITIVITY_GROUP_NAME}/{SAME_HASHER}/String<16>"
-        ));
-        group.warm_up_time(WARM_UP_TIME);
-        group.measurement_time(MEASUREMENT_TIME);
+        let mut group = bench_group!(
+            c,
+            format!("{KEY_SENSITIVITY_GROUP_NAME}/{SAME_HASHER}/String<16>")
+        );
         group.throughput(Throughput::Elements(existing_key_count));
-        group.sampling_mode(SAMPLING_MODE);
 
         expand_bench_with_map_data_and_common_hasher!(bench, String, &mut group, &map_data,
             AhashBenchMap<String, u64, CommonHasher>,
@@ -138,13 +133,11 @@ fn key_sensitivity(c: &mut Criterion) {
             missing_key_count as usize,
             sort_keys,
         ));
-        let mut group = c.benchmark_group(format!(
-            "{KEY_SENSITIVITY_GROUP_NAME}/{SAME_HASHER}/String<128>"
-        ));
-        group.warm_up_time(WARM_UP_TIME);
-        group.measurement_time(MEASUREMENT_TIME);
+        let mut group = bench_group!(
+            c,
+            format!("{KEY_SENSITIVITY_GROUP_NAME}/{SAME_HASHER}/String<128>")
+        );
         group.throughput(Throughput::Elements(existing_key_count));
-        group.sampling_mode(SAMPLING_MODE);
 
         expand_bench_with_map_data_and_common_hasher!(bench, String, &mut group, &map_data,
             AhashBenchMap<String, u64, CommonHasher>,

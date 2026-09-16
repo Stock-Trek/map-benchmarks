@@ -1,5 +1,6 @@
 // How does it behave under realistic concurrent use? Tests the end-to-end concurrency design, mixed read/write/remove workloads and how performance scales with thread count.
 use bench_map::{
+    bench_group,
     concurrent_workers::ConcurrentWorkers,
     config::*,
     data::{string::StringDataGen, u64_sparse::U64SparseDataGen},
@@ -154,11 +155,9 @@ fn throughput_concurrent(c: &mut Criterion) {
             // u64 keys
             {
                 let mut group =
-                    c.benchmark_group(format!("throughput/threads-{thread_count}/u64/{name}"));
-                group.warm_up_time(WARM_UP_TIME);
+                    bench_group!(c, format!("throughput/threads-{thread_count}/u64/{name}"));
                 group.measurement_time(CONCURRENT_MEASUREMENT_TIME);
                 group.throughput(Throughput::Elements(total_ops as u64));
-                group.sampling_mode(SAMPLING_MODE);
 
                 expand_bench_concurrent!(bench, u64, &mut group, &map_data_u64, thread_count, &workloads,
                     // AhashBenchMap<u64, u64>, // not concurrent
@@ -188,13 +187,12 @@ fn throughput_concurrent(c: &mut Criterion) {
 
             // String<32> keys
             {
-                let mut group = c.benchmark_group(format!(
-                    "throughput/threads-{thread_count}/String<32>/{name}"
-                ));
-                group.warm_up_time(WARM_UP_TIME);
+                let mut group = bench_group!(
+                    c,
+                    format!("throughput/threads-{thread_count}/String<32>/{name}")
+                );
                 group.measurement_time(CONCURRENT_MEASUREMENT_TIME);
                 group.throughput(Throughput::Elements(total_ops as u64));
-                group.sampling_mode(SAMPLING_MODE);
 
                 expand_bench_concurrent!(bench, String, &mut group, &map_data_string_32, thread_count, &workloads_string_32,
                     // AhashBenchMap<String, u64>, // not concurrent

@@ -1,3 +1,19 @@
+/// Creates a Criterion [`BenchmarkGroup`](criterion::BenchmarkGroup) with the
+/// default configuration shared by every benchmark applied. Configuration that
+/// depends on a specific benchmark (such as `throughput`, or a longer
+/// measurement time for concurrent benchmarks) is still set on the returned
+/// group.
+#[macro_export]
+macro_rules! bench_group {
+    ($criterion:expr, $name:expr) => {{
+        let mut group = $criterion.benchmark_group($name);
+        group.warm_up_time($crate::config::WARM_UP_TIME);
+        group.measurement_time($crate::config::MEASUREMENT_TIME);
+        group.sampling_mode($crate::config::SAMPLING_MODE);
+        group
+    }};
+}
+
 #[macro_export]
 macro_rules! expand_bench {
     ($bench_fn:ident, $key_type:ty, $group:expr, $($bench_type:ty),* $(,)?) => {

@@ -1,5 +1,6 @@
 // How fast can it find a key that is present? Tests the successful lookup path, probing strategy and cache locality on hits.
 use bench_map::{
+    bench_group,
     common_hasher::CommonHasher,
     config::*,
     constants::*,
@@ -81,11 +82,8 @@ fn lookup_hit(c: &mut Criterion) {
 
     // out of the box, u64 keys
     {
-        let mut group = c.benchmark_group(format!("lookup-hit/{OUT_OF_THE_BOX}/u64"));
-        group.warm_up_time(WARM_UP_TIME);
-        group.measurement_time(MEASUREMENT_TIME);
+        let mut group = bench_group!(c, format!("lookup-hit/{OUT_OF_THE_BOX}/u64"));
         group.throughput(Throughput::Elements(existing_key_count as u64));
-        group.sampling_mode(SAMPLING_MODE);
 
         expand_bench_with_map_data!(bench_out_of_the_box, u64, &mut group, &map_data_u64,
             AhashBenchMap<u64, u64>,
@@ -115,11 +113,8 @@ fn lookup_hit(c: &mut Criterion) {
 
     // CommonHasher, u64 keys
     {
-        let mut group = c.benchmark_group(format!("lookup-hit/{SAME_HASHER}/u64"));
-        group.warm_up_time(WARM_UP_TIME);
-        group.measurement_time(MEASUREMENT_TIME);
+        let mut group = bench_group!(c, format!("lookup-hit/{SAME_HASHER}/u64"));
         group.throughput(Throughput::Elements(existing_key_count as u64));
-        group.sampling_mode(SAMPLING_MODE);
 
         expand_bench_with_map_data_and_common_hasher!(bench_same_hasher, u64, &mut group, &map_data_u64,
             AhashBenchMap<u64, u64, CommonHasher>,
@@ -149,11 +144,8 @@ fn lookup_hit(c: &mut Criterion) {
 
     // out of the box, String<32> keys
     {
-        let mut group = c.benchmark_group(format!("lookup-hit/{OUT_OF_THE_BOX}/String<32>"));
-        group.warm_up_time(WARM_UP_TIME);
-        group.measurement_time(MEASUREMENT_TIME);
+        let mut group = bench_group!(c, format!("lookup-hit/{OUT_OF_THE_BOX}/String<32>"));
         group.throughput(Throughput::Elements(existing_key_count as u64));
-        group.sampling_mode(SAMPLING_MODE);
 
         expand_bench_with_map_data!(bench_out_of_the_box, String, &mut group, &map_data_string_32,
             AhashBenchMap<String, u64>,
@@ -183,11 +175,8 @@ fn lookup_hit(c: &mut Criterion) {
 
     // CommonHasher, String<32> keys
     {
-        let mut group = c.benchmark_group(format!("lookup-hit/{SAME_HASHER}/String<32>"));
-        group.warm_up_time(WARM_UP_TIME);
-        group.measurement_time(MEASUREMENT_TIME);
+        let mut group = bench_group!(c, format!("lookup-hit/{SAME_HASHER}/String<32>"));
         group.throughput(Throughput::Elements(existing_key_count as u64));
-        group.sampling_mode(SAMPLING_MODE);
 
         expand_bench_with_map_data_and_common_hasher!(bench_same_hasher, String, &mut group, &map_data_string_32,
             AhashBenchMap<String, u64, CommonHasher>,

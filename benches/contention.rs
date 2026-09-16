@@ -1,5 +1,6 @@
 // How well does it cope when threads compete for the same keys? Tests synchronization granularity, how sharding/locking handles hot spots under uniform and skewed (Zipfian) key distributions.
 use bench_map::{
+    bench_group,
     concurrent_workers::ConcurrentWorkers,
     config::*,
     data::{string::StringDataGen, u64_dense::U64DenseDataGen, u64_sparse::U64SparseDataGen},
@@ -150,13 +151,12 @@ fn contention(c: &mut Criterion) {
 
             // u64 keys
             {
-                let mut group = c.benchmark_group(format!(
-                    "contention/threads-{thread_count}/u64/{key_distribution}",
-                ));
-                group.warm_up_time(WARM_UP_TIME);
+                let mut group = bench_group!(
+                    c,
+                    format!("contention/threads-{thread_count}/u64/{key_distribution}",)
+                );
                 group.measurement_time(CONCURRENT_MEASUREMENT_TIME);
                 group.throughput(Throughput::Elements(total_ops as u64));
-                group.sampling_mode(SAMPLING_MODE);
 
                 expand_bench_concurrent!(bench, u64, &mut group, &map_data_u64, thread_count, &workloads,
                     // AhashBenchMap<u64, u64>, // not concurrent
@@ -186,13 +186,12 @@ fn contention(c: &mut Criterion) {
 
             // String<32> keys
             {
-                let mut group = c.benchmark_group(format!(
-                    "contention/threads-{thread_count}/String<32>/{key_distribution}",
-                ));
-                group.warm_up_time(WARM_UP_TIME);
+                let mut group = bench_group!(
+                    c,
+                    format!("contention/threads-{thread_count}/String<32>/{key_distribution}",)
+                );
                 group.measurement_time(CONCURRENT_MEASUREMENT_TIME);
                 group.throughput(Throughput::Elements(total_ops as u64));
-                group.sampling_mode(SAMPLING_MODE);
 
                 expand_bench_concurrent!(bench, String, &mut group, &map_data_string_32, thread_count, &workloads_string_32,
                     // AhashBenchMap<String, u64>, // not concurrent

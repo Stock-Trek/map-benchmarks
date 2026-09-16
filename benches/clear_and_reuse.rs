@@ -1,8 +1,8 @@
 // Can a map be recycled as a reusable pool without paying rebuild costs? Tests capacity-retention semantics, whether clearing preserves the underlying allocation so refilling avoids reallocation and re-growth.
 use bench_map::{
-    common_hasher::CommonHasher, config::*, constants::*, data::u64_sparse::U64SparseDataGen,
-    expand_bench_with_map_data, expand_bench_with_map_data_and_common_hasher, map_data::MapData,
-    map_gen::MapGen, maps::*,
+    bench_group, common_hasher::CommonHasher, config::*, constants::*,
+    data::u64_sparse::U64SparseDataGen, expand_bench_with_map_data,
+    expand_bench_with_map_data_and_common_hasher, map_data::MapData, map_gen::MapGen, maps::*,
 };
 use criterion::{
     BatchSize, BenchmarkGroup, Criterion, Throughput, criterion_group, criterion_main,
@@ -92,13 +92,11 @@ fn clear_and_reuse(c: &mut Criterion) {
 
         // Each map uses its default hasher
         {
-            let mut group = c.benchmark_group(format!(
-                "clear-and-reuse/map-size-{entry_count_name}/{OUT_OF_THE_BOX}"
-            ));
-            group.warm_up_time(WARM_UP_TIME);
-            group.measurement_time(MEASUREMENT_TIME);
+            let mut group = bench_group!(
+                c,
+                format!("clear-and-reuse/map-size-{entry_count_name}/{OUT_OF_THE_BOX}")
+            );
             group.throughput(Throughput::Elements(*entry_count as u64));
-            group.sampling_mode(SAMPLING_MODE);
 
             expand_bench_with_map_data!(bench_out_of_the_box, u64, &mut group, &map_data,
                 AhashBenchMap<u64, u64>,
@@ -128,13 +126,11 @@ fn clear_and_reuse(c: &mut Criterion) {
 
         // Every map that supports a custom hasher uses the same CommonHasher
         {
-            let mut group = c.benchmark_group(format!(
-                "clear-and-reuse/map-size-{entry_count_name}/{SAME_HASHER}"
-            ));
-            group.warm_up_time(WARM_UP_TIME);
-            group.measurement_time(MEASUREMENT_TIME);
+            let mut group = bench_group!(
+                c,
+                format!("clear-and-reuse/map-size-{entry_count_name}/{SAME_HASHER}")
+            );
             group.throughput(Throughput::Elements(*entry_count as u64));
-            group.sampling_mode(SAMPLING_MODE);
 
             expand_bench_with_map_data_and_common_hasher!(bench_same_hasher, u64, &mut group, &map_data,
                 AhashBenchMap<u64, u64, CommonHasher>,
