@@ -230,7 +230,6 @@ fn remove(c: &mut Criterion) {
 criterion_group!(
     name = group;
     config = Criterion::default()
-        .sample_size(SAMPLE_SIZE)
         .warm_up_time(WARM_UP_TIME)
         .measurement_time(MEASUREMENT_TIME);
     targets = remove
