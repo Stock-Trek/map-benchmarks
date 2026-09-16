@@ -51,5 +51,9 @@ fn create(c: &mut Criterion) {
     );
 }
 
-criterion_group!(group, create);
+criterion_group!(
+    name = group;
+    config = Criterion::default().sample_size(SAMPLE_SIZE);
+    targets = create
+);
 criterion_main!(group);

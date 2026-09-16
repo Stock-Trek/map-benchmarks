@@ -173,5 +173,9 @@ fn key_sensitivity(c: &mut Criterion) {
     }
 }
 
-criterion_group!(group, key_sensitivity);
+criterion_group!(
+    name = group;
+    config = Criterion::default().sample_size(SAMPLE_SIZE);
+    targets = key_sensitivity
+);
 criterion_main!(group);

@@ -164,5 +164,9 @@ fn clear_and_reuse(c: &mut Criterion) {
     }
 }
 
-criterion_group!(group, clear_and_reuse);
+criterion_group!(
+    name = group;
+    config = Criterion::default().sample_size(SAMPLE_SIZE);
+    targets = clear_and_reuse
+);
 criterion_main!(group);

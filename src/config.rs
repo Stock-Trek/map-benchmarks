@@ -2,6 +2,7 @@ use criterion::SamplingMode;
 use std::time::Duration;
 
 pub const SAMPLING_MODE: SamplingMode = SamplingMode::Linear;
+pub const SAMPLE_SIZE: usize = 20;
 pub const WARM_UP_TIME: Duration = Duration::from_secs(1);
 pub const MEASUREMENT_TIME: Duration = Duration::from_secs(2);
 pub const CONCURRENT_MEASUREMENT_TIME: Duration = Duration::from_secs(3);

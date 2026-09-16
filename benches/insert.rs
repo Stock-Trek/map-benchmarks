@@ -232,5 +232,9 @@ fn insert(c: &mut Criterion) {
     }
 }
 
-criterion_group!(group, insert);
+criterion_group!(
+    name = group;
+    config = Criterion::default().sample_size(SAMPLE_SIZE);
+    targets = insert
+);
 criterion_main!(group);

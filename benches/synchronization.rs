@@ -238,5 +238,9 @@ fn synchronization(c: &mut Criterion) {
     }
 }
 
-criterion_group!(group, synchronization);
+criterion_group!(
+    name = group;
+    config = Criterion::default().sample_size(SAMPLE_SIZE);
+    targets = synchronization
+);
 criterion_main!(group);

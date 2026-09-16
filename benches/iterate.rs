@@ -142,5 +142,9 @@ fn iterate(c: &mut Criterion) {
     }
 }
 
-criterion_group!(group, iterate);
+criterion_group!(
+    name = group;
+    config = Criterion::default().sample_size(SAMPLE_SIZE);
+    targets = iterate
+);
 criterion_main!(group);

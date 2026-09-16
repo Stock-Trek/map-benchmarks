@@ -180,5 +180,9 @@ fn throughput_serial(c: &mut Criterion) {
     }
 }
 
-criterion_group!(group, throughput_serial);
+criterion_group!(
+    name = group;
+    config = Criterion::default().sample_size(SAMPLE_SIZE);
+    targets = throughput_serial
+);
 criterion_main!(group);
