@@ -177,8 +177,8 @@ fn synchronization(c: &mut Criterion) {
                     // AhashBenchMap<u64, u64>, // not concurrent
                     // BTreeMapBenchMap<u64, u64>, // not concurrent
                     // ConcreadBenchMap<u64, u64>, // too slow
-                    ConcurrentMapBenchMap<u64, u64>,
-                    CrossbeamSkiplistBenchMap<u64, u64>,
+                    // ConcurrentMapBenchMap<u64, u64>,
+                    // CrossbeamSkiplistBenchMap<u64, u64>,
                     DashMapBenchMap<u64, u64>,
                     // FlurryBenchMap<u64, u64>, // too slow
                     // HashbrownBenchMap<u64, u64>, // not concurrent
@@ -193,7 +193,7 @@ fn synchronization(c: &mut Criterion) {
                     // RpdsHashTrieMapBenchMap<u64, u64>, // mutation returns a new map; requires &mut or storing the result, cannot mutate through a shared reference
                     // RustCHashBenchMap<u64, u64>, // not concurrent
                     SccBenchMap<u64, u64>,
-                    StarshardBenchMap<u64, u64>,
+                    // StarshardBenchMap<u64, u64>,
                     // StdBenchMap<u64, u64>, // not concurrent
                     TxMapBenchMap<u64, u64>,
                 );
@@ -213,8 +213,8 @@ fn synchronization(c: &mut Criterion) {
                     // AhashBenchMap<String, u64>, // not concurrent
                     // BTreeMapBenchMap<String, u64>, // not concurrent
                     // ConcreadBenchMap<String, u64>, // too slow
-                    ConcurrentMapBenchMap<String, u64>,
-                    CrossbeamSkiplistBenchMap<String, u64>,
+                    // ConcurrentMapBenchMap<String, u64>,
+                    // CrossbeamSkiplistBenchMap<String, u64>,
                     DashMapBenchMap<String, u64>,
                     // FlurryBenchMap<String, u64>, // too slow
                     // HashbrownBenchMap<String, u64>, // not concurrent
@@ -229,7 +229,7 @@ fn synchronization(c: &mut Criterion) {
                     // RpdsHashTrieMapBenchMap<String, u64>, // mutation returns a new map; requires &mut or storing the result, cannot mutate through a shared reference
                     // RustCHashBenchMap<String, u64>, // not concurrent
                     SccBenchMap<String, u64>,
-                    StarshardBenchMap<String, u64>,
+                    // StarshardBenchMap<String, u64>,
                     // StdBenchMap<String, u64>, // not concurrent
                     TxMapBenchMap<String, u64>,
                 );
