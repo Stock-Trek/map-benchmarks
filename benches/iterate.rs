@@ -72,8 +72,6 @@ fn iterate(c: &mut Criterion) {
                 "iterate/map-size-{}/{OUT_OF_THE_BOX}",
                 entry_count_name
             ));
-            group.warm_up_time(WARM_UP_TIME);
-            group.measurement_time(MEASUREMENT_TIME);
             group.throughput(Throughput::Elements(*entry_count as u64));
             group.sampling_mode(SAMPLING_MODE);
 
@@ -109,8 +107,6 @@ fn iterate(c: &mut Criterion) {
                 "iterate/map-size-{}/{SAME_HASHER}",
                 entry_count_name
             ));
-            group.warm_up_time(WARM_UP_TIME);
-            group.measurement_time(MEASUREMENT_TIME);
             group.throughput(Throughput::Elements(*entry_count as u64));
             group.sampling_mode(SAMPLING_MODE);
 
@@ -144,7 +140,10 @@ fn iterate(c: &mut Criterion) {
 
 criterion_group!(
     name = group;
-    config = Criterion::default().sample_size(SAMPLE_SIZE);
+    config = Criterion::default()
+        .sample_size(SAMPLE_SIZE)
+        .warm_up_time(WARM_UP_TIME)
+        .measurement_time(MEASUREMENT_TIME);
     targets = iterate
 );
 criterion_main!(group);

@@ -55,8 +55,6 @@ fn key_sensitivity(c: &mut Criterion) {
         );
         let mut group =
             c.benchmark_group(format!("{KEY_SENSITIVITY_GROUP_NAME}/{SAME_HASHER}/u64"));
-        group.warm_up_time(WARM_UP_TIME);
-        group.measurement_time(MEASUREMENT_TIME);
         group.throughput(Throughput::Elements(existing_key_count));
         group.sampling_mode(SAMPLING_MODE);
 
@@ -98,8 +96,6 @@ fn key_sensitivity(c: &mut Criterion) {
         let mut group = c.benchmark_group(format!(
             "{KEY_SENSITIVITY_GROUP_NAME}/{SAME_HASHER}/String<16>"
         ));
-        group.warm_up_time(WARM_UP_TIME);
-        group.measurement_time(MEASUREMENT_TIME);
         group.throughput(Throughput::Elements(existing_key_count));
         group.sampling_mode(SAMPLING_MODE);
 
@@ -141,8 +137,6 @@ fn key_sensitivity(c: &mut Criterion) {
         let mut group = c.benchmark_group(format!(
             "{KEY_SENSITIVITY_GROUP_NAME}/{SAME_HASHER}/String<128>"
         ));
-        group.warm_up_time(WARM_UP_TIME);
-        group.measurement_time(MEASUREMENT_TIME);
         group.throughput(Throughput::Elements(existing_key_count));
         group.sampling_mode(SAMPLING_MODE);
 
@@ -175,7 +169,10 @@ fn key_sensitivity(c: &mut Criterion) {
 
 criterion_group!(
     name = group;
-    config = Criterion::default().sample_size(SAMPLE_SIZE);
+    config = Criterion::default()
+        .sample_size(SAMPLE_SIZE)
+        .warm_up_time(WARM_UP_TIME)
+        .measurement_time(MEASUREMENT_TIME);
     targets = key_sensitivity
 );
 criterion_main!(group);

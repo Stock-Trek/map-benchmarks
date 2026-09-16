@@ -105,8 +105,6 @@ fn get_or_insert(c: &mut Criterion) {
     // out of the box, u64 keys
     {
         let mut group = c.benchmark_group(format!("get-or-insert/{OUT_OF_THE_BOX}/u64"));
-        group.warm_up_time(WARM_UP_TIME);
-        group.measurement_time(MEASUREMENT_TIME);
         group.throughput(Throughput::Elements(op_count as u64));
         group.sampling_mode(SAMPLING_MODE);
 
@@ -139,8 +137,6 @@ fn get_or_insert(c: &mut Criterion) {
     // same hasher, u64 keys
     {
         let mut group = c.benchmark_group(format!("get-or-insert/{SAME_HASHER}/u64"));
-        group.warm_up_time(WARM_UP_TIME);
-        group.measurement_time(MEASUREMENT_TIME);
         group.throughput(Throughput::Elements(op_count as u64));
         group.sampling_mode(SAMPLING_MODE);
 
@@ -173,8 +169,6 @@ fn get_or_insert(c: &mut Criterion) {
     // out of the box, String<32> keys
     {
         let mut group = c.benchmark_group(format!("get-or-insert/{OUT_OF_THE_BOX}/String<32>"));
-        group.warm_up_time(WARM_UP_TIME);
-        group.measurement_time(MEASUREMENT_TIME);
         group.throughput(Throughput::Elements(op_count as u64));
         group.sampling_mode(SAMPLING_MODE);
 
@@ -207,8 +201,6 @@ fn get_or_insert(c: &mut Criterion) {
     // same hasher, String<32> keys
     {
         let mut group = c.benchmark_group(format!("get-or-insert/{SAME_HASHER}/String<32>"));
-        group.warm_up_time(WARM_UP_TIME);
-        group.measurement_time(MEASUREMENT_TIME);
         group.throughput(Throughput::Elements(op_count as u64));
         group.sampling_mode(SAMPLING_MODE);
 
@@ -241,7 +233,10 @@ fn get_or_insert(c: &mut Criterion) {
 
 criterion_group!(
     name = group;
-    config = Criterion::default().sample_size(SAMPLE_SIZE);
+    config = Criterion::default()
+        .sample_size(SAMPLE_SIZE)
+        .warm_up_time(WARM_UP_TIME)
+        .measurement_time(MEASUREMENT_TIME);
     targets = get_or_insert
 );
 criterion_main!(group);
