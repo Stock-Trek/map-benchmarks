@@ -235,5 +235,9 @@ fn remove(c: &mut Criterion) {
     }
 }
 
-criterion_group!(group, remove);
+criterion_group!(
+    name = group;
+    config = Criterion::default().sample_size(SAMPLE_SIZE);
+    targets = remove
+);
 criterion_main!(group);

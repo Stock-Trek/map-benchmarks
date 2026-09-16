@@ -216,5 +216,9 @@ fn lookup_hit(c: &mut Criterion) {
     }
 }
 
-criterion_group!(group, lookup_hit);
+criterion_group!(
+    name = group;
+    config = Criterion::default().sample_size(SAMPLE_SIZE);
+    targets = lookup_hit
+);
 criterion_main!(group);

@@ -216,5 +216,9 @@ fn lookup_miss(c: &mut Criterion) {
     }
 }
 
-criterion_group!(group, lookup_miss);
+criterion_group!(
+    name = group;
+    config = Criterion::default().sample_size(SAMPLE_SIZE);
+    targets = lookup_miss
+);
 criterion_main!(group);

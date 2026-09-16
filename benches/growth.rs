@@ -241,5 +241,9 @@ fn growth(c: &mut Criterion) {
     }
 }
 
-criterion_group!(group, growth);
+criterion_group!(
+    name = group;
+    config = Criterion::default().sample_size(SAMPLE_SIZE);
+    targets = growth
+);
 criterion_main!(group);

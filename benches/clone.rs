@@ -139,5 +139,9 @@ fn clone_then_write(c: &mut Criterion) {
     }
 }
 
-criterion_group!(group, clone, clone_then_write);
+criterion_group!(
+    name = group;
+    config = Criterion::default().sample_size(SAMPLE_SIZE);
+    targets = clone, clone_then_write
+);
 criterion_main!(group);

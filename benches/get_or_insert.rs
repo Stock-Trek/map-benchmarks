@@ -239,5 +239,9 @@ fn get_or_insert(c: &mut Criterion) {
     }
 }
 
-criterion_group!(group, get_or_insert);
+criterion_group!(
+    name = group;
+    config = Criterion::default().sample_size(SAMPLE_SIZE);
+    targets = get_or_insert
+);
 criterion_main!(group);
