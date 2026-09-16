@@ -19,7 +19,7 @@ where
 }
 
 fn create(c: &mut Criterion) {
-    let mut group = c.benchmark_group(format!("create"));
+    let mut group = c.benchmark_group("create");
     group.warm_up_time(WARM_UP_TIME);
     group.measurement_time(MEASUREMENT_TIME);
     group.throughput(Throughput::Elements(DEFAULT_OP_COUNT as u64));
