@@ -4,16 +4,12 @@
 #[macro_export]
 macro_rules! __bench_timed {
     ($name:expr, $body:expr) => {{
-        let start_wall = $crate::chrono::Local::now()
-            .format("%H:%M:%S:%3f")
-            .to_string();
+        let start_wall = chrono::Local::now().format("%H:%M:%S:%3f").to_string();
         let start = ::std::time::Instant::now();
         println!("[bench] start {} at {}", $name, start_wall);
         let result = $body;
         let duration = start.elapsed();
-        let end_wall = $crate::chrono::Local::now()
-            .format("%H:%M:%S:%3f")
-            .to_string();
+        let end_wall = chrono::Local::now().format("%H:%M:%S:%3f").to_string();
         println!(
             "[bench] end   {} at {} (duration {:.3}s)",
             $name,

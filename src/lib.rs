@@ -1,6 +1,3 @@
-// Re-exported so the exported benchmark macros can refer to it via `$crate`.
-pub use chrono;
-
 pub mod common_hasher;
 pub mod concurrent_workers;
 pub mod config;
