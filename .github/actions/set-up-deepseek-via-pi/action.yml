@@ -33,7 +33,7 @@ runs:
                 "api": $api,
                 "apiKey": $apiKey,
                 "models": [
-                  { "id": "deepseek-v4-flash" },
+                  { "id": "deepseek-flash" },
                   { "id": "deepseek-v4-pro" }
                 ]
               }

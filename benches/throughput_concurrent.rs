@@ -224,7 +224,6 @@ fn throughput_concurrent(c: &mut Criterion) {
 criterion_group!(
     name = group;
     config = Criterion::default()
-        .sample_size(SAMPLE_SIZE)
         .warm_up_time(WARM_UP_TIME)
         .measurement_time(CONCURRENT_MEASUREMENT_TIME);
     targets = throughput_concurrent
