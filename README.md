@@ -1,6 +1,6 @@
 # Map benchmarks
 
-Benchmarks 20 of 22* map implementations
+Benchmarks 15 of 22* map implementations
 
 [AI generated executive summary can be found here](./EXECUTIVE_SUMMARY.md)
 
@@ -12,20 +12,20 @@ Benchmarks 20 of 22* map implementations
 
 All benchmarks use blackbox to avoid any overly aggressive compiler optimisations.
 
-20 of 22* map implementations are benchmarked:
+15 of 22* map implementations are benchmarked:
 
 - [ahash::AHashMap](https://crates.io/crates/ahash)
-- [std::collections::btreemap](https://doc.rust-lang.org/std/collections/struct.BTreeMap.html)
+- ~~[std::collections::btreemap](https://doc.rust-lang.org/std/collections/struct.BTreeMap.html)~~
 - ~~[concread::hashmap::HashMap](https://crates.io/crates/concread)~~
-- [concurrent_map::ConcurrentMap](https://crates.io/crates/concurrent-map)
-- [crossbeam_skiplist::SkipMap](https://crates.io/crates/crossbeam-skiplist)
+- ~~[concurrent_map::ConcurrentMap](https://crates.io/crates/concurrent-map)~~
+- ~~[crossbeam_skiplist::SkipMap](https://crates.io/crates/crossbeam-skiplist)~~
 - [dashmap::DashMap](https://crates.io/crates/dashmap)
 - ~~[flurry::HashMap](https://crates.io/crates/flurry)~~
 - [hashbrown::HashMap](https://crates.io/crates/hashbrown)
 - [hashlink::LinkedHashMap](https://crates.io/crates/hashlink)
 - [horde::SyncTable](https://crates.io/crates/horde)
 - [immutable_chunkmap::map::MapM](https://crates.io/crates/immutable-chunkmap)
-- [imbl::HashMap](https://crates.io/crates/imbl)
+- ~~[imbl::HashMap](https://crates.io/crates/imbl)~~
 - [indexmap::IndexMap](https://crates.io/crates/indexmap)
 - [intmap::IntMap](https://crates.io/crates/intmap)
 - [leapfrog::LeapMap](https://crates.io/crates/leapfrog)
@@ -33,11 +33,11 @@ All benchmarks use blackbox to avoid any overly aggressive compiler optimisation
 - [rustc_hash::FxHashMap](https://crates.io/crates/rustc-hash)
 - [rpds::HashTrieMap](https://crates.io/crates/rpds)
 - [scc::HashMap](https://crates.io/crates/scc)
-- [starshard::ShardedHashMap](https://crates.io/crates/starshard)
+- ~~[starshard::ShardedHashMap](https://crates.io/crates/starshard)~~
 - [std::collections::HashMap](https://doc.rust-lang.org/std/collections/struct.HashMap.html)
 - [txmap::TxMap](https://crates.io/crates/txmap)
 
-*`concread` and `flurry` were both found to be substantially slower than the others so were removed from the benchmarks.
+*`concread` and `flurry` were both found to be substantially slower than the others so were removed from the benchmarks. `btreemap`, `concurrent-map`, `crossbeam-skiplist`, `imbl` and `starshard` never placed within 10% of the fastest implementation in any benchmark, so they have been commented out.
 
 There are 3 groups of tests, `out-of-the-box` which uses each map's default implementation for more realistic "real-world" performance, `same-hasher` which uses the same hasher for more accurate, "fairer" performance, and `both` which contains benchmarks that are run for both types of comparison.
 
