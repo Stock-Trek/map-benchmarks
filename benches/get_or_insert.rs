@@ -110,17 +110,17 @@ fn get_or_insert(c: &mut Criterion) {
 
         expand_bench_with_map_data!(bench_out_of_the_box, u64, &mut group, &map_data_u64,
             AhashBenchMap<u64, u64>,
-            // BTreeMapBenchMap<u64, u64>,
+            BTreeMapBenchMap<u64, u64>,
             // ConcreadBenchMap<u64, u64>, // too slow; no entry/get-or-insert API
             // ConcurrentMapBenchMap<u64, u64>, // no entry/get-or-insert API
-            // CrossbeamSkiplistBenchMap<u64, u64>,
+            CrossbeamSkiplistBenchMap<u64, u64>,
             DashMapBenchMap<u64, u64>,
             // FlurryBenchMap<u64, u64>, // too slow; no entry/get-or-insert API
             HashbrownBenchMap<u64, u64>,
             HashlinkBenchMap<u64, u64>,
             // HordeBenchMap<u64, u64>, // no entry/get-or-insert API
             ImmutableChunkMapBenchMap<u64, u64>,
-            // ImblBenchMap<u64, u64>,
+            ImblBenchMap<u64, u64>,
             IndexMapBenchMap<u64, u64>,
             IntMapBenchMap<u64, u64>,
             LeapfrogBenchMap<u64, u64>,
@@ -128,7 +128,7 @@ fn get_or_insert(c: &mut Criterion) {
             // RpdsHashTrieMapBenchMap<u64, u64>, // no entry/get-or-insert API
             RustCHashBenchMap<u64, u64>,
             SccBenchMap<u64, u64>,
-            // StarshardBenchMap<u64, u64>,
+            StarshardBenchMap<u64, u64>,
             StdBenchMap<u64, u64>,
             TxMapBenchMap<u64, u64>,
         );
@@ -174,17 +174,17 @@ fn get_or_insert(c: &mut Criterion) {
 
         expand_bench_with_map_data!(bench_out_of_the_box, String, &mut group, &map_data_string_32,
             AhashBenchMap<String, u64>,
-            // BTreeMapBenchMap<String, u64>,
+            BTreeMapBenchMap<String, u64>,
             // ConcreadBenchMap<String, u64>, // too slow; no entry/get-or-insert API
             // ConcurrentMapBenchMap<String, u64>, // no entry/get-or-insert API
-            // CrossbeamSkiplistBenchMap<String, u64>,
+            CrossbeamSkiplistBenchMap<String, u64>,
             DashMapBenchMap<String, u64>,
             // FlurryBenchMap<String, u64>, // too slow; no entry/get-or-insert API
             HashbrownBenchMap<String, u64>,
             HashlinkBenchMap<String, u64>,
             // HordeBenchMap<String, u64>, // no entry/get-or-insert API
             ImmutableChunkMapBenchMap<String, u64>,
-            // ImblBenchMap<String, u64>,
+            ImblBenchMap<String, u64>,
             IndexMapBenchMap<String, u64>,
             // IntMapBenchMap<String, u64>, // keys require IntKey
             // LeapfrogBenchMap<String, u64>, // keys require Copy
@@ -192,7 +192,7 @@ fn get_or_insert(c: &mut Criterion) {
             // RpdsHashTrieMapBenchMap<String, u64>, // no entry/get-or-insert API
             RustCHashBenchMap<String, u64>,
             SccBenchMap<String, u64>,
-            // StarshardBenchMap<String, u64>,
+            StarshardBenchMap<String, u64>,
             StdBenchMap<String, u64>,
             TxMapBenchMap<String, u64>,
         );
