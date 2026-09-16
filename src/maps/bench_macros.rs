@@ -4,20 +4,14 @@
 #[macro_export]
 macro_rules! __bench_timed {
     ($name:expr, $body:expr) => {{
-        let start_wall = ::std::time::SystemTime::now()
-            .duration_since(::std::time::UNIX_EPOCH)
-            .map(|d| d.as_secs_f64())
-            .unwrap_or_default();
+        let start_wall = $crate::time_format::format_time_of_day(::std::time::SystemTime::now());
         let start = ::std::time::Instant::now();
-        println!("[bench] start {} at {:.3}", $name, start_wall);
+        println!("[bench] start {} at {}", $name, start_wall);
         let result = $body;
         let duration = start.elapsed();
-        let end_wall = ::std::time::SystemTime::now()
-            .duration_since(::std::time::UNIX_EPOCH)
-            .map(|d| d.as_secs_f64())
-            .unwrap_or_default();
+        let end_wall = $crate::time_format::format_time_of_day(::std::time::SystemTime::now());
         println!(
-            "[bench] end   {} at {:.3} (duration {:.3}s)",
+            "[bench] end   {} at {} (duration {:.3}s)",
             $name,
             end_wall,
             duration.as_secs_f64()

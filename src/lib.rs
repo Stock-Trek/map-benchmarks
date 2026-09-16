@@ -7,4 +7,5 @@ pub mod map_data;
 pub mod map_gen;
 pub mod maps;
 pub mod pin_thread;
+pub mod time_format;
 pub mod workload;
