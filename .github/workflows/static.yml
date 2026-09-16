@@ -42,10 +42,11 @@ jobs:
       - name: Run benchmarks
         run: cargo bench
 
-      - name: Set up DeepSeek via pi
-        uses: ./.github/actions/set-up-deepseek-via-pi
+      - name: Set up pi models
+        uses: ./.github/actions/set-up-pi-models
         env:
           DEEPSEEK_API_KEY: ${{ env.DEEPSEEK_API_KEY }}
+          EDENAI_API_KEY: ${{ env.EDENAI_API_KEY }}
 
       - name: Prepare for report and save base64 prompt
         id: prepare
