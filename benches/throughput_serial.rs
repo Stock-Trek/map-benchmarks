@@ -113,8 +113,6 @@ fn throughput_serial(c: &mut Criterion) {
         // u64 keys
         {
             let mut group = c.benchmark_group(format!("throughput/threads-1/u64/{name}"));
-            group.warm_up_time(WARM_UP_TIME);
-            group.measurement_time(MEASUREMENT_TIME);
             group.throughput(Throughput::Elements(DEFAULT_OP_COUNT as u64));
             group.sampling_mode(SAMPLING_MODE);
 
@@ -147,8 +145,6 @@ fn throughput_serial(c: &mut Criterion) {
         // String<32> keys
         {
             let mut group = c.benchmark_group(format!("throughput/threads-1/String<32>/{name}"));
-            group.warm_up_time(WARM_UP_TIME);
-            group.measurement_time(MEASUREMENT_TIME);
             group.throughput(Throughput::Elements(DEFAULT_OP_COUNT as u64));
             group.sampling_mode(SAMPLING_MODE);
 
@@ -182,7 +178,10 @@ fn throughput_serial(c: &mut Criterion) {
 
 criterion_group!(
     name = group;
-    config = Criterion::default().sample_size(SAMPLE_SIZE);
+    config = Criterion::default()
+        .sample_size(SAMPLE_SIZE)
+        .warm_up_time(WARM_UP_TIME)
+        .measurement_time(MEASUREMENT_TIME);
     targets = throughput_serial
 );
 criterion_main!(group);
