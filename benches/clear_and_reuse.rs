@@ -144,7 +144,7 @@ fn clear_and_reuse(c: &mut Criterion) {
                 HashlinkBenchMap<u64, u64, CommonHasher>,
                 HordeBenchMap<u64, u64, CommonHasher>,
                 // ImmutableChunkMapBenchMap<u64, u64, CommonHasher>, // doesn't allow setting hasher
-                // ImblBenchMap<u64, u64, CommonHasher>,
+                ImblBenchMap<u64, u64, CommonHasher>,
                 IndexMapBenchMap<u64, u64, CommonHasher>,
                 // IntMapBenchMap<u64, u64, CommonHasher>, // doesn't allow setting hasher
                 // LeapfrogBenchMap<u64, u64, CommonHasher>, // no clear
@@ -152,7 +152,7 @@ fn clear_and_reuse(c: &mut Criterion) {
                 // RpdsHashTrieMapBenchMap<u64, u64, CommonHasher>, // no clear
                 // RustCHashBenchMap<u64, u64, CommonHasher>, // doesn't allow setting hasher
                 SccBenchMap<u64, u64, CommonHasher>,
-                // StarshardBenchMap<u64, u64, CommonHasher>,
+                StarshardBenchMap<u64, u64, CommonHasher>,
                 StdBenchMap<u64, u64, CommonHasher>,
                 TxMapBenchMap<u64, u64, CommonHasher>,
             );
