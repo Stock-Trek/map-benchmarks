@@ -77,7 +77,7 @@ fn growth(c: &mut Criterion) {
     let entry_count = 0;
     let existing_key_count = 0;
     let sort_keys = false;
-    for (missing_key_count, entry_count_name) in GROWTH_ENTRY_COUNTS {
+    for (missing_key_count, entry_count_name) in DEFAULT_ENTRY_COUNTS {
         let map_data_u64 = MapGen::generate(
             U64SparseDataGen,
             U64SparseDataGen,

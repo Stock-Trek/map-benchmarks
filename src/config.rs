@@ -16,10 +16,3 @@ pub const DEFAULT_THREAD_COUNTS: &[usize] = &[2, 3];
 /// the remainder are missing keys that get inserted (the "get-or-create cache
 /// entry" pattern).
 pub const GET_OR_INSERT_HIT_RATIO: f64 = 0.90;
-
-pub const GROWTH_ENTRY_COUNTS: &[(usize, &str)] = &[
-    (1_000, "1K"),
-    (10_000, "10K"),
-    (100_000, "100K"),
-    (1_000_000, "1M"),
-];
