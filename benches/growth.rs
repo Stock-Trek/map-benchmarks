@@ -135,7 +135,7 @@ fn growth(c: &mut Criterion) {
                 "growth/map-size-{entry_count_name}/{SAME_HASHER}/u64"
             ));
             group.throughput(Throughput::Elements(*missing_key_count as u64));
-            group.sampling_mode(SAMPLING_MODE);
+            group.sampling_mode(GROWTH_SAMPLING_MODE);
 
             expand_bench_with_map_data_and_common_hasher!(bench_same_hasher, u64, &mut group, &map_data_u64,
                 AhashBenchMap<u64, u64, CommonHasher>,
@@ -169,7 +169,7 @@ fn growth(c: &mut Criterion) {
                 "growth/map-size-{entry_count_name}/{OUT_OF_THE_BOX}/String<32>"
             ));
             group.throughput(Throughput::Elements(*missing_key_count as u64));
-            group.sampling_mode(SAMPLING_MODE);
+            group.sampling_mode(GROWTH_SAMPLING_MODE);
 
             expand_bench_with_map_data!(bench_out_of_the_box, String, &mut group, &map_data_string_32,
                 AhashBenchMap<String, u64>,
@@ -203,7 +203,7 @@ fn growth(c: &mut Criterion) {
                 "growth/map-size-{entry_count_name}/{SAME_HASHER}/String<32>"
             ));
             group.throughput(Throughput::Elements(*missing_key_count as u64));
-            group.sampling_mode(SAMPLING_MODE);
+            group.sampling_mode(GROWTH_SAMPLING_MODE);
 
             expand_bench_with_map_data_and_common_hasher!(bench_same_hasher, String, &mut group, &map_data_string_32,
                 AhashBenchMap<String, u64, CommonHasher>,
