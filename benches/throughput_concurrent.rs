@@ -98,10 +98,10 @@ fn bench<Map, K>(
 }
 
 fn throughput_concurrent(c: &mut Criterion) {
-    let max_threads = DEFAULT_THREAD_COUNTS.last().unwrap();
-    let entry_count = DEFAULT_ENTRY_COUNT;
+    let max_threads = THREAD_COUNTS.last().unwrap();
+    let entry_count = ENTRY_COUNT;
     let existing_key_count = entry_count;
-    let missing_key_count = max_threads * DEFAULT_OP_COUNT;
+    let missing_key_count = max_threads * OP_COUNT;
     let sort_keys = false;
     let map_data_u64 = MapGen::generate(
         U64SparseDataGen,
@@ -121,15 +121,15 @@ fn throughput_concurrent(c: &mut Criterion) {
     );
 
     let designs: &[(&str, WorkloadDesign)] = &[
-        ("write-heavy", WorkloadDesign::write_heavy(DEFAULT_OP_COUNT)),
-        ("balanced", WorkloadDesign::balanced(DEFAULT_OP_COUNT)),
-        ("read-heavy", WorkloadDesign::read_heavy(DEFAULT_OP_COUNT)),
+        ("write-heavy", WorkloadDesign::write_heavy(OP_COUNT)),
+        ("balanced", WorkloadDesign::balanced(OP_COUNT)),
+        ("read-heavy", WorkloadDesign::read_heavy(OP_COUNT)),
     ];
 
     for &(name, design) in designs {
         let mut rng = rand::rng();
-        for &thread_count in DEFAULT_THREAD_COUNTS {
-            let total_ops = thread_count * DEFAULT_OP_COUNT;
+        for &thread_count in THREAD_COUNTS {
+            let total_ops = thread_count * OP_COUNT;
             let workloads = (0..thread_count)
                 .map(|_| {
                     KeyDistribution::Uniform.thread_workload(

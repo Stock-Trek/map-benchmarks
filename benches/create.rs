@@ -11,7 +11,7 @@ where
 {
     group.bench_function(name, move |b| {
         b.iter(|| {
-            for _ in 0..DEFAULT_OP_COUNT {
+            for _ in 0..OP_COUNT {
                 black_box(Map::new());
             }
         });
@@ -20,7 +20,7 @@ where
 
 fn create(c: &mut Criterion) {
     let mut group = c.benchmark_group("create");
-    group.throughput(Throughput::Elements(DEFAULT_OP_COUNT as u64));
+    group.throughput(Throughput::Elements(OP_COUNT as u64));
     group.sampling_mode(SAMPLING_MODE);
 
     expand_bench!(bench, u64, &mut group,

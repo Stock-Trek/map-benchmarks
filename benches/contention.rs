@@ -98,22 +98,22 @@ fn bench<Map, K>(
 }
 
 fn contention(c: &mut Criterion) {
-    let max_threads = DEFAULT_THREAD_COUNTS.last().unwrap();
-    let missing_key_count = max_threads * DEFAULT_OP_COUNT;
-    let design = WorkloadDesign::contention(DEFAULT_OP_COUNT);
+    let max_threads = THREAD_COUNTS.last().unwrap();
+    let missing_key_count = max_threads * OP_COUNT;
+    let design = WorkloadDesign::contention(OP_COUNT);
     let map_data_u64 = MapGen::generate(
         U64DenseDataGen,
         U64SparseDataGen,
-        DEFAULT_ENTRY_COUNT,
-        DEFAULT_ENTRY_COUNT,
+        ENTRY_COUNT,
+        ENTRY_COUNT,
         missing_key_count,
         true,
     );
     let map_data_string_32 = MapGen::generate(
         StringDataGen::<32>,
         U64SparseDataGen,
-        DEFAULT_ENTRY_COUNT,
-        DEFAULT_ENTRY_COUNT,
+        ENTRY_COUNT,
+        ENTRY_COUNT,
         missing_key_count,
         true,
     );
@@ -123,10 +123,10 @@ fn contention(c: &mut Criterion) {
         KeyDistribution::Zipfian(2.0),
     ];
 
-    for &thread_count in DEFAULT_THREAD_COUNTS {
+    for &thread_count in THREAD_COUNTS {
         for key_distribution in &key_distributions {
             let mut rng = rand::rng();
-            let total_ops = thread_count * DEFAULT_OP_COUNT;
+            let total_ops = thread_count * OP_COUNT;
             let workloads = (0..thread_count)
                 .map(|_| {
                     key_distribution.thread_workload(

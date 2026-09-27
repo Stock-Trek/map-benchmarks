@@ -58,7 +58,7 @@ fn bench_same_hasher<Map, K>(
 }
 
 fn lookup_miss(c: &mut Criterion) {
-    let entry_count = DEFAULT_ENTRY_COUNT;
+    let entry_count = ENTRY_COUNT;
     let existing_key_count = 0;
     let missing_key_count = 100;
     let sort_keys = false;

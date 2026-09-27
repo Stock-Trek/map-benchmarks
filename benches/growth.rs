@@ -77,7 +77,7 @@ fn growth(c: &mut Criterion) {
     let entry_count = 0;
     let existing_key_count = 0;
     let sort_keys = false;
-    for (missing_key_count, entry_count_name) in DEFAULT_ENTRY_COUNTS {
+    for (missing_key_count, entry_count_name) in GROWTH_ENTRY_COUNTS {
         let map_data_u64 = MapGen::generate(
             U64SparseDataGen,
             U64SparseDataGen,
@@ -101,7 +101,7 @@ fn growth(c: &mut Criterion) {
                 "growth/map-size-{entry_count_name}/{OUT_OF_THE_BOX}/u64"
             ));
             group.throughput(Throughput::Elements(*missing_key_count as u64));
-            group.sampling_mode(SAMPLING_MODE);
+            group.sampling_mode(GROWTH_SAMPLING_MODE);
 
             expand_bench_with_map_data!(bench_out_of_the_box, u64, &mut group, &map_data_u64,
                 AhashBenchMap<u64, u64>,

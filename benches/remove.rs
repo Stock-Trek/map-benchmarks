@@ -77,7 +77,7 @@ fn bench_same_hasher<Map, K>(
 }
 
 fn remove(c: &mut Criterion) {
-    let entry_count = DEFAULT_ENTRY_COUNT;
+    let entry_count = ENTRY_COUNT;
     let existing_key_count = 100;
     let missing_key_count = 0;
     let sort_keys = false;

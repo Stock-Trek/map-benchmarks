@@ -74,9 +74,9 @@ fn bench_same_hasher<Map, K>(
 }
 
 fn insert(c: &mut Criterion) {
-    let entry_count = DEFAULT_ENTRY_COUNT;
+    let entry_count = ENTRY_COUNT;
     let existing_key_count = 0;
-    let missing_key_count = DEFAULT_OP_COUNT;
+    let missing_key_count = OP_COUNT;
     let sort_keys = false;
     let map_data_u64 = MapGen::generate(
         U64SparseDataGen,

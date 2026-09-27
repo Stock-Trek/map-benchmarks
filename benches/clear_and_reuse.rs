@@ -79,7 +79,7 @@ fn bench_same_hasher<Map, K>(
 fn clear_and_reuse(c: &mut Criterion) {
     let existing_key_count = 0;
     let sort_keys = false;
-    for (entry_count, entry_count_name) in DEFAULT_ENTRY_COUNTS {
+    for (entry_count, entry_count_name) in ENTRY_COUNTS {
         let missing_key_count = *entry_count;
         let map_data = MapGen::generate(
             U64SparseDataGen,

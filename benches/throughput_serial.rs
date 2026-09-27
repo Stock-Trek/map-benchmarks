@@ -68,9 +68,9 @@ fn bench<Map, K>(
 }
 
 fn throughput_serial(c: &mut Criterion) {
-    let entry_count = DEFAULT_ENTRY_COUNT;
+    let entry_count = ENTRY_COUNT;
     let existing_key_count = entry_count;
-    let missing_key_count = DEFAULT_OP_COUNT;
+    let missing_key_count = OP_COUNT;
     let sort_keys = false;
     let map_data_u64 = MapGen::generate(
         U64SparseDataGen,
@@ -91,9 +91,9 @@ fn throughput_serial(c: &mut Criterion) {
 
     let mut rng = rand::rng();
     let designs: &[(&str, WorkloadDesign)] = &[
-        ("write-heavy", WorkloadDesign::write_heavy(DEFAULT_OP_COUNT)),
-        ("balanced", WorkloadDesign::balanced(DEFAULT_OP_COUNT)),
-        ("read-heavy", WorkloadDesign::read_heavy(DEFAULT_OP_COUNT)),
+        ("write-heavy", WorkloadDesign::write_heavy(OP_COUNT)),
+        ("balanced", WorkloadDesign::balanced(OP_COUNT)),
+        ("read-heavy", WorkloadDesign::read_heavy(OP_COUNT)),
     ];
 
     for &(name, design) in designs {
@@ -113,7 +113,7 @@ fn throughput_serial(c: &mut Criterion) {
         // u64 keys
         {
             let mut group = c.benchmark_group(format!("throughput/threads-1/u64/{name}"));
-            group.throughput(Throughput::Elements(DEFAULT_OP_COUNT as u64));
+            group.throughput(Throughput::Elements(OP_COUNT as u64));
             group.sampling_mode(SAMPLING_MODE);
 
             expand_bench_concurrent!(bench, u64, &mut group, &map_data_u64, 1, &workload_u64,
@@ -145,7 +145,7 @@ fn throughput_serial(c: &mut Criterion) {
         // String<32> keys
         {
             let mut group = c.benchmark_group(format!("throughput/threads-1/String<32>/{name}"));
-            group.throughput(Throughput::Elements(DEFAULT_OP_COUNT as u64));
+            group.throughput(Throughput::Elements(OP_COUNT as u64));
             group.sampling_mode(SAMPLING_MODE);
 
             expand_bench_concurrent!(bench, String, &mut group, &map_data_string_32, 1, &workload_string_32,

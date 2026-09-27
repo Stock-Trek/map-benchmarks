@@ -39,7 +39,7 @@ fn bench<Map, K>(
 
 fn key_sensitivity(c: &mut Criterion) {
     const KEY_SENSITIVITY_GROUP_NAME: &str = "key-sensitivity";
-    let entry_count = DEFAULT_ENTRY_COUNT;
+    let entry_count = ENTRY_COUNT;
     let existing_key_count: u64 = 100;
     let missing_key_count: u64 = 0;
     let sort_keys = false;

@@ -140,23 +140,18 @@ fn synchronization(c: &mut Criterion) {
     );
 
     let mut rng = rand::rng();
-    for &thread_count in DEFAULT_THREAD_COUNTS {
+    for &thread_count in THREAD_COUNTS {
         for &(name, read_ratio) in SYNC_WORKLOADS {
-            let total_ops = thread_count * DEFAULT_OP_COUNT;
+            let total_ops = thread_count * OP_COUNT;
             let workloads = (0..thread_count)
                 .map(|_| {
-                    generate_sync_workload(
-                        DEFAULT_OP_COUNT,
-                        read_ratio,
-                        &mut rng,
-                        SYNCHRONIZATION_HIT_KEY,
-                    )
+                    generate_sync_workload(OP_COUNT, read_ratio, &mut rng, SYNCHRONIZATION_HIT_KEY)
                 })
                 .collect::<Vec<_>>();
             let workloads_string_32 = (0..thread_count)
                 .map(|_| {
                     generate_sync_workload(
-                        DEFAULT_OP_COUNT,
+                        OP_COUNT,
                         read_ratio,
                         &mut rng,
                         SYNCHRONIZATION_HIT_KEY_STRING.to_string(),
