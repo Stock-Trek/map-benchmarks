@@ -160,7 +160,7 @@ fn contention(c: &mut Criterion) {
                     // AhashBenchMap<u64, u64>, // not concurrent
                     // BTreeMapBenchMap<u64, u64>, // not concurrent
                     // ConcreadBenchMap<u64, u64>, // too slow
-                    ConcurrentMapBenchMap<u64, u64>,
+                    // ConcurrentMapBenchMap<u64, u64>, // too slow
                     CrossbeamSkiplistBenchMap<u64, u64>,
                     DashMapBenchMap<u64, u64>,
                     // FlurryBenchMap<u64, u64>, // too slow
@@ -194,7 +194,7 @@ fn contention(c: &mut Criterion) {
                     // AhashBenchMap<String, u64>, // not concurrent
                     // BTreeMapBenchMap<String, u64>, // not concurrent
                     // ConcreadBenchMap<String, u64>, // too slow
-                    ConcurrentMapBenchMap<String, u64>,
+                    // ConcurrentMapBenchMap<String, u64>, // too slow
                     CrossbeamSkiplistBenchMap<String, u64>,
                     DashMapBenchMap<String, u64>,
                     // FlurryBenchMap<String, u64>, // too slow

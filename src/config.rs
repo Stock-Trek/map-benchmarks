@@ -11,12 +11,13 @@ pub const ENTRY_COUNTS: &[(usize, &str)] = &[(1_000, "1K"), (10_000, "10K"), (10
 pub const OP_COUNT: usize = 10_000;
 pub const THREAD_COUNTS: &[usize] = &[2, 3];
 
+pub const SLOW_SAMPLING_MODE: SamplingMode = SamplingMode::Flat;
+
 /// The fraction of get-or-insert operations that hit keys already in the map;
 /// the remainder are missing keys that get inserted (the "get-or-create cache
 /// entry" pattern).
 pub const GET_OR_INSERT_HIT_RATIO: f64 = 0.90;
 
-pub const GROWTH_SAMPLING_MODE: SamplingMode = SamplingMode::Flat;
 pub const GROWTH_ENTRY_COUNTS: &[(usize, &str)] = &[
     (1_000, "1K"),
     (10_000, "10K"),

@@ -79,7 +79,7 @@ fn iterate(c: &mut Criterion) {
                 AhashBenchMap<u64, u64>,
                 BTreeMapBenchMap<u64, u64>,
                 // ConcreadBenchMap<u64, u64>, // too slow
-                ConcurrentMapBenchMap<u64, u64>,
+                // ConcurrentMapBenchMap<u64, u64>, // too slow
                 CrossbeamSkiplistBenchMap<u64, u64>,
                 DashMapBenchMap<u64, u64>,
                 // FlurryBenchMap<u64, u64>, // too slow

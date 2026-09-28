@@ -101,13 +101,13 @@ fn growth(c: &mut Criterion) {
                 "growth/map-size-{entry_count_name}/{OUT_OF_THE_BOX}/u64"
             ));
             group.throughput(Throughput::Elements(*missing_key_count as u64));
-            group.sampling_mode(GROWTH_SAMPLING_MODE);
+            group.sampling_mode(SLOW_SAMPLING_MODE);
 
             expand_bench_with_map_data!(bench_out_of_the_box, u64, &mut group, &map_data_u64,
                 AhashBenchMap<u64, u64>,
                 BTreeMapBenchMap<u64, u64>,
                 // ConcreadBenchMap<u64, u64>, // too slow
-                ConcurrentMapBenchMap<u64, u64>,
+                // ConcurrentMapBenchMap<u64, u64>, // too slow
                 CrossbeamSkiplistBenchMap<u64, u64>,
                 DashMapBenchMap<u64, u64>,
                 // FlurryBenchMap<u64, u64>, // too slow
@@ -135,7 +135,7 @@ fn growth(c: &mut Criterion) {
                 "growth/map-size-{entry_count_name}/{SAME_HASHER}/u64"
             ));
             group.throughput(Throughput::Elements(*missing_key_count as u64));
-            group.sampling_mode(GROWTH_SAMPLING_MODE);
+            group.sampling_mode(SLOW_SAMPLING_MODE);
 
             expand_bench_with_map_data_and_common_hasher!(bench_same_hasher, u64, &mut group, &map_data_u64,
                 AhashBenchMap<u64, u64, CommonHasher>,
@@ -169,13 +169,13 @@ fn growth(c: &mut Criterion) {
                 "growth/map-size-{entry_count_name}/{OUT_OF_THE_BOX}/String<32>"
             ));
             group.throughput(Throughput::Elements(*missing_key_count as u64));
-            group.sampling_mode(GROWTH_SAMPLING_MODE);
+            group.sampling_mode(SLOW_SAMPLING_MODE);
 
             expand_bench_with_map_data!(bench_out_of_the_box, String, &mut group, &map_data_string_32,
                 AhashBenchMap<String, u64>,
                 BTreeMapBenchMap<String, u64>,
                 // ConcreadBenchMap<String, u64>, // too slow
-                ConcurrentMapBenchMap<String, u64>,
+                // ConcurrentMapBenchMap<String, u64>, // too slow
                 CrossbeamSkiplistBenchMap<String, u64>,
                 DashMapBenchMap<String, u64>,
                 // FlurryBenchMap<String, u64>, // too slow
@@ -203,7 +203,7 @@ fn growth(c: &mut Criterion) {
                 "growth/map-size-{entry_count_name}/{SAME_HASHER}/String<32>"
             ));
             group.throughput(Throughput::Elements(*missing_key_count as u64));
-            group.sampling_mode(GROWTH_SAMPLING_MODE);
+            group.sampling_mode(SLOW_SAMPLING_MODE);
 
             expand_bench_with_map_data_and_common_hasher!(bench_same_hasher, String, &mut group, &map_data_string_32,
                 AhashBenchMap<String, u64, CommonHasher>,
