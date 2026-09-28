@@ -9,7 +9,7 @@ Include:
 
 1. **Scope**
    - Which map implementations were benchmarked.
-   - [table: implementation, crate (structure), internal mutability (✅/❌), configurable hasher (✅/❌), String keys (✅/❌)]
+   - [table: implementation, crate (structure), internal mutability (✅/❌), configurable hasher (✅/❌), non-Copy keys (✅/❌)]
    - Which distinct benchmark operations/workloads were used.
    - [table: operation, variants, measured]
 
@@ -22,10 +22,8 @@ Include:
 
 3. **Cross-Operation Patterns**
 
-    - Which implementation is most often the fastest?
-    - [table: implementation, # times fastest, # times within 10% of fastest, notes]
-    - Which implementation(s) is/are recommended for each use case?
-    - [table: use case, recommended implementation(s)]
+    - Which implementation is most often the fastest? 2 tables, one for serial benchmarks, one for concurrent benchmarks. [table: implementation, # times fastest, # times within 10% of fastest, notes]
+    - Which implementation(s) is/are recommended for each use case? [table: use case, recommended implementation(s)]
     - Are there cases where different implementations excel in different operations (trade-offs)?
     - Are there any implementations that are consistently close to the fastest across many operations?
 
