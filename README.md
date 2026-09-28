@@ -1,6 +1,6 @@
 # Map benchmarks
 
-Benchmarks 20 of 22* map implementations
+Benchmarks 19 of 22* map implementations
 
 [AI generated executive summary can be found here](./EXECUTIVE_SUMMARY.md)
 
