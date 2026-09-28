@@ -27,7 +27,10 @@ where
 {
     fn new() -> Self {
         Self {
-            map: starshard::ShardedHashMap::with_shards_and_hasher(8, H::default()),
+            map: starshard::ShardedHashMap::with_shards_and_hasher(
+                starshard::DEFAULT_SHARDS,
+                H::default(),
+            ),
         }
     }
 }
@@ -40,7 +43,10 @@ where
 {
     fn new_with_hasher(hasher: H) -> Self {
         Self {
-            map: starshard::ShardedHashMap::with_shards_and_hasher(8, hasher),
+            map: starshard::ShardedHashMap::with_shards_and_hasher(
+                starshard::DEFAULT_SHARDS,
+                hasher,
+            ),
         }
     }
 }
