@@ -33,7 +33,7 @@ where
 
 impl<K, V, H> BenchMapClone<K, V> for HordeBenchMap<K, V, H>
 where
-    K: Clone + Hash,
+    K: Clone + Hash + Eq,
     V: Clone,
     H: BuildHasher + Clone,
 {
@@ -87,7 +87,7 @@ where
 
 impl<K, V, H> BenchMapMutRemove<K, V> for HordeBenchMap<K, V, H>
 where
-    K: Hash + Eq,
+    K: Hash + Eq + Clone,
     V: Clone,
     H: BuildHasher,
 {
