@@ -81,8 +81,8 @@ fn bench_same_hasher<Map, K>(
 
 fn get_or_insert(c: &mut Criterion) {
     let entry_count = ENTRY_COUNT;
-    let existing_key_count = OP_COUNT;
-    let missing_key_count = OP_COUNT;
+    let existing_key_count = (OP_COUNT as f64 * GET_OR_INSERT_HIT_RATIO).round() as usize;
+    let missing_key_count = OP_COUNT - existing_key_count;
     let sort_keys = false;
     let map_data_u64 = MapGen::generate(
         U64SparseDataGen,
