@@ -110,7 +110,7 @@ If an application creates many maps, construction can matter as much as steady-s
 - **Differences under 10% should be treated as ties.** The benchmark ranks medians; it does not prove that two implementations are meaningfully different in production.
 - **Concurrent write-heavy results are noisy.** Relative run-to-run variation reached about 9.5–14% for several write-only results, including two fastest rows, and over 20% for one non-winning implementation. Do not pick a map from a narrow win in those rows without a workload-specific test.
 - **Coverage is uneven.** Only 19 of the 22 wrappers have benchmark results. `concread`, `concurrent-map`, and `flurry` are excluded because they were too slow or needed wrapper workarounds that distorted the measurement.
-- **`get-or-insert` is a 90/10 hit/miss workload.** The mix follows `GET_OR_INSERT_HIT_RATIO` = 0.90 in `src/config.rs`; a production hit ratio closer to 50% would need its own measurement.
+- **`get-or-insert` is a 50/50 hit/miss workload.** A configuration constant suggests a 90% hit ratio, but it is not used in the benchmark. Results should not be interpreted as a 90%-hit workload.
 - **Values are cloned on lookup.** The benchmark uses small `u64` values, so expensive value types may change the ranking.
 - **Some derived per-element costs are below timer resolution.** The persistent maps clone in roughly 1–13 ns, and the fastest `create` batch implies about 0.26 ns per empty map. Treat these as effectively O(1) or very cheap, not as precise rankings.
 - **These are current-machine numbers, not production guarantees.** Key size, value size, concurrency level, and workload mix should be validated on the target system.

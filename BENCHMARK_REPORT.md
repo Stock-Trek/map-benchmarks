@@ -63,7 +63,7 @@ There are 15 benchmark families. "OOTB" means out-of-the-box (each map's default
 | `lookup-hit` | 4: OOTB/same-hasher × `u64`/`String<32>` | 100 successful lookups on a 10,000-entry map; found values are cloned. |
 | `lookup-miss` | 4: OOTB/same-hasher × `u64`/`String<32>` | 100 unsuccessful lookups on a 10,000-entry map. |
 | `remove` | 4: OOTB/same-hasher × `u64`/`String<32>` | 100 removals from a 10,000-entry map. |
-| `get-or-insert` | 4: OOTB/same-hasher × `u64`/`String<32>` | 10,000 calls: 9,000 existing-key (hit) and 1,000 missing-key operations, matching `GET_OR_INSERT_HIT_RATIO` = 0.90. Values are cloned. |
+| `get-or-insert` | 4: OOTB/same-hasher × `u64`/`String<32>` | 20,000 calls: 10,000 existing-key and 10,000 missing-key operations (a 50/50 mix). Values are cloned. |
 | `growth` | 16: 4 sizes × 2 modes × 2 key types | Insertion into an empty map until it reaches 1K, 10K, 100K, or 1M entries. |
 | `clear-and-reuse` | 6: 3 sizes × 2 modes (`u64` only) | Clear a full map but keep it alive, then reinsert 1K/10K/100K entries. |
 | `iterate` | 6: 3 sizes × 2 modes (`u64` only) | Full iteration over a 1K/10K/100K-entry map. |
@@ -78,6 +78,7 @@ There are 15 benchmark families. "OOTB" means out-of-the-box (each map's default
 
 **Important interpretation notes**
 
+- `GET_OR_INSERT_HIT_RATIO` is defined as 0.90 in `src/config.rs` but is not used by the benchmark code. The actual `get-or-insert` workload is 50% existing keys and 50% missing keys, so these results should not be read as a 90%-hit workload.
 - The wrapper contract returns cloned values on lookup (`get_cloned`), and the benchmarks use `u64` values. Value-clone cost is therefore present but deliberately small and consistent across implementations.
 - Some rows contain only 100 operations (`lookup-hit`, `lookup-miss`, `remove`) or 100 lookups (`key-sensitivity`). A sub-microsecond median can move by several percent from a handful of samples; use the ratios and §4 stability data together.
 - Coverage is not equal. For example, `intmap` appears in 25 serial groups rather than 64 because it cannot accept String keys or a custom hasher. Raw "number of wins" therefore favours implementations that can enter more rows.
@@ -501,6 +502,7 @@ The data supports the following conclusions and next steps.
 - **Validate finalists on production-like data.** The benchmark clones `u64` values and uses fixed key sizes. Re-run the shortlist with the real value type, key length distribution, and map sizes, especially if values are expensive to clone.
 - **Resolve the concurrent String choice with a workload trace.** There is no dominant concurrent String map: `txmap`, `scc`, `papaya`, and `dashmap` win different mixes. Capture the real read/write ratio and key-frequency skew, then test only the two or three candidates that match it.
 - **Re-test clone-then-write with the real write fraction.** The benchmark inserts new entries equal to 10% of the map size. Persistent maps are attractive at 0% writes and become much less attractive as writes increase; the crossover should be measured for the intended workload.
+- **Test `get-or-insert` at the intended hit ratio.** The current benchmark is 50% existing keys and 50% missing keys. If the production expectation is closer to the unused `GET_OR_INSERT_HIT_RATIO = 0.90`, that variant should be measured directly.
 - **Decide the hashing policy before choosing a map.** If DoS resistance or hash randomisation is required, exclude `rustc-hash` and re-rank the same-hasher results. If it is not required, `rustc-hash` is a strong default.
 - **Investigate the excluded wrappers only if they are candidates.** `concread`, `concurrent-map`, and `flurry` were excluded for slow performance or wrapper workarounds that distort timing. Revisit them only after fixing those integration issues; their absence is not evidence that they are unusable in their native APIs.
 - **Revisit high-variance rows with more samples.** `create`, short lookup batches, and write-heavy concurrent synchronization would benefit from additional repetitions or a dedicated harness before a close ranking is treated as settled.
